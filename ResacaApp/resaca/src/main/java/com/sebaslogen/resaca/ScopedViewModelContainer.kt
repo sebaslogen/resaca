@@ -1,104 +1,143 @@
 package com.sebaslogen.resaca
 
+import android.util.Log
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.*
 import kotlinx.coroutines.*
 import java.util.concurrent.ConcurrentSkipListSet
 
-class ScopedViewModelContainer : ViewModel(), LifecycleObserver {
+/**
+ * [ViewModel] class used to store objects and [ScopedViewModel]s
+ * as long as the requester doesn't completely leave composition
+ * or the scope of this [ViewModel] is cleared.
+ *
+ * The lifecycle of a Composable doesn't match the one from this ViewModel nor Activities/Fragments.
+ * To detect when the requester has left composition and the screen for good (it's not needed anymore)
+ * this class observes the [Lifecycle] of the scope containing this [ScopedViewModelContainer] using
+ * the following flow:
+ * - When Composable leaves composition mark the composable to be forgotten/disposed from this object after a small delay
+ * - This clean up can be cancelled by two events:
+ *  * Same composable is requested before the small delay (e.g. when Android makes a configuration change)
+ *  * The [Lifecycle] of the scope in which this [ScopedViewModelContainer] lives has been paused (e.g. app went to background)
+ * - When the clean-up is cancelled because the [Lifecycle] of the scope was paused then the objects
+ * marked for disposal will be disposed after a small delay only once the [Lifecycle] of the
+ * scope returns to resume (e.g. app came back to foreground)
+ * This clean up can also be cancelled for the same to reasons as above
+ *
+ */
+class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
+
+    /**
+     * Mark whether the container of this class (usually a screen like an Activity, a Fragment or a Compose destination)
+     * is in foreground or in background to avoid disposing objects while in the background
+     */
     private var isInForeground = true
 
-    //private // TODO scopedContainer should be private, visible for debugging
-    val scopedObjectContainer = mutableMapOf<Int, Any>()
+    /**
+     * Generic objects container
+     */
+    private val scopedObjectsContainer = mutableMapOf<Key, Any>()
 
-    //private // TODO scopedContainer should be private, visible for debugging
-    val scopedViewModelContainer = mutableMapOf<Int, ScopedViewModel>()
+    /**
+     * Generic [ViewModel]s container
+     */
+    private val scopedViewModelsContainer = mutableMapOf<Key, ScopedViewModel>()
+
+    /**
+     * List of [Key]s for the objects that will be disposed (forgotten from this class so they can be garbage collected) in the near future
+     */
     private val markedForDisposal = ConcurrentSkipListSet<Int>()
 
-    // TODO: use this one on immediate
-    private val beforeGoingToBackgroundDisposingJobs = mutableMapOf<Int, Job>()
-    private val afterReturningFromBackgroundDisposingJobs = mutableMapOf<Int, Job>()
+    /**
+     * List of [Job]s associated with an object [Key] that is scheduled to be disposed very soon, unless
+     * the object is requested again (and [cancelDisposal] is triggered) or
+     * the container of this [ScopedViewModelContainer] class goes to the background (making [isInForeground] false)
+     */
+    private val disposingJobs = mutableMapOf<Key, Job>()
 
-    fun <T : Any> getOrBuild(
-        key: Int,
+    @Suppress("UNCHECKED_CAST")
+    fun <T : Any> getOrBuildObject(
+        key: Key,
         builder: () -> T
     ): T {
         cancelDisposal(key)
-        // TODO: Can we improve casting?
-        return scopedObjectContainer[key] as? T
-            ?: builder.invoke().apply { scopedObjectContainer[key] = this }
+        return scopedObjectsContainer[key] as? T
+            ?: builder.invoke().apply { scopedObjectsContainer[key] = this }
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun <T : ScopedViewModel> getOrBuildScopedViewModel(
-        key: Int,
+        key: Key,
         builder: () -> T
     ): T {
         cancelDisposal(key)
-        // TODO: Can we improve casting?
-        return scopedViewModelContainer[key] as? T
-            ?: builder.invoke().apply { scopedViewModelContainer[key] = this }
+        return scopedViewModelsContainer[key] as? T
+            ?: builder.invoke().apply { scopedViewModelsContainer[key] = this }
     }
 
-    // TODO: Fix/Update this doc
-    fun onDisposedByCompose(key: Int) {
-        markedForDisposal.add(key) // Marked to be disposed after onResume
+    /**
+     * Triggered when a Composable that stored an object in this class is disposed and signals this container
+     * that the object might be also disposed from this container only when the stored object
+     * is not going to be used anymore (e.g. after configuration change or container fragment returning from backstack)
+     */
+    fun onDisposedFromComposition(key: Key) {
+        markedForDisposal.add(key.value) // Marked to be disposed after onResume
         scheduleToDisposeBeforeGoingToBackground(key) // Schedule to dispose this object before onPause
     }
 
     /**
-     * Schedules the object referenced by this [key] in the [scopedObjectContainer] and [scopedViewModelContainer]
+     * Schedules the object referenced by this [key] in the [scopedObjectsContainer] and [scopedViewModelsContainer]
      * to be removed (so it can be garbage collected) if the screen associated with this still [isInForeground]
      */
-    private fun scheduleToDisposeBeforeGoingToBackground(key: Int) {
-        scheduleToDispose(key = key, jobsContainer = beforeGoingToBackgroundDisposingJobs) { isInForeground }
-    }
-
-    private fun cancelDisposal(key: Int) {
-        if (markedForDisposal.remove(key)) { // Unmark for disposal in case it's not yet scheduled for disposal
-            //TODO Logger  { "Resuming with ${scopedViewModelContainer.keys}" }
-        }
-        if (afterReturningFromBackgroundDisposingJobs.containsKey(key)) { // Cancel scheduled disposal
-            afterReturningFromBackgroundDisposingJobs.remove(key)?.cancel()
-        }
-        if (beforeGoingToBackgroundDisposingJobs.containsKey(key)) { // Cancel scheduled disposal
-            beforeGoingToBackgroundDisposingJobs.remove(key)?.cancel()
-        }
+    private fun scheduleToDisposeBeforeGoingToBackground(key: Key) {
+        scheduleToDispose(key = key)
     }
 
     /**
-     * Dispose item from [scopedObjectContainer] or [scopedViewModelContainer] after the screen resumes
+     * Dispose item from [scopedObjectsContainer] or [scopedViewModelsContainer] after the screen resumes
      * This makes possible to garbage collect objects that were disposed by Compose right before the container screen went
-     * to background ([onLifeCyclePause]) and are not required anymore whe the screen is back in foreground ([onLifeCycleResume])
+     * to background ([Lifecycle.Event.ON_PAUSE]) and are not required anymore whe the screen is back in foreground ([Lifecycle.Event.ON_RESUME])
      *
-     * Disposal delay: Instead of immediately disposing the object after onResume, launch a coroutine with a delay
+     * Disposal delay: Instead of immediately disposing the object after [Lifecycle.Event.ON_RESUME], launch a coroutine with a delay
      * to give the Activity/Fragment enough time to recreate the desired UI after resuming or configuration change.
-     * [ScopedViewModel] objects will also be requested to cancel all their coroutines in their [CoroutineScope]
+     * Upon disposal, [ScopedViewModel] objects will also be requested to cancel all their coroutines in their [CoroutineScope]
      */
     private fun scheduleToDisposeAfterReturningFromBackground() {
         markedForDisposal.forEach { key ->
-            scheduleToDispose(key = key, jobsContainer = afterReturningFromBackgroundDisposingJobs)
+            scheduleToDispose(key = Key(key))
         }
     }
 
     /**
+     * Dispose/Forget the object -if present- in [scopedObjectsContainer] or [scopedViewModelsContainer] after a small delay.
+     * We store the deletion job with the given [key] in the given [jobsContainer] to make sure we don't schedule the same work twice
+     * An optional [removalCondition] is provided to check at removal time to make sure no object is removed while in the background
      *
-     * @param key Key of the object stored in either [scopedObjectContainer] or [scopedViewModelContainer] to be de-referenced for GC
-     * @param jobsContainer
-     * @param removalCondition
+     * @param key Key of the object stored in either [scopedObjectsContainer] or [scopedViewModelsContainer] to be de-referenced for GC
+     * @param jobsContainer Stores the disposal job to avoid duplicated requests
+     * @param removalCondition Last check at disposal time to prevent disposal when this condition is not met
      */
-    private fun scheduleToDispose(key: Int, jobsContainer: MutableMap<Int, Job>, removalCondition: () -> Boolean = { true }) {
-        if (jobsContainer.containsKey(key)) return // Already disposing, quit
+    private fun scheduleToDispose(key: Key, removalCondition: () -> Boolean = { isInForeground }) {
+        if (disposingJobs.containsKey(key)) return // Already disposing, quit
 
         val disposeDelayTimeMillis: Long = 5000
         val newDisposingJob = viewModelScope.launch {
             delay(disposeDelayTimeMillis)
             if (removalCondition()) {
-                markedForDisposal.remove(key)
-                scopedObjectContainer.remove(key)
-                scopedViewModelContainer.remove(key)?.viewModelScope?.cancel()
+                markedForDisposal.remove(key.value)
+                scopedObjectsContainer.remove(key)
+                scopedViewModelsContainer.remove(key)?.viewModelScope?.cancel()
             }
-            jobsContainer.remove(key)
+            disposingJobs.remove(key)
         }
-        jobsContainer[key] = newDisposingJob
+        disposingJobs[key] = newDisposingJob
+    }
+
+    private fun cancelDisposal(key: Key) {
+        disposingJobs.remove(key)?.cancel() // Cancel scheduled disposal
+        if (markedForDisposal.remove(key.value)) { // Unmark for disposal in case it's not yet scheduled for disposal
+            Log.d("ScopedVMContainer", "Resuming with ${scopedViewModelsContainer.keys}")
+        }
     }
 
     /**
@@ -106,23 +145,40 @@ class ScopedViewModelContainer : ViewModel(), LifecycleObserver {
      */
     override fun onCleared() {
         // Cancel disposal jobs, all those references will be garbage collected anyway with this ViewModel
-        beforeGoingToBackgroundDisposingJobs.forEach { (_, job) -> job.cancel() }
-        afterReturningFromBackgroundDisposingJobs.forEach { (_, job) -> job.cancel() }
+        disposingJobs.forEach { (_, job) -> job.cancel() }
         // Cancel all coroutines from ViewModels hosted in this object
-        scopedViewModelContainer.forEach { (_, scopedViewModel) ->
+        scopedViewModelsContainer.values.forEach { scopedViewModel ->
             scopedViewModel.viewModelScope.cancel()
         }
+        scopedObjectsContainer.clear() // Clear just in case this VM is leaked
+        scopedViewModelsContainer.clear() // Clear just in case this VM is leaked
         super.onCleared()
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME) // Note Fragment View creation happens before this onResume
-    private fun onLifeCycleResume() {
-        isInForeground = true
-        scheduleToDisposeAfterReturningFromBackground()
+    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+        when (event) {
+            Lifecycle.Event.ON_RESUME -> { // Note Fragment View creation happens before this onResume
+                isInForeground = true
+                scheduleToDisposeAfterReturningFromBackground()
+            }
+            Lifecycle.Event.ON_PAUSE -> {
+                isInForeground = false
+            }
+            Lifecycle.Event.ON_DESTROY -> { // Remove ourselves so that this ViewModel can be garbage collected
+                source.lifecycle.removeObserver(this)
+            }
+            else -> {
+                // No-Op
+            }
+        }
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    private fun onLifeCyclePause() {
-        isInForeground = false
-    }
+    @VisibleForTesting
+    fun getObjectsContainer(): Map<Key, Any> = scopedObjectsContainer
+
+    @VisibleForTesting
+    fun getVMsContainer(): Map<Key, ScopedViewModel> = scopedViewModelsContainer
+
+    @JvmInline
+    value class Key(val value: Int)
 }
