@@ -1,5 +1,5 @@
 plugins {
-    id 'com.android.application'
+    id 'com.android.library'
     id 'kotlin-android'
 }
 
@@ -7,7 +7,6 @@ android {
     compileSdk 31
 
     defaultConfig {
-        applicationId "com.sebaslogen.resaca"
         minSdk 21
         targetSdk 31
         versionCode 1
@@ -29,6 +28,13 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    buildFeatures { // Enables Jetpack Compose for this module
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerVersion versions.kotlin
+        kotlinCompilerExtensionVersion versions.composeCompiler
+    }
 }
 
 dependencies {
@@ -38,4 +44,11 @@ dependencies {
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0'
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0"
+
+    // Compose dependencies
+    implementation "androidx.compose.compiler:compiler:$versions.composeCompiler"
+    implementation "androidx.navigation:navigation-compose:$versions.navigation"
+    // Integration with ViewModels
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.lifecycle"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$versions.lifecycleViewmodelCompose"
 }

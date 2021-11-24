@@ -1,11 +1,17 @@
 package com.sebaslogen.resacaapp.ui.main
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import com.sebaslogen.resaca.compose.installScopedViewModelContainer
 import com.sebaslogen.resacaapp.R
 
 class MainFragment : Fragment() {
@@ -22,7 +28,22 @@ class MainFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.main_fragment, container, false)
+        return inflater.inflate(R.layout.main_fragment, container, false).apply {
+            this.findViewById<ComposeView>(R.id.composeContainer)?.apply {
+                // This is required so the Compose Views follow the lifecycle of the Fragment, not the Window
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                setContent {
+                    installScopedViewModelContainer()
+                    CreateComposeContent()
+                }
+            }
+        }
     }
+}
 
+@Composable
+fun CreateComposeContent() {
+    MaterialTheme(colors = MaterialTheme.colors.copy(primary = Color.Gray)) {
+//            DemoScreen()
+    }
 }
