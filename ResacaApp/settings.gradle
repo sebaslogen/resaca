@@ -8,3 +8,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "ResacaApp"
 include ':app'
+include ':resaca'
