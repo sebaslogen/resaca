@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
@@ -47,7 +47,7 @@ class MainFragment : Fragment() {
 
 @Composable
 fun CreateFragmentComposeContent(clickListener: () -> Unit) {
-    MaterialTheme(colors = MaterialTheme.colors.copy(primary = Color.DarkGray)) {
+    Surface(color = MaterialTheme.colors.background) {
         DemoScreenInFragment(clickListener)
     }
 }

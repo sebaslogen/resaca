@@ -4,8 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.sebaslogen.resaca.compose.installScopedViewModelContainer
@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
 
 @Composable
 fun CreateActivityComposeContent(clickListener: () -> Unit) {
-    MaterialTheme(colors = MaterialTheme.colors.copy(primary = Color.Gray)) {
+    Surface(color = MaterialTheme.colors.background.copy(alpha = 0.5f)) {
         DemoScreenInActivity(clickListener)
     }
 }
