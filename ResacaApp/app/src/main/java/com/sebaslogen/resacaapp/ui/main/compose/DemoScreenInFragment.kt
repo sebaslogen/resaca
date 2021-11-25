@@ -17,9 +17,17 @@ import com.sebaslogen.resacaapp.ui.main.data.FakeScopedViewModel
 @Composable
 fun DemoScreenInFragment(clickListener: () -> Unit) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        DemoNotScopedObjectComposable()
         DemoScopedObjectComposable()
         DemoScopedViewModelComposable()
         FragmentTwoButton(clickListener)
+    }
+}
+
+@Composable
+fun DemoNotScopedObjectComposable() {
+    Box(modifier = Modifier.padding(5.dp)) {
+        DemoComposable(FakeRepo(), "FakeRepo")
     }
 }
 
