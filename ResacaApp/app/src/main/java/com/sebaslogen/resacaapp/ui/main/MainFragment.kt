@@ -34,8 +34,8 @@ class MainFragment : Fragment() {
                 // This is required so the Compose Views follow the lifecycle of the Fragment, not the Window
                 setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                 setContent {
-                    installScopedViewModelContainer()
-                    CreateComposeContent(::navigateToFragmentTwo)
+                    installScopedViewModelContainer() // ScopedViewModelContainer will live in the scope of this Fragment
+                    CreateFragmentComposeContent(::navigateToFragmentTwo)
                 }
             }
         }
@@ -44,15 +44,15 @@ class MainFragment : Fragment() {
     private fun navigateToFragmentTwo() {
         parentFragmentManager
             .beginTransaction()
-            .add(R.id.container, FragmentTwo())
+            .replace(R.id.container, FragmentTwo())
             .addToBackStack(null)
             .commit()
     }
 }
 
 @Composable
-fun CreateComposeContent(clickListener: () -> Unit) {
-    MaterialTheme(colors = MaterialTheme.colors.copy(primary = Color.Gray)) {
+fun CreateFragmentComposeContent(clickListener: () -> Unit) {
+    MaterialTheme(colors = MaterialTheme.colors.copy(primary = Color.DarkGray)) {
         DemoScreenInFragment(clickListener)
     }
 }

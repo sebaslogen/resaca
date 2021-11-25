@@ -1,5 +1,6 @@
 package com.sebaslogen.resacaapp.ui.main.compose
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -8,6 +9,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.sebaslogen.resaca.compose.rememberScoped
 import com.sebaslogen.resaca.compose.rememberScopedViewModel
@@ -26,7 +28,11 @@ fun DemoScreenInFragment(clickListener: () -> Unit) {
 
 @Composable
 fun DemoNotScopedObjectComposable() {
-    Box(modifier = Modifier.padding(5.dp)) {
+    Box(
+        modifier = Modifier
+            .padding(15.dp)
+            .border(width = 4.dp, color = Color.Red)
+    ) {
         DemoComposable(FakeRepo(), "FakeRepo")
     }
 }
