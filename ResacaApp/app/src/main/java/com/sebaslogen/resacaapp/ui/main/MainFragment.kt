@@ -35,16 +35,20 @@ class MainFragment : Fragment() {
                 setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                 setContent {
                     installScopedViewModelContainer()
-                    CreateComposeContent()
+                    CreateComposeContent(::navigateToFragmentTwo)
                 }
             }
         }
     }
+
+    fun navigateToFragmentTwo() {
+        //TODO
+    }
 }
 
 @Composable
-fun CreateComposeContent() {
+fun CreateComposeContent(clickListener: () -> Unit) {
     MaterialTheme(colors = MaterialTheme.colors.copy(primary = Color.Gray)) {
-        DemoScreenInFragment()
+        DemoScreenInFragment(clickListener)
     }
 }
