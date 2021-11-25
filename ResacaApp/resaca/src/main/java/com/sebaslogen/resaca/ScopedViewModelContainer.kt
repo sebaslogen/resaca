@@ -1,7 +1,6 @@
 package com.sebaslogen.resaca
 
 import android.util.Log
-import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.*
 import kotlinx.coroutines.*
 import java.util.concurrent.ConcurrentSkipListSet
@@ -172,12 +171,6 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
             }
         }
     }
-
-    @VisibleForTesting
-    fun getObjectsContainer(): Map<Key, Any> = scopedObjectsContainer
-
-    @VisibleForTesting
-    fun getVMsContainer(): Map<Key, ScopedViewModel> = scopedViewModelsContainer
 
     @JvmInline
     value class Key(val value: Int)

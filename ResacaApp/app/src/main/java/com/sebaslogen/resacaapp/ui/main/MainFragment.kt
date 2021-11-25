@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.sebaslogen.resaca.compose.installScopedViewModelContainer
 import com.sebaslogen.resacaapp.R
+import com.sebaslogen.resacaapp.ui.main.compose.DemoScreenInFragment
 
 class MainFragment : Fragment() {
 
@@ -44,6 +45,6 @@ class MainFragment : Fragment() {
 @Composable
 fun CreateComposeContent() {
     MaterialTheme(colors = MaterialTheme.colors.copy(primary = Color.Gray)) {
-//            DemoScreen()
+        DemoScreenInFragment()
     }
 }
