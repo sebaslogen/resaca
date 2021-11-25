@@ -41,8 +41,10 @@ class MainFragment : Fragment() {
         }
     }
 
-    fun navigateToFragmentTwo() {
-        //TODO
+    private fun navigateToFragmentTwo() {
+        parentFragmentManager.beginTransaction()
+            .add(R.id.container, FragmentTwo())
+            .commitNow()
     }
 }
 
