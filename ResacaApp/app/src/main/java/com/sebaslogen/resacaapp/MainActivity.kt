@@ -1,5 +1,6 @@
 package com.sebaslogen.resacaapp
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.MaterialTheme
@@ -8,6 +9,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.sebaslogen.resaca.compose.installScopedViewModelContainer
+import com.sebaslogen.resacaapp.ui.main.ComposeActivity
 import com.sebaslogen.resacaapp.ui.main.MainFragment
 import com.sebaslogen.resacaapp.ui.main.compose.DemoScreenInActivity
 
@@ -21,6 +23,7 @@ class MainActivity : AppCompatActivity() {
                 .replace(R.id.container, MainFragment.newInstance())
                 .commitNow()
         }
+        title = "ComposeViews in Activity & Fragment"
         findViewById<ComposeView>(R.id.activity_composable)?.apply {
             // This is required so the Compose Views follow the lifecycle of the Activity, not the Window
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -32,7 +35,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun navigateToComposeActivity() {
-        //TODO
+        startActivity(Intent(this, ComposeActivity::class.java))
     }
 }
 

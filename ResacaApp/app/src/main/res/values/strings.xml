@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">ResacaApp</string>
     <string name="fragment_two_title">Fragment Two</string>
+    <string name="title_activity_compose">ComposeActivity</string>
 </resources>

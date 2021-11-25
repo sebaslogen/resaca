@@ -10,6 +10,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ResacaApp">
         <activity
+            android:name=".ui.main.ComposeActivity"
+            android:exported="false"
+            android:label="@string/title_activity_compose"
+            android:theme="@style/Theme.ResacaApp.NoActionBar" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
