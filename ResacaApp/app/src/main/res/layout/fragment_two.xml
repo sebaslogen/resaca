@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:text="@string/fragment_two_title" />
+        android:text="Fragment Two\n has destroyed the View of \n the previous fragment\n
+        \nWhen you navigate back with \n hardware back button \n the View of the Fragment \n will be re-created" />
 
 </FrameLayout>

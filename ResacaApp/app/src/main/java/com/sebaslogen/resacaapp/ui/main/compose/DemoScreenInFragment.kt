@@ -30,30 +30,30 @@ fun DemoScreenInFragment(clickListener: () -> Unit) {
 fun DemoNotScopedObjectComposable() {
     Box(
         modifier = Modifier
-            .padding(15.dp)
+            .padding(top = 2.dp, bottom = 12.dp, start = 8.dp, end = 8.dp)
             .border(width = 4.dp, color = Color.Red)
     ) {
-        DemoComposable(FakeRepo(), "FakeRepo")
+        DemoComposable(inputObject = FakeRepo(), objectType = "FakeRepo", scoped = false)
     }
 }
 
 @Composable
 fun DemoScopedObjectComposable() {
     val fakeRepo: FakeRepo = rememberScoped { FakeRepo() }
-    DemoComposable(fakeRepo, "FakeRepo")
+    DemoComposable(inputObject = fakeRepo, objectType = "FakeRepo", scoped = true)
 }
 
 @Composable
 fun DemoScopedViewModelComposable() {
     val fakeScopedVM: FakeScopedViewModel = rememberScopedViewModel { FakeScopedViewModel() }
-    DemoComposable(fakeScopedVM, "FakeScopedViewModel")
+    DemoComposable(inputObject = fakeScopedVM, objectType = "FakeScopedViewModel", scoped = true)
 }
 
 @Composable
 fun FragmentTwoButton(clickListener: () -> Unit) {
     Box(
         Modifier
-            .padding(vertical = 20.dp)
+            .padding(vertical = 12.dp, horizontal = 4.dp)
     ) {
         Button(onClick = clickListener) {
             Text("CLick to navigate to nested fragment")

@@ -23,7 +23,7 @@ fun DemoScreenInActivity(clickListener: () -> Unit) {
 fun ComposeActivityButton(clickListener: () -> Unit) {
     Box(
         Modifier
-            .padding(vertical = 20.dp)
+            .padding(vertical = 12.dp, horizontal = 4.dp)
     ) {
         Button(onClick = clickListener) {
             Text("CLick to navigate to a full Compose Activity with Compose navigation")
