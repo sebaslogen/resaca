@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
-import com.sebaslogen.resaca.compose.installScopedViewModelContainer
 import com.sebaslogen.resacaapp.R
 import com.sebaslogen.resacaapp.ui.main.compose.DemoScreenInFragment
 
@@ -29,7 +28,6 @@ class MainFragment : Fragment() {
                 // This is required so the Compose Views follow the lifecycle of the Fragment, not the Window
                 setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                 setContent {
-                    installScopedViewModelContainer() // ScopedViewModelContainer will live in the scope of this Fragment
                     CreateFragmentComposeContent(::navigateToFragmentTwo)
                 }
             }

@@ -20,7 +20,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.sebaslogen.resaca.compose.installScopedViewModelContainer
 import com.sebaslogen.resacaapp.ui.main.compose.DemoNotScopedObjectComposable
 import com.sebaslogen.resacaapp.ui.main.compose.DemoScopedObjectComposable
 import com.sebaslogen.resacaapp.ui.main.compose.DemoScopedViewModelComposable
@@ -44,11 +43,9 @@ fun ScreensWithNavigation() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "first") {
         composable("first") {
-            it.installScopedViewModelContainer() // ScopedViewModelContainer will live in the scope of this Nav-graph destination
             ComposeScreenWithNavigation(navController)
         }
         composable("second") {
-            it.installScopedViewModelContainer() // ScopedViewModelContainer will live in the scope of this Nav-graph destination
             ComposeScreenWithNavigation(navController)
         }
     }
@@ -79,7 +76,7 @@ fun NavigationButtons(navController: NavHostController) {
         onClick = {
             if (!navController.popBackStack()) activity?.finish()
         }) {
-        Text(text = "Go to BACK")
+        Text(text = "Go BACK")
     }
 }
 

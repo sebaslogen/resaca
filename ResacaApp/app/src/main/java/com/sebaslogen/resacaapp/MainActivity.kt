@@ -8,7 +8,6 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import com.sebaslogen.resaca.compose.installScopedViewModelContainer
 import com.sebaslogen.resacaapp.ui.main.ComposeActivity
 import com.sebaslogen.resacaapp.ui.main.MainFragment
 import com.sebaslogen.resacaapp.ui.main.compose.DemoScreenInActivity
@@ -28,7 +27,6 @@ class MainActivity : AppCompatActivity() {
             // This is required so the Compose Views follow the lifecycle of the Activity, not the Window
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                installScopedViewModelContainer() // ScopedViewModelContainer will live in the scope of this Activity
                 CreateActivityComposeContent(::navigateToComposeActivity)
             }
         }
