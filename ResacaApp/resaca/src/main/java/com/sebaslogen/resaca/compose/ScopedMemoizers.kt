@@ -52,7 +52,9 @@ fun <T : ScopedViewModel> rememberScopedViewModel(builder: (() -> T)): T {
     val key = Key(rememberSaveable { Random.nextInt() })
     val scopedViewModel: T = scopedViewModelContainer.getOrBuildScopedViewModel(key, builder)
 
-    DisposableEffect(key) { // Remove reference to ScopedViewModel from ScopedViewModelContainer so it can be garbage collected and the CoroutineScope cancelled
+    DisposableEffect(key) {
+        // Remove reference to ScopedViewModel from ScopedViewModelContainer so that
+        // it can be garbage collected and the CoroutineScope cancelled
         onDispose { scopedViewModelContainer.onDisposedFromComposition(key) }
     }
 
@@ -61,7 +63,8 @@ fun <T : ScopedViewModel> rememberScopedViewModel(builder: (() -> T)): T {
 
 /**
  * Observe the lifecycle of this navigation destination in [ScopedViewModelContainer] and detect screen resumed/paused/destroyed
- * We can detect objects stored in [ScopedViewModelContainer] that are missing after this resume and then dispose them after a delay
+ * With this observer we can detect when an object (stored in [ScopedViewModelContainer]) is missing on the screen
+ * after the screen is resumed and then we can finally dispose the object after a delay
  *
  * The current navigation destination that owns the lifecycle can be either a:
  * - [NavBackStackEntry] ScopedViewModelContainer will live in the scope of this Nav-graph destination
