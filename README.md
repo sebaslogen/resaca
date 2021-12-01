@@ -1,4 +1,4 @@
-# Resaca 💰
+# Resaca 🍹
 Scoped View Models for Android &amp; Compose
 
 The goal of this project is to provide a simple way to retain a Jetpack ViewModel (or any other object) in memory in the scope of a Composable function during configuration changes and also when the container Fragment goes into the backstack.
