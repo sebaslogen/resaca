@@ -6,18 +6,20 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.sebaslogen.resaca.compose.rememberScoped
 import com.sebaslogen.resaca.compose.rememberScopedViewModel
 import com.sebaslogen.resacaapp.ui.main.data.FakeRepo
 import com.sebaslogen.resacaapp.ui.main.data.FakeScopedViewModel
 import com.sebaslogen.resacaapp.ui.main.toHexString
+import com.sebaslogen.resacaapp.ui.main.ui.theme.emojis
 
 @Composable
 fun DemoNotScopedObjectComposable() {
@@ -57,14 +59,23 @@ fun DemoComposable(
         val scopedBannerText = if (scoped) "Scoped" else "Not scoped"
         Text(scopedBannerText, textAlign = TextAlign.Center, modifier = Modifier.rotate(-90f))
 
-        val objectAddressName = rememberSaveable { objectToShortStringWithoutPackageName(inputObject) }
+        val objectAddressName = remember { objectToShortStringWithoutPackageName(inputObject) }
         Text(
             modifier = Modifier
                 .background(Color(objectToColorInt(inputObject)))
                 .padding(vertical = 18.dp, horizontal = 8.dp)
-                .fillMaxWidth()
+                .weight(1f)
                 .fillMaxHeight(),
             text = "Composable that uses \n$objectType with address:\n$objectAddressName"
+        )
+
+        val objectAddressEmoji = remember { objectToEmoji(inputObject) }
+        Text(
+            modifier = Modifier
+                .padding(vertical = 18.dp, horizontal = 4.dp)
+                .fillMaxHeight(),
+            fontSize = 30.sp,
+            text = objectAddressEmoji
         )
     }
 }
@@ -72,11 +83,13 @@ fun DemoComposable(
 @ColorInt
 private fun objectToColorInt(inputObject: Any): Int =
     android.graphics.Color.parseColor(
-        "#" + inputObject
+        "#9F" + inputObject
             .hashCode()
             .toHexString()
             .substring(0..5)
     )
 
+private fun objectToEmoji(inputObject: Any): String = emojis[inputObject.hashCode() % emojis.size]
+
 private fun objectToShortStringWithoutPackageName(inputObject: Any): String =
-    inputObject.toString().removePrefix("com.sebaslogen.resacaapp.ui.main.")
+    inputObject.toString().removePrefix("com.sebaslogen.resacaapp.ui.main.data.")
