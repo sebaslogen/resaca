@@ -55,17 +55,15 @@ fun DemoComposable(
         verticalAlignment = Alignment.CenterVertically
     ) {
         val scopedBannerText = if (scoped) "Scoped" else "Not scoped"
-        Text(
-            scopedBannerText, textAlign = TextAlign.Center, modifier = Modifier.rotate(-90f)
-        )
+        Text(scopedBannerText, textAlign = TextAlign.Center, modifier = Modifier.rotate(-90f))
+
         val objectAddressName = rememberSaveable { objectToShortStringWithoutPackageName(inputObject) }
         Text(
             modifier = Modifier
-                .background(
-                    Color(objectToColorInt(inputObject))
-                )
-                .padding(vertical = 10.dp, horizontal = 5.dp)
-                .fillMaxWidth(),
+                .background(Color(objectToColorInt(inputObject)))
+                .padding(vertical = 18.dp, horizontal = 8.dp)
+                .fillMaxWidth()
+                .fillMaxHeight(),
             text = "Composable that uses \n$objectType with address:\n$objectAddressName"
         )
     }
