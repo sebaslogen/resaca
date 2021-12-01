@@ -17,11 +17,11 @@ import java.util.concurrent.ConcurrentSkipListSet
  * - When Composable leaves composition mark the composable to be forgotten/disposed from this object after a small delay
  * - This clean up can be cancelled by two events:
  *  * Same composable is requested before the small delay (e.g. when Android makes a configuration change)
- *  * The [Lifecycle] of the scope in which this [ScopedViewModelContainer] lives has been paused (e.g. app went to background)
+ *  * The [Lifecycle] of the scope in which this [ScopedViewModelContainer] lives has been paused (e.g. app/screen went to background)
  * - When the clean-up is cancelled because the [Lifecycle] of the scope was paused then the objects
  * marked for disposal will be disposed after a small delay only once the [Lifecycle] of the
- * scope returns to resume (e.g. app came back to foreground)
- * This clean up can also be cancelled for the same to reasons as above
+ * scope returns to resume (e.g. app or screen came back to foreground)
+ * This clean up step after resume can also be cancelled for the same to reasons as above and go back to the first step of this flow
  *
  */
 class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
