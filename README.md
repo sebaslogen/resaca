@@ -6,9 +6,11 @@ The goal of this project is to provide a simple way to retain a Jetpack ViewMode
 # Why
 Compose allows the creation of fine grained UI components that can be easily reused like Lego pieces 🧱. Well architectured Android apps isolate functionality in small business logic components (think of use cases, interactors, repositories, etc.) that are also reusable like Lego pieces 🧱.
 
-Screens are built using Compose components together with business logic components but unfortunately, the standard tool to connect these components is a Jetpack ViewModel but unfortunately we can only have them scoped to a whole screen.
+Screens are built using Compose components together with business logic components and the standard tool to connect these components is a Jetpack ViewModel but, unfortunately, we can only have the ViewModel scoped to a whole screen.
 
-In practice these means that we are sticking UI Lego blocks 🧱 with business logic Lego blocks 🧱 using a big glue class, the ViewModel 🗜. Until now...
+In practice this means that we are sticking UI Lego blocks with business logic Lego blocks using a big glue class, the ViewModel 🗜.
+
+Until now...
 
 # Usage 
 Inside your `@Composable` function create and retrieve an object using the `rememberScoped` (to remember any type of object) or `rememberScopedViewModel` (to remember a Jetpack ViewModel of type `ScopedViewModel`). That's all 🪄✨
@@ -28,15 +30,15 @@ fun DemoScopedViewModelComposable() {
 }
 ```
 
-Once you use one of the `rememberScoped` functions the same object will be restored as long as the Composable is still part of the composition, even if it temporarely leaves composition on configuration change or while being in the backstack.
+Once you use one of the `rememberScoped` functions, the same object will be restored as long as the Composable is still part of the composition, even if it temporarily leaves composition on configuration change (e.g. screen rotation, change to dark mode, etc.) or while being in the backstack.
 
 # Installation
 Only the three files contained in the resaca module under the package `com.sebaslogen.resaca` are required.
 
 # Lifecycle
-The `rememberScoped` functions will retain objects longer than the `remember` function but shorter than `rememberSaveable` because they store these objects in memory (no serialization involved).
-
 This project uses a ViewModel as a container to store all scoped ViewModels and scoped objects.
+
+The `rememberScoped` functions will retain objects longer than the `remember` function but shorter than `rememberSaveable` because they store these objects in memory (no serialization involved).
 
 When a Composable is disposed we don't know for sure if it will return again later. So at the moment of disposal we mark in our container the scoped associated object to be disposed after a small delay (currently 5 seconds). During this span of time a few things can happen:
 - The Composable is not part of the composition anymore after the delay and the associated object is disposed. 🚮
@@ -46,3 +48,5 @@ When a Composable is disposed we don't know for sure if it will return again lat
   - When the LifecycleOwner of the disposed Composable returns to the foreground (i.e. it is resumed), then the disposal of the associated object is scheduled again to happen after a small delay. At this point two things can happen:
     - The Composable becomes part of the composition again and the `rememberScoped` function restores the associated object while also cancelling any pending delayed disposal. 🎉
     - The Composable is not part of the composition anymore after the delay and the associated object is disposed. 🚮
+
+Note: To know that the same Composable is being added to the composition again after being disposed, we generate a random ID and store it with `rememberSaveable`, which survives all recreations (even process death).
