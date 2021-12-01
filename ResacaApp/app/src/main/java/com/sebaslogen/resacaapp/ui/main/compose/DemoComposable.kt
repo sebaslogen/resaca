@@ -1,5 +1,6 @@
 package com.sebaslogen.resacaapp.ui.main.compose
 
+import androidx.annotation.ColorInt
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -51,25 +52,36 @@ fun DemoComposable(
 ) {
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         val scopedBannerText = if (scoped) "Scoped" else "Not scoped"
-        Text(scopedBannerText, textAlign = TextAlign.Center, modifier = Modifier.rotate(-90f))
+        Text(
+            scopedBannerText, textAlign = TextAlign.Center, modifier = Modifier.rotate(-90f)
+        )
         Box(
             Modifier
                 .padding(vertical = 2.dp)
                 .background(
-                    Color(
-                        android.graphics.Color.parseColor(
-                            "#" + inputObject
-                                .hashCode()
-                                .toHexString()
-                                .substring(0..5)
-                        )
-                    )
+                    Color(objectToColorInt(inputObject))
                 )
+                .weight(1f)
         ) {
+            val objectAddressName = objectToShortStringWithoutPackageName(inputObject)
             Text(
-                modifier = Modifier.padding(vertical = 10.dp, horizontal = 5.dp),
-                text = "Composable that uses \n$objectType with address:\n$inputObject"
+                modifier = Modifier
+                    .padding(vertical = 10.dp, horizontal = 5.dp)
+                    .fillMaxWidth(),
+                text = "Composable that uses \n$objectType with address:\n$objectAddressName"
             )
         }
     }
 }
+
+@ColorInt
+private fun objectToColorInt(inputObject: Any): Int =
+    android.graphics.Color.parseColor(
+        "#" + inputObject
+            .hashCode()
+            .toHexString()
+            .substring(0..5)
+    )
+
+private fun objectToShortStringWithoutPackageName(inputObject: Any) =
+    inputObject.toString().removePrefix("com.sebaslogen.resacaapp.ui.main.")
