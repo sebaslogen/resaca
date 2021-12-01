@@ -3,12 +3,10 @@ package com.sebaslogen.resacaapp.ui.main.compose
 import androidx.annotation.ColorInt
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -50,27 +48,26 @@ fun DemoComposable(
     objectType: String,
     scoped: Boolean
 ) {
-    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         val scopedBannerText = if (scoped) "Scoped" else "Not scoped"
         Text(
             scopedBannerText, textAlign = TextAlign.Center, modifier = Modifier.rotate(-90f)
         )
-        Box(
-            Modifier
-                .padding(vertical = 2.dp)
+        val objectAddressName = rememberSaveable { objectToShortStringWithoutPackageName(inputObject) }
+        Text(
+            modifier = Modifier
                 .background(
                     Color(objectToColorInt(inputObject))
                 )
-                .weight(1f)
-        ) {
-            val objectAddressName = objectToShortStringWithoutPackageName(inputObject)
-            Text(
-                modifier = Modifier
-                    .padding(vertical = 10.dp, horizontal = 5.dp)
-                    .fillMaxWidth(),
-                text = "Composable that uses \n$objectType with address:\n$objectAddressName"
-            )
-        }
+                .padding(vertical = 10.dp, horizontal = 5.dp)
+                .fillMaxWidth(),
+            text = "Composable that uses \n$objectType with address:\n$objectAddressName"
+        )
     }
 }
 
@@ -83,5 +80,5 @@ private fun objectToColorInt(inputObject: Any): Int =
             .substring(0..5)
     )
 
-private fun objectToShortStringWithoutPackageName(inputObject: Any) =
+private fun objectToShortStringWithoutPackageName(inputObject: Any): String =
     inputObject.toString().removePrefix("com.sebaslogen.resacaapp.ui.main.")
