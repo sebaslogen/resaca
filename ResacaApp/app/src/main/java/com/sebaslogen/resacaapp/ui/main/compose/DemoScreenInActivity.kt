@@ -29,5 +29,4 @@ fun ComposeActivityButton(clickListener: () -> Unit) {
             Text("CLick to navigate to a full Compose Activity with Compose navigation")
         }
     }
-
 }
