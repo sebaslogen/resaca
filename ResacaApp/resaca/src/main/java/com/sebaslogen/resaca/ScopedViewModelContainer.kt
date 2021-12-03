@@ -3,6 +3,7 @@ package com.sebaslogen.resaca
 import androidx.lifecycle.*
 import kotlinx.coroutines.*
 import java.util.concurrent.ConcurrentSkipListSet
+import kotlin.coroutines.CoroutineContext
 
 /**
  * [ViewModel] class used to store objects and [ViewModel]s as long as the
@@ -61,6 +62,11 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      */
     private val disposingJobs = mutableMapOf<Key, Job>()
 
+    /**
+     * Time to wait until disposing an object from the [scopedObjectsContainer] after it has been scheduled for disposal
+     */
+    private val disposeDelayTimeMillis: Long = 5000
+
     @Suppress("UNCHECKED_CAST")
     fun <T : Any> getOrBuildObject(
         key: Key,
@@ -83,7 +89,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
 
     /**
      * Schedules the object referenced by this [key] in the [scopedObjectsContainer]
-     * to be removed (so it can be garbage collected) if the screen associated with this [isInForeground]
+     * to be removed (so it can be garbage collected) if the screen associated with this is still in foreground ([isInForeground])
      */
     private fun scheduleToDisposeBeforeGoingToBackground(key: Key) {
         scheduleToDispose(key = key)
@@ -115,13 +121,18 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     private fun scheduleToDispose(key: Key, removalCondition: () -> Boolean = { isInForeground }) {
         if (disposingJobs.containsKey(key)) return // Already disposing, quit
 
-        val disposeDelayTimeMillis: Long = 5000
         val newDisposingJob = viewModelScope.launch {
             delay(disposeDelayTimeMillis)
             if (removalCondition()) {
                 markedForDisposal.remove(key.value)
                 scopedObjectsContainer.remove(key)
-                    ?.also { if (it is ViewModel) it.viewModelScope.cancel() }
+                    ?.also {
+                        when (it) {
+                            is ViewModel -> it.viewModelScope.cancel()
+                            is CoroutineScope -> it.cancel()
+                            is CoroutineContext -> it.cancel()
+                        }
+                    }
             }
             disposingJobs.remove(key)
         }
