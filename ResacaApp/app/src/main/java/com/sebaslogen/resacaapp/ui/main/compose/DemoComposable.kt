@@ -15,7 +15,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sebaslogen.resaca.compose.rememberScoped
-import com.sebaslogen.resaca.compose.rememberScopedViewModel
 import com.sebaslogen.resacaapp.ui.main.data.FakeRepo
 import com.sebaslogen.resacaapp.ui.main.data.FakeScopedViewModel
 import com.sebaslogen.resacaapp.ui.main.toHexString
@@ -40,7 +39,7 @@ fun DemoScopedObjectComposable() {
 
 @Composable
 fun DemoScopedViewModelComposable() {
-    val fakeScopedVM: FakeScopedViewModel = rememberScopedViewModel { FakeScopedViewModel() }
+    val fakeScopedVM: FakeScopedViewModel = rememberScoped { FakeScopedViewModel() }
     DemoComposable(inputObject = fakeScopedVM, objectType = "FakeScopedViewModel", scoped = true)
 }
 

@@ -1,6 +1,5 @@
 package com.sebaslogen.resaca
 
-import android.util.Log
 import androidx.lifecycle.*
 import kotlinx.coroutines.*
 import java.util.concurrent.ConcurrentSkipListSet
@@ -13,7 +12,7 @@ import java.util.concurrent.ConcurrentSkipListSet
  * The lifecycle of a Composable doesn't match the one from this ViewModel nor Activities/Fragments, it's alive
  * as long it's part of the composition and in some cases even after temporary leaving composition.
  *
- * In Compose, we don't know for sure a at the moment of disposal if the
+ * In Compose, we don't know for sure at the moment of disposal if the
  * Composable will be disposed for good or if it will return again later.
  * Therefore, at the moment of disposal, we mark in our container the scoped
  * associated object to be disposed after a small delay (currently 5 seconds).
@@ -51,11 +50,6 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     private val scopedObjectsContainer = mutableMapOf<Key, Any>()
 
     /**
-     * Generic [ViewModel]s container
-     */
-    private val scopedViewModelsContainer = mutableMapOf<Key, ScopedViewModel>()
-
-    /**
      * List of [Key]s for the objects that will be disposed (forgotten from this class so they can be garbage collected) in the near future
      */
     private val markedForDisposal = ConcurrentSkipListSet<Int>()
@@ -77,16 +71,6 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
             ?: builder.invoke().apply { scopedObjectsContainer[key] = this }
     }
 
-    @Suppress("UNCHECKED_CAST")
-    fun <T : ScopedViewModel> getOrBuildScopedViewModel(
-        key: Key,
-        builder: () -> T
-    ): T {
-        cancelDisposal(key)
-        return scopedViewModelsContainer[key] as? T
-            ?: builder.invoke().apply { scopedViewModelsContainer[key] = this }
-    }
-
     /**
      * Triggered when a Composable that stored an object in this class is disposed and signals this container
      * that the object might be also disposed from this container only when the stored object
@@ -98,21 +82,21 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     }
 
     /**
-     * Schedules the object referenced by this [key] in the [scopedObjectsContainer] and [scopedViewModelsContainer]
-     * to be removed (so it can be garbage collected) if the screen associated with this still [isInForeground]
+     * Schedules the object referenced by this [key] in the [scopedObjectsContainer]
+     * to be removed (so it can be garbage collected) if the screen associated with this [isInForeground]
      */
     private fun scheduleToDisposeBeforeGoingToBackground(key: Key) {
         scheduleToDispose(key = key)
     }
 
     /**
-     * Dispose item from [scopedObjectsContainer] or [scopedViewModelsContainer] after the screen resumes
+     * Dispose item from [scopedObjectsContainer] after the screen resumes
      * This makes possible to garbage collect objects that were disposed by Compose right before the container screen went
      * to background ([Lifecycle.Event.ON_PAUSE]) and are not required anymore whe the screen is back in foreground ([Lifecycle.Event.ON_RESUME])
      *
      * Disposal delay: Instead of immediately disposing the object after [Lifecycle.Event.ON_RESUME], launch a coroutine with a delay
      * to give the Activity/Fragment enough time to recreate the desired UI after resuming or configuration change.
-     * Upon disposal, [ScopedViewModel] objects will also be requested to cancel all their coroutines in their [CoroutineScope]
+     * Upon disposal, [ViewModel] objects will also be requested to cancel all their coroutines in their [CoroutineScope]
      */
     private fun scheduleToDisposeAfterReturningFromBackground() {
         markedForDisposal.forEach { key ->
@@ -121,12 +105,11 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     }
 
     /**
-     * Dispose/Forget the object -if present- in [scopedObjectsContainer] or [scopedViewModelsContainer] after a small delay.
-     * We store the deletion job with the given [key] in the given [jobsContainer] to make sure we don't schedule the same work twice
-     * An optional [removalCondition] is provided to check at removal time to make sure no object is removed while in the background
+     * Dispose/Forget the object -if present- in [scopedObjectsContainer] after a small delay.
+     * We store the deletion job with the given [key] in the [disposingJobs] to make sure we don't schedule the same work twice
+     * An optional [removalCondition] is provided to check at removal time, to make sure no object is removed while in the background
      *
-     * @param key Key of the object stored in either [scopedObjectsContainer] or [scopedViewModelsContainer] to be de-referenced for GC
-     * @param jobsContainer Stores the disposal job to avoid duplicated requests
+     * @param key Key of the object stored in either [scopedObjectsContainer] to be de-referenced for GC
      * @param removalCondition Last check at disposal time to prevent disposal when this condition is not met
      */
     private fun scheduleToDispose(key: Key, removalCondition: () -> Boolean = { isInForeground }) {
@@ -138,7 +121,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
             if (removalCondition()) {
                 markedForDisposal.remove(key.value)
                 scopedObjectsContainer.remove(key)
-                scopedViewModelsContainer.remove(key)?.viewModelScope?.cancel()
+                    ?.also { if (it is ViewModel) it.viewModelScope.cancel() }
             }
             disposingJobs.remove(key)
         }
@@ -147,23 +130,20 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
 
     private fun cancelDisposal(key: Key) {
         disposingJobs.remove(key)?.cancel() // Cancel scheduled disposal
-        if (markedForDisposal.remove(key.value)) { // Unmark for disposal in case it's not yet scheduled for disposal
-            Log.d("ScopedVMContainer", "Resuming with ${scopedViewModelsContainer.keys}")
-        }
+        markedForDisposal.remove(key.value) // Un-mark for disposal in case it's not yet scheduled for disposal
     }
 
     /**
-     * Cancel all [ScopedViewModel] coroutines in their [CoroutineScope]
+     * Cancel all [ViewModel] coroutines in their [CoroutineScope]
      */
     override fun onCleared() {
         // Cancel disposal jobs, all those references will be garbage collected anyway with this ViewModel
         disposingJobs.forEach { (_, job) -> job.cancel() }
         // Cancel all coroutines from ViewModels hosted in this object
-        scopedViewModelsContainer.values.forEach { scopedViewModel ->
-            scopedViewModel.viewModelScope.cancel()
+        scopedObjectsContainer.values.forEach { maybeScopedViewModel ->
+            if (maybeScopedViewModel is ViewModel) maybeScopedViewModel.viewModelScope.cancel()
         }
         scopedObjectsContainer.clear() // Clear just in case this VM is leaked
-        scopedViewModelsContainer.clear() // Clear just in case this VM is leaked
         super.onCleared()
     }
 
@@ -180,11 +160,14 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
                 source.lifecycle.removeObserver(this)
             }
             else -> {
-                // No-Op
+                // No-Op: the other lifecycle event are irrelevant for this class
             }
         }
     }
 
+    /**
+     * Unique Key to identify objects store in the [ScopedViewModelContainer]
+     */
     @JvmInline
     value class Key(val value: Int)
 }

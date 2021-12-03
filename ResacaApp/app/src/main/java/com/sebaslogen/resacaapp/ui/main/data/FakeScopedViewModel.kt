@@ -1,6 +1,6 @@
 package com.sebaslogen.resacaapp.ui.main.data
 
-import com.sebaslogen.resaca.ScopedViewModel
+import androidx.lifecycle.ViewModel
 
-class FakeScopedViewModel : ScopedViewModel() {
+class FakeScopedViewModel : ViewModel() {
 }

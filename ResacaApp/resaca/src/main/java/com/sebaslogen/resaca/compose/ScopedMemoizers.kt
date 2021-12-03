@@ -10,7 +10,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
-import com.sebaslogen.resaca.ScopedViewModel
 import com.sebaslogen.resaca.ScopedViewModelContainer
 import com.sebaslogen.resaca.ScopedViewModelContainer.Key
 import kotlinx.coroutines.Dispatchers
@@ -36,29 +35,6 @@ fun <T : Any> rememberScoped(builder: (() -> T)): T {
         onDispose { scopedViewModelContainer.onDisposedFromComposition(key) }
     }
     return scopedObject
-}
-
-/**
- * Return an object created with the provided [builder] function
- * and store this object in the [ScopedViewModelContainer] that will keep this
- * object in memory as long as needed
- * A key will be generated for this object in the Compose tree and if an object
- * is present in [ScopedViewModelContainer] for this key it will be returned instead of calling [builder]
- */
-@Composable
-fun <T : ScopedViewModel> rememberScopedViewModel(builder: (() -> T)): T {
-    val scopedViewModelContainer: ScopedViewModelContainer = viewModel()
-    ObserverLifecycleWithScopedViewModelContainer(scopedViewModelContainer)
-    val key = Key(rememberSaveable { Random.nextInt() })
-    val scopedViewModel: T = scopedViewModelContainer.getOrBuildScopedViewModel(key, builder)
-
-    DisposableEffect(key) {
-        // Remove reference to ScopedViewModel from ScopedViewModelContainer so that
-        // it can be garbage collected and the CoroutineScope cancelled
-        onDispose { scopedViewModelContainer.onDisposedFromComposition(key) }
-    }
-
-    return scopedViewModel
 }
 
 /**
