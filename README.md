@@ -60,3 +60,7 @@ When a Composable is disposed, we don't know for sure if it will return again la
 Notes:
 - To know that the same Composable is being added to the composition again after being disposed, we generate a random ID and store it with `rememberSaveable`, which survives recreation (even process death).
 - To detect when the requester Composable is not needed anymore (has left composition and the screen for good), the ScopedViewModelContainer observes the Lifecycle of the owner of this ScopedViewModelContainer (i.e. Activity, Fragment or Compose Navigation destination)
+
+
+![Compose state scope](https://user-images.githubusercontent.com/1936647/144655597-3b0cfad2-badb-463c-a64d-285af34c289a.png)
+
