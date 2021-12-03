@@ -34,6 +34,7 @@ fun DemoScopedViewModelComposable() {
 Once you use the `rememberScoped` function, the same object will be restored as long as the Composable is part of the composition, even if it _temporarily_ leaves composition on configuration change (e.g. screen rotation, change to dark mode, etc.) or while being in the backstack.
 
 For ViewModels, on top of being forgotten when they're really not needed anymore, their coroutineScope will also be automatically cancelled.
+⚠️ ViewModels remembered with `rememberScoped` should not be created using any of the Compose or ViewModelProviders factories, otherwise it will be retained in the scope of the screen regardless of the `rememberScoped`
 
 # Demo app
 
