@@ -13,7 +13,8 @@ In practice this means that we are gluing UI Lego blocks with business logic Leg
 Until now...
 
 # Usage 
-Inside your `@Composable` function create and retrieve an object using the `rememberScoped` (to remember any type of object) or `rememberScopedViewModel` (to remember a Jetpack ViewModel of type `ScopedViewModel`). That's all 🪄✨
+Inside your `@Composable` function create and retrieve an object using the `rememberScoped` to remember any type of object (including ViewModels).
+That's all 🪄✨
 
 Example
 ```kotlin
@@ -25,19 +26,21 @@ fun DemoScopedObjectComposable() {
 
 @Composable
 fun DemoScopedViewModelComposable() {
-    val fakeScopedVM: FakeScopedViewModel = rememberScopedViewModel { FakeScopedViewModel() }
+    val fakeScopedVM: FakeScopedViewModel = rememberScoped { FakeScopedViewModel() }
     DemoComposable(inputObject = fakeScopedVM)
 }
 ```
 
-Once you use one of the `rememberScoped` functions, the same object will be restored as long as the Composable is part of the composition, even if it _temporarily_ leaves composition on configuration change (e.g. screen rotation, change to dark mode, etc.) or while being in the backstack.
+Once you use the `rememberScoped` function, the same object will be restored as long as the Composable is part of the composition, even if it _temporarily_ leaves composition on configuration change (e.g. screen rotation, change to dark mode, etc.) or while being in the backstack.
+
+For ViewModels, on top of being forgotten when they're really not needed anymore, their coroutineScope will also be automatically cancelled.
 
 # Demo app
 
 ![Resaca-demo](https://user-images.githubusercontent.com/1936647/144597718-db7e8901-a726-4871-abf8-7fc53333a90e.gif)
 
 # Installation
-Only the three files contained in the resaca module under the package `com.sebaslogen.resaca` are required.
+Only the two files contained in the resaca module under the package `com.sebaslogen.resaca` are required.
 
 # Lifecycle
 This project uses a ViewModel as a container to store all scoped ViewModels and scoped objects.
@@ -54,5 +57,5 @@ When a Composable is disposed, we don't know for sure if it will return again la
   - The Composable is not part of the composition anymore after the delay and the associated object is disposed. 🚮
 
 Notes:
-- To know that the same Composable is being added to the composition again after being disposed, we generate a random ID and store it with `rememberSaveable`, which survives all recreations (even process death).
-- To detect when the requester Composable is not needed anymore (has left composition and the screen for good), this class observes the Lifecycle of the owner of this ScopedViewModelContainer (i.e. Activity, Fragment or Compose Navigation destination)
+- To know that the same Composable is being added to the composition again after being disposed, we generate a random ID and store it with `rememberSaveable`, which survives recreation (even process death).
+- To detect when the requester Composable is not needed anymore (has left composition and the screen for good), the ScopedViewModelContainer observes the Lifecycle of the owner of this ScopedViewModelContainer (i.e. Activity, Fragment or Compose Navigation destination)
