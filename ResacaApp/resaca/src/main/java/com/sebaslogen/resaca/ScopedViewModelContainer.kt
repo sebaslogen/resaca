@@ -6,22 +6,35 @@ import kotlinx.coroutines.*
 import java.util.concurrent.ConcurrentSkipListSet
 
 /**
- * [ViewModel] class used to store objects and [ScopedViewModel]s
- * as long as the requester doesn't completely leave composition
+ * [ViewModel] class used to store objects and [ViewModel]s as long as the
+ * requester doesn't completely leave composition (even temporary)
  * or the scope of this [ViewModel] is cleared.
  *
- * The lifecycle of a Composable doesn't match the one from this ViewModel nor Activities/Fragments.
- * To detect when the requester has left composition and the screen for good (it's not needed anymore)
- * this class observes the [Lifecycle] of the scope containing this [ScopedViewModelContainer] using
- * the following flow:
- * - When Composable leaves composition mark the composable to be forgotten/disposed from this object after a small delay
- * - This clean up can be cancelled by two events:
- *  * Same composable is requested before the small delay (e.g. when Android makes a configuration change)
- *  * The [Lifecycle] of the scope in which this [ScopedViewModelContainer] lives has been paused (e.g. app/screen went to background)
- * - When the clean-up is cancelled because the [Lifecycle] of the scope was paused then the objects
- * marked for disposal will be disposed after a small delay only once the [Lifecycle] of the
- * scope returns to resume (e.g. app or screen came back to foreground)
- * This clean up step after resume can also be cancelled for the same to reasons as above and go back to the first step of this flow
+ * The lifecycle of a Composable doesn't match the one from this ViewModel nor Activities/Fragments, it's alive
+ * as long it's part of the composition and in some cases even after temporary leaving composition.
+ *
+ * In Compose, we don't know for sure a at the moment of disposal if the
+ * Composable will be disposed for good or if it will return again later.
+ * Therefore, at the moment of disposal, we mark in our container the scoped
+ * associated object to be disposed after a small delay (currently 5 seconds).
+ * During the span of time of this delay a few things can happen:
+ * - The Composable is not part of the composition anymore after the delay and the associated object is disposed.
+ * - The [LifecycleOwner] of the disposed Composable (i.e. the navigation destination where the Composable lived)
+ * is paused (e.g. screen went to background) before the delay finishes. Then the disposal of the scoped object is cancelled,
+ * but the object is still marked for disposal at a later stage after resume of the [LifecycleOwner].
+ *      * This can happen when the application goes through a configuration change and the container Activity/Fragment is recreated.
+ *      * This can also happen when the Composable is part of a Fragment that has been pushed to the backstack.
+ * - When the [LifecycleOwner] of the disposed Composable is resumed (i.e. screen comes back to foreground),
+ * then the disposal of the associated object is scheduled again to happen after a small delay.
+ * At this point two things can happen:
+ *      * The Composable becomes part of the composition again and the [rememberScoped] function restores
+ *      the associated object while also cancelling any pending delayed disposal.
+ *      * The Composable is not part of the composition anymore after the delay and the associated object is disposed.
+ *
+ *
+ * To detect when the requester Composable is not needed anymore (has left composition and
+ * the screen for good), this class observes the [Lifecycle] of the owner of
+ * this [ScopedViewModelContainer] (i.e. Activity, Fragment or Compose Navigation destination)
  *
  */
 class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
