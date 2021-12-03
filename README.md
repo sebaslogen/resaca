@@ -1,14 +1,14 @@
 # Resaca 🍹
-Scoped View Models for Android &amp; Compose
+Scoping for objects and View Models in Android [Compose](https://developer.android.com/jetpack/compose)
 
-The goal of this project is to provide a simple way to retain a Jetpack ViewModel (or any other object) in memory in the scope of a Composable function during configuration changes and also when the container Fragment goes into the backstack.
+The goal of this project is to provide a simple way to retain a Jetpack ViewModel (or any other object) in memory in the scope of a `@Composable` function during configuration changes and also when the container Fragment goes into the backstack.
 
 # Why
-Compose allows the creation of fine grained UI components that can be easily reused like Lego pieces 🧱. Well architectured Android apps isolate functionality in small business logic components (think of use cases, interactors, repositories, etc.) that are also reusable like Lego pieces 🧱.
+Compose allows the creation of fine grained UI components that can be easily reused like Lego pieces 🧱. Well architectured Android apps isolate functionality in small business logic components (like use cases, interactors, repositories, etc.) that are also reusable like Lego pieces 🧱.
 
-Screens are built using Compose components together with business logic components and the standard tool to connect these components is a Jetpack ViewModel but, unfortunately, we can only have the ViewModel scoped to a whole screen.
+Screens are built using Compose components together with business logic components, and the standard tool to connect these components is a [Jetpack ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel). Unfortunately, ViewModels can only be scoped to a whole screen, not to Compose components on the screen.
 
-In practice this means that we are sticking UI Lego blocks with business logic Lego blocks using a big glue class, the ViewModel 🗜.
+In practice this means that we are gluing UI Lego blocks with business logic Lego blocks using a big glue class, the ViewModel 🗜.
 
 Until now...
 
@@ -30,7 +30,11 @@ fun DemoScopedViewModelComposable() {
 }
 ```
 
-Once you use one of the `rememberScoped` functions, the same object will be restored as long as the Composable is still part of the composition, even if it temporarily leaves composition on configuration change (e.g. screen rotation, change to dark mode, etc.) or while being in the backstack.
+Once you use one of the `rememberScoped` functions, the same object will be restored as long as the Composable is part of the composition, even if it _temporarily_ leaves composition on configuration change (e.g. screen rotation, change to dark mode, etc.) or while being in the backstack.
+
+# Demo app
+
+![Resaca-demo](https://user-images.githubusercontent.com/1936647/144597718-db7e8901-a726-4871-abf8-7fc53333a90e.gif)
 
 # Installation
 Only the three files contained in the resaca module under the package `com.sebaslogen.resaca` are required.
