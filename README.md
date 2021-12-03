@@ -44,13 +44,15 @@ This project uses a ViewModel as a container to store all scoped ViewModels and 
 
 The `rememberScoped` functions will retain objects longer than the `remember` function but shorter than `rememberSaveable` because they store these objects in memory (no serialization involved).
 
-When a Composable is disposed we don't know for sure if it will return again later. So at the moment of disposal we mark in our container the scoped associated object to be disposed after a small delay (currently 5 seconds). During this span of time a few things can happen:
+When a Composable is disposed, we don't know for sure if it will return again later. So at the moment of disposal we mark in our container the scoped associated object to be disposed after a small delay (currently 5 seconds). During the span of time of this delay a few things can happen:
 - The Composable is not part of the composition anymore after the delay and the associated object is disposed. 🚮
-- The LifecycleOwner of the disposed Composable (i.e. the navigation destination where the Composable lived) is paused before the delay finishes. Then the disposal of the scoped object is cancelled, but the object is still marked for disposal at a later stage.
+- The LifecycleOwner of the disposed Composable (i.e. the navigation destination where the Composable lived) is paused (e.g. screen went to background) before the delay finishes. Then the disposal of the scoped object is cancelled, but the object is still marked for disposal at a later stage.
   - This can happen when the application goes through a configuration change and the container Activity is recreated.
   - This can also happen when the Composable is part of a Fragment that has been pushed to the backstack.
-  - When the LifecycleOwner of the disposed Composable returns to the foreground (i.e. it is resumed), then the disposal of the associated object is scheduled again to happen after a small delay. At this point two things can happen:
-    - The Composable becomes part of the composition again and the `rememberScoped` function restores the associated object while also cancelling any pending delayed disposal. 🎉
-    - The Composable is not part of the composition anymore after the delay and the associated object is disposed. 🚮
+- When the LifecycleOwner of the disposed Composable is resumed (i.e. screen comes back to foreground), then the disposal of the associated object is scheduled again to happen after a small delay. At this point two things can happen:
+  - The Composable becomes part of the composition again and the `rememberScoped` function restores the associated object while also cancelling any pending delayed disposal. 🎉
+  - The Composable is not part of the composition anymore after the delay and the associated object is disposed. 🚮
 
-Note: To know that the same Composable is being added to the composition again after being disposed, we generate a random ID and store it with `rememberSaveable`, which survives all recreations (even process death).
+Notes:
+- To know that the same Composable is being added to the composition again after being disposed, we generate a random ID and store it with `rememberSaveable`, which survives all recreations (even process death).
+- To detect when the requester Composable is not needed anymore (has left composition and the screen for good), this class observes the Lifecycle of the owner of this ScopedViewModelContainer (i.e. Activity, Fragment or Compose Navigation destination)
