@@ -13,7 +13,7 @@ In practice this means that we are gluing UI Lego blocks with business logic Leg
 Until now...
 
 # Usage 
-Inside your `@Composable` function create and retrieve an object using the `rememberScoped` to remember any type of object (including ViewModels).
+Inside your `@Composable` function create and retrieve an object using `rememberScoped` to remember any type of object (including ViewModels).
 That's all 🪄✨
 
 Example
@@ -46,20 +46,21 @@ Only the two files contained in the resaca module under the package `com.sebaslo
 # Lifecycle
 This project uses a ViewModel as a container to store all scoped ViewModels and scoped objects.
 
-The `rememberScoped` functions will retain objects longer than the `remember` function but shorter than `rememberSaveable` because they store these objects in memory (no serialization involved).
+The `rememberScoped` functions will retain objects longer than the `remember` function but shorter than `rememberSaveable` because these objects are stored in memory (no serialization involved).
 
-When a Composable is disposed, we don't know for sure if it will return again later. So at the moment of disposal we mark in our container the scoped associated object to be disposed after a small delay (currently 5 seconds). During the span of time of this delay a few things can happen:
+When a Composable is disposed, we don't know for sure if it will return again later. So at the moment of disposal we mark in our container the associated object to be disposed after a small delay (currently 5 seconds). During the span of time of this delay, a few things can happen:
 - The Composable is not part of the composition anymore after the delay and the associated object is disposed. 🚮
 - The LifecycleOwner of the disposed Composable (i.e. the navigation destination where the Composable lived) is paused (e.g. screen went to background) before the delay finishes. Then the disposal of the scoped object is cancelled, but the object is still marked for disposal at a later stage.
   - This can happen when the application goes through a configuration change and the container Activity is recreated.
-  - This can also happen when the Composable is part of a Fragment that has been pushed to the backstack.
-- When the LifecycleOwner of the disposed Composable is resumed (i.e. screen comes back to foreground), then the disposal of the associated object is scheduled again to happen after a small delay. At this point two things can happen:
+  - Also when the Composable is part of a Fragment that has been pushed to the backstack.
+  - And also when the Composable is part of a Compose Navigation destination that has been pushed to the backstack.
+- When the LifecycleOwner of the disposed Composable is resumed (e.g. screen comes back to foreground), then the disposal of the associated object is scheduled again to happen after a small delay. At this point two things can happen:
   - The Composable becomes part of the composition again and the `rememberScoped` function restores the associated object while also cancelling any pending delayed disposal. 🎉
   - The Composable is not part of the composition anymore after the delay and the associated object is disposed. 🚮
 
 Notes:
-- To know that the same Composable is being added to the composition again after being disposed, we generate a random ID and store it with `rememberSaveable`, which survives recreation (even process death).
-- To detect when the requester Composable is not needed anymore (has left composition and the screen for good), the ScopedViewModelContainer observes the Lifecycle of the owner of this ScopedViewModelContainer (i.e. Activity, Fragment or Compose Navigation destination)
+- To know that the same Composable is being added to the composition again after being disposed, we generate a random ID and store it with `rememberSaveable`, which survives recreation (and even process death).
+- To detect when the requester Composable is not needed anymore (has left composition and the screen for good), the ScopedViewModelContainer observes the resume/pause Lifecycle events of the owner of this ScopedViewModelContainer (i.e. Activity, Fragment or Compose Navigation destination)
 
 
 ![Compose state scope](https://user-images.githubusercontent.com/1936647/144655597-3b0cfad2-badb-463c-a64d-285af34c289a.png)
