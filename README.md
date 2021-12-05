@@ -34,7 +34,7 @@ fun DemoScopedViewModelComposable() {
 Once you use the `rememberScoped` function, the same object will be restored as long as the Composable is part of the composition, even if it _temporarily_ leaves composition on configuration change (e.g. screen rotation, change to dark mode, etc.) or while being in the backstack.
 
 For ViewModels, on top of being forgotten when they're really not needed anymore, their coroutineScope will also be automatically cancelled.
-⚠️ ViewModels remembered with `rememberScoped` should not be created using any of the Compose or ViewModelProviders factories, otherwise it will be retained in the scope of the screen regardless of the `rememberScoped`
+⚠️ ViewModels remembered with `rememberScoped` **should not be created** using any of the Compose `viewModel()` or `ViewModelProviders` factories, otherwise it will be retained in the scope of the screen regardless of the `rememberScoped`
 
 # Demo app
 
@@ -64,3 +64,8 @@ Notes:
 
 
 ![Compose state scope](https://user-images.githubusercontent.com/1936647/144682707-dd06e2ee-5542-400b-9a8d-cb27fb7c28e8.png)
+
+Existing alternatives to `rememberScoped` objects in the diagram:
+- Object A lifecycle could only be achieved using the Compose `viewModel()` or `ViewModelProviders` factories.
+- Object B lifecycle could only be achieved using the Compose `remember()` function.
+- Object C lifecycle could not simply be achieved neither by using ViewModel provider functions nor Compose `remember` functions.
