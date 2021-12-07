@@ -41,7 +41,7 @@ For ViewModels, on top of being forgotten when they're really not needed anymore
 ![Resaca-demo](https://user-images.githubusercontent.com/1936647/144597718-db7e8901-a726-4871-abf8-7fc53333a90e.gif)
 
 # Installation
-Only the two files contained in the resaca module under the package `com.sebaslogen.resaca` are required.
+Only two files are needed and they can be found in the `resaca` module under the package `com.sebaslogen.resaca`, they are [ScopedViewModelContainer](https://github.com/sebaslogen/resaca/blob/main/ResacaApp/resaca/src/main/java/com/sebaslogen/resaca/ScopedViewModelContainer.kt) and [ScopedMemoizers](https://github.com/sebaslogen/resaca/blob/main/ResacaApp/resaca/src/main/java/com/sebaslogen/resaca/compose/ScopedMemoizers.kt).
 
 # Lifecycle
 This project uses a ViewModel as a container to store all scoped ViewModels and scoped objects.
