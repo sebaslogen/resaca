@@ -27,11 +27,19 @@ import kotlin.random.Random
 @Composable
 fun <T : Any> rememberScoped(builder: (() -> T)): T {
     val scopedViewModelContainer: ScopedViewModelContainer = viewModel()
-    ObserverLifecycleWithScopedViewModelContainer(scopedViewModelContainer)
+    
+    // Observe this destination's lifecycle to detect screen resumed/paused/destroyed 
+    // and remember or forget this object correctly
+    ObserveLifecycleWithScopedViewModelContainer(scopedViewModelContainer)
+    
+    // This key will be used to identify, retrieve and remove the stored object in the ScopedViewModelContainer
     val key = Key(rememberSaveable { Random.nextInt() })
+    
+    // The object will be built the first time and retrieved in next calls or recompositions
     val scopedObject: T = scopedViewModelContainer.getOrBuildObject(key, builder)
 
-    DisposableEffect(key) { // Remove reference to object from ScopedViewModelContainer so it can be garbage collected
+    // Remove reference to object from ScopedViewModelContainer so it can be garbage collected when needed
+    DisposableEffect(key) {
         onDispose { scopedViewModelContainer.onDisposedFromComposition(key) }
     }
     return scopedObject
@@ -48,10 +56,14 @@ fun <T : Any> rememberScoped(builder: (() -> T)): T {
  * - [Activity] ScopedViewModelContainer will live in the scope of this Activity
  *
  * Note: the addObserver call needs to run on main thread because there is a thread check in [LifecycleRegistry.addObserver]
+ * Note2: Adding the same observer [scopedViewModelContainer] to the lifecycle has no effect
  */
 @Composable
-private fun ObserverLifecycleWithScopedViewModelContainer(scopedViewModelContainer: ScopedViewModelContainer) {
+private fun ObserveLifecycleWithScopedViewModelContainer(scopedViewModelContainer: ScopedViewModelContainer) {
     val lifecycle = LocalLifecycleOwner.current.lifecycle
+    
+    // Use LaunchedEffect to make sure we have a coroutine scope to run on main-thread
+    // and to add the observer again every time the lifecycle or the ScopedViewModelContainer change
     LaunchedEffect(lifecycle, scopedViewModelContainer) {
         launch(Dispatchers.Main) {
             lifecycle.addObserver(scopedViewModelContainer)
