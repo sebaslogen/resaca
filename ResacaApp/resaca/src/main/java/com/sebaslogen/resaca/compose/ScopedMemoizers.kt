@@ -33,6 +33,7 @@ fun <T : Any> rememberScoped(builder: (() -> T)): T {
     ObserveLifecycleWithScopedViewModelContainer(scopedViewModelContainer)
     
     // This key will be used to identify, retrieve and remove the stored object in the ScopedViewModelContainer
+    // across recompositions, configuration changes and even process death
     val key = Key(rememberSaveable { Random.nextInt() })
     
     // The object will be built the first time and retrieved in next calls or recompositions
