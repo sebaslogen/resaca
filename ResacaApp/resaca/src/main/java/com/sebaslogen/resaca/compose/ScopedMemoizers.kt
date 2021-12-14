@@ -27,15 +27,15 @@ import kotlin.random.Random
 @Composable
 fun <T : Any> rememberScoped(builder: (() -> T)): T {
     val scopedViewModelContainer: ScopedViewModelContainer = viewModel()
-    
+
     // Observe this destination's lifecycle to detect screen resumed/paused/destroyed 
     // and remember or forget this object correctly
     ObserveLifecycleWithScopedViewModelContainer(scopedViewModelContainer)
-    
+
     // This key will be used to identify, retrieve and remove the stored object in the ScopedViewModelContainer
     // across recompositions, configuration changes and even process death
     val key = Key(rememberSaveable { Random.nextInt() })
-    
+
     // The object will be built the first time and retrieved in next calls or recompositions
     val scopedObject: T = scopedViewModelContainer.getOrBuildObject(key, builder)
 
@@ -62,7 +62,7 @@ fun <T : Any> rememberScoped(builder: (() -> T)): T {
 @Composable
 private fun ObserveLifecycleWithScopedViewModelContainer(scopedViewModelContainer: ScopedViewModelContainer) {
     val lifecycle = LocalLifecycleOwner.current.lifecycle
-    
+
     // Use LaunchedEffect to make sure we have a coroutine scope to run on main-thread
     // and to add the observer again every time the lifecycle or the ScopedViewModelContainer change
     LaunchedEffect(lifecycle, scopedViewModelContainer) {
