@@ -53,7 +53,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     /**
      * List of [Key]s for the objects that will be disposed (forgotten from this class so they can be garbage collected) in the near future
      */
-    private val markedForDisposal = ConcurrentSkipListSet<Int>()
+    private val markedForDisposal = ConcurrentSkipListSet<String>()
 
     /**
      * List of [Job]s associated with an object [Key] that is scheduled to be disposed very soon, unless
@@ -180,5 +180,5 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      * Unique Key to identify objects store in the [ScopedViewModelContainer]
      */
     @JvmInline
-    value class Key(val value: Int)
+    value class Key(val value: String)
 }

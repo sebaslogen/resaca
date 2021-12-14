@@ -14,7 +14,7 @@ import com.sebaslogen.resaca.ScopedViewModelContainer
 import com.sebaslogen.resaca.ScopedViewModelContainer.Key
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlin.random.Random
+import java.util.*
 
 
 /**
@@ -34,7 +34,7 @@ fun <T : Any> rememberScoped(builder: (() -> T)): T {
 
     // This key will be used to identify, retrieve and remove the stored object in the ScopedViewModelContainer
     // across recompositions, configuration changes and even process death
-    val key = Key(rememberSaveable { Random.nextInt() })
+    val key = Key(rememberSaveable { UUID.randomUUID().toString() })
 
     // The object will be built the first time and retrieved in next calls or recompositions
     val scopedObject: T = scopedViewModelContainer.getOrBuildObject(key, builder)
