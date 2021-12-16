@@ -82,12 +82,16 @@ fun DemoComposable(
     }
 }
 
+/**
+ * Convert the object's [hashCode] into a color
+ */
 @ColorInt
 private fun objectToColorInt(inputObject: Any): Int =
     android.graphics.Color.parseColor(
         "#9F" + inputObject
             .hashCode()
             .toHexString()
+            .padStart(6, 'A')
             .substring(0..5)
     )
 
