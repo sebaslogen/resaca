@@ -11,6 +11,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -61,6 +63,7 @@ fun DemoComposable(
         val objectAddressName = remember { objectToShortStringWithoutPackageName(inputObject) }
         Text(
             modifier = Modifier
+                .semantics { contentDescription = "$objectType $scopedBannerText" } // Semantics used for automated tests to find this node
                 .background(Color(objectToColorInt(inputObject)))
                 .padding(vertical = 18.dp, horizontal = 8.dp)
                 .weight(1f)

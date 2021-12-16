@@ -14,6 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -26,6 +28,7 @@ import com.sebaslogen.resacaapp.ui.main.compose.DemoScopedViewModelComposable
 import com.sebaslogen.resacaapp.ui.main.ui.theme.ResacaAppTheme
 
 class ComposeActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -39,9 +42,8 @@ class ComposeActivity : ComponentActivity() {
 }
 
 @Composable
-fun ScreensWithNavigation() {
-    val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "first") {
+fun ScreensWithNavigation(navController: NavHostController = rememberNavController()) {
+    NavHost(navController = navController, startDestination = "first", modifier = Modifier.semantics { contentDescription = "navController" }) {
         composable("first") {
             ComposeScreenWithNavigation(navController)
         }
@@ -76,7 +78,7 @@ fun NavigationButtons(navController: NavHostController) {
         onClick = {
             if (!navController.popBackStack()) activity?.finish()
         }) {
-        Text(text = "Go BACK")
+        Text(text = "go back")
     }
 }
 

@@ -5,6 +5,7 @@ versions.gradle = '7.0.4'
 versions.kotlin = "1.5.31"
 versions.coreKtx = "1.7.0"
 versions.navigation = "2.4.0-beta02"
+versions.robolectric = "4.7.3"
 
 // Compose
 versions.composeCompiler = "1.0.5"
