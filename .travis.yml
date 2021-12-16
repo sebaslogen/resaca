@@ -2,12 +2,26 @@ language: android
 dist: trusty
 jdk:
   - openjdk11
+
 android:
   components:
+    - android-31
     - build-tools-29.0.3
   licenses:
+    - 'android-sdk-preview-license-.+'
     - 'android-sdk-license-.+'
     - 'google-gdk-license-.+'
-script:
+
+before_install:
   - cd ResacaApp
+  - chmod +x gradlew
+  - yes | sdkmanager "platforms;android-31"
+
+script:
   - ./gradlew :app:cleanTestDebugUnitTest :app:testDebugUnitTest --tests "com.sebaslogen.resacaapp.*"
+
+cache:
+  directories:
+  - $HOME/.gradle/caches/
+  - $HOME/.gradle/wrapper/
+  - $HOME/.android/build-cache
