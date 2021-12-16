@@ -2,6 +2,12 @@ language: android
 dist: trusty
 jdk:
   - openjdk11
+android:
+  components:
+    - build-tools-29.0.3
+  licenses:
+    - 'android-sdk-license-.+'
+    - 'google-gdk-license-.+'
 script:
   - cd ResacaApp
   - ./gradlew :app:cleanTestDebugUnitTest :app:testDebugUnitTest --tests "com.sebaslogen.resacaapp.*"
