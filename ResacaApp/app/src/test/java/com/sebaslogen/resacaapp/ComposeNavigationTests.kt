@@ -7,15 +7,15 @@ import androidx.compose.ui.test.hasTextExactly
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sebaslogen.resacaapp.ui.main.ScreensWithNavigation
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 
-@RunWith(RobolectricTestRunner::class)
+@RunWith(AndroidJUnit4::class)
 @Config(instrumentedPackages = ["androidx.loader.content"])
 class ComposeNavigationTests : ComposeTestUtils {
 
@@ -47,7 +47,6 @@ class ComposeNavigationTests : ComposeTestUtils {
         onNodeWithContentDescription("FakeRepo Scoped").assertIsDisplayed().assertTextEquals(initialFakeScopedRepoText)
         onNodeWithContentDescription("FakeScopedViewModel Scoped").assertIsDisplayed().assertTextEquals(initialFakeScopedViewModelText)
     }
-
 
     @Test
     fun `when I navigate to nested screen and back, then the not scoped object changes`() {

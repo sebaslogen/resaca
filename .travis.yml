@@ -1,0 +1,5 @@
+language: android
+dist: trusty
+script:
+  - cd ResacaApp
+  - ./gradlew :app:cleanTestDebugUnitTest :app:testDebugUnitTest --tests "com.sebaslogen.resacaapp.*"
