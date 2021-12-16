@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/sebaslogen/resaca.svg?branch=master)](https://travis-ci.org/sebaslogen/resaca)
+
 # Resaca 🍹
 Scoping for objects and View Models in Android [Compose](https://developer.android.com/jetpack/compose)
 
