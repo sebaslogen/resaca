@@ -1,5 +1,7 @@
 language: android
 dist: trusty
+jdk:
+  - openjdk11
 script:
   - cd ResacaApp
   - ./gradlew :app:cleanTestDebugUnitTest :app:testDebugUnitTest --tests "com.sebaslogen.resacaapp.*"
