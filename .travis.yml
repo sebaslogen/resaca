@@ -5,6 +5,8 @@ jdk:
 
 android:
   components:
+    - extra-google-m2repository
+    - extra-android-m2repository
     - tools
     - android-31
     - build-tools-30.0.2
