@@ -1,10 +1,7 @@
 package com.sebaslogen.resacaapp
 
-import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
-import androidx.compose.ui.test.onNodeWithContentDescription
-import androidx.compose.ui.test.onRoot
-import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.text.AnnotatedString
 import org.junit.Before
 import org.robolectric.shadows.ShadowLog
@@ -22,14 +19,25 @@ interface ComposeTestUtils {
 
     // Helper functions //
 
-    fun printComposeUiTreeToLog() {
-        composeTestRule.onRoot().printToLog("TAG")
+    fun printComposeUiTreeToLog(testTag: String? = null) {
+        if (testTag.isNullOrEmpty()) {
+            composeTestRule.onRoot().printToLog("TAG")
+        } else {
+            composeTestRule.onNodeWithTag(testTag).printToLog("TAG")
+        }
     }
 
-    fun onNodeWithContentDescription(description: String) = composeTestRule.onNodeWithContentDescription(description, substring = true)
+    fun onNodeWithTestTag(tag: String, parentTestTag: String? = null) =
+        if (parentTestTag != null) {
+            composeTestRule.onAllNodesWithTag(tag)
+                .filterToOne(hasParent(hasTestTag(parentTestTag)))
+        } else {
+            composeTestRule.onNodeWithTag(tag)
+        }
 
-    fun retrieveTextFromNodeWithContentDescription(description: String): String {
-        val textField = onNodeWithContentDescription(description).assertIsDisplayed()
-        return (textField.fetchSemanticsNode().config.first { it.key.name == "Text" }.value as List<AnnotatedString>).first().toString()
-    }
+    fun retrieveTextFromNodeWithTestTag(tag: String, parentTestTag: String? = null): String =
+        (onNodeWithTestTag(tag, parentTestTag)
+            .fetchSemanticsNode().config
+            .first { it.key.name == "Text" }
+            .value as List<AnnotatedString>).first().toString()
 }

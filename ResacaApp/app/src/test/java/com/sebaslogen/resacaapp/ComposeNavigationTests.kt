@@ -34,8 +34,8 @@ class ComposeNavigationTests : ComposeTestUtils {
         }
         printComposeUiTreeToLog()
         // Find the scoped text fields and grab their texts
-        val initialFakeScopedRepoText = retrieveTextFromNodeWithContentDescription("FakeRepo Scoped")
-        val initialFakeScopedViewModelText = retrieveTextFromNodeWithContentDescription("FakeScopedViewModel Scoped")
+        val initialFakeScopedRepoText = retrieveTextFromNodeWithTestTag("FakeRepo Scoped")
+        val initialFakeScopedViewModelText = retrieveTextFromNodeWithTestTag("FakeScopedViewModel Scoped")
 
         // When I navigate to a nested screen and back to initial screen
         navController.navigate("first")
@@ -44,8 +44,8 @@ class ComposeNavigationTests : ComposeTestUtils {
         printComposeUiTreeToLog()
 
         // Then the scoped objects on the first screen are still the same
-        onNodeWithContentDescription("FakeRepo Scoped").assertIsDisplayed().assertTextEquals(initialFakeScopedRepoText)
-        onNodeWithContentDescription("FakeScopedViewModel Scoped").assertIsDisplayed().assertTextEquals(initialFakeScopedViewModelText)
+        onNodeWithTestTag("FakeRepo Scoped").assertIsDisplayed().assertTextEquals(initialFakeScopedRepoText)
+        onNodeWithTestTag("FakeScopedViewModel Scoped").assertIsDisplayed().assertTextEquals(initialFakeScopedViewModelText)
     }
 
     @Test
@@ -58,7 +58,7 @@ class ComposeNavigationTests : ComposeTestUtils {
         }
         printComposeUiTreeToLog()
         // Find the NOT scoped text field and grab its text
-        val initialFakeRepoText = retrieveTextFromNodeWithContentDescription("FakeRepo Not scoped")
+        val initialFakeRepoText = retrieveTextFromNodeWithTestTag("FakeRepo Not scoped")
 
         // When I navigate to a nested screen and back to initial screen
         navController.navigate("first")
@@ -67,6 +67,6 @@ class ComposeNavigationTests : ComposeTestUtils {
         printComposeUiTreeToLog()
 
         // Then the text of the not scoped object is different from the original one because it's a new object
-        onNodeWithContentDescription("FakeRepo Not scoped").assertIsDisplayed().assert(hasTextExactly(initialFakeRepoText).not())
+        onNodeWithTestTag("FakeRepo Not scoped").assertIsDisplayed().assert(hasTextExactly(initialFakeRepoText).not())
     }
 }
