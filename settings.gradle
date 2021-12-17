@@ -3,9 +3,9 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        jcenter() // Warning: this repository is going to shut down soon
     }
 }
-rootProject.name = "ResacaApp"
-include ':app'
+rootProject.name = "resaca"
 include ':resaca'
+if (!System.env.JITPACK) // Remove the sample app to reduce Jitpack builds
+    include ':app'

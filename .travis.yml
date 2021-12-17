@@ -34,7 +34,6 @@ before_script:
   - echo y | ${TOOLS}/bin/sdkmanager "platforms;android-$BUILD_API" >/dev/null
 
 script:
-  - cd ResacaApp
   - ./gradlew :app:cleanTestDebugUnitTest :app:testDebugUnitTest --tests "com.sebaslogen.resacaapp.*"
 
 before_cache:
