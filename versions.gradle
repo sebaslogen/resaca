@@ -2,6 +2,7 @@
 def versions = [:]
 
 versions.gradle = '7.0.4'
+versions.buildTools = "30.0.2"
 versions.kotlin = "1.5.31"
 versions.coreKtx = "1.7.0"
 versions.navigation = "2.4.0-beta02"

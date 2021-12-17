@@ -10,6 +10,7 @@ android {
         applicationId "com.sebaslogen.resacaapp"
         minSdk 21
         targetSdk 31
+        buildToolsVersion versions.buildTools
         versionCode 1
         versionName "1.0"
 
