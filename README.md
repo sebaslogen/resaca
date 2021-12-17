@@ -1,4 +1,4 @@
-[![Build Status](https://app.travis-ci.com/sebaslogen/resaca.svg?branch=main)](https://app.travis-ci.com/sebaslogen/resaca)
+[![Build Status](https://app.travis-ci.com/sebaslogen/resaca.svg?branch=main)](https://app.travis-ci.com/sebaslogen/resaca) [![Release](https://jitpack.io/v/sebaslogen/resaca.svg)](https://jitpack.io/#sebaslogen/resaca)
 
 # Resaca 🍹
 Scoping for objects and View Models in Android [Compose](https://developer.android.com/jetpack/compose)
@@ -22,28 +22,45 @@ Example
 ```kotlin
 @Composable
 fun DemoScopedObjectComposable() {
-    val fakeRepo: FakeRepo = rememberScoped { FakeRepo() }
-    DemoComposable(inputObject = fakeRepo)
+    val myRepository: MyRepository = rememberScoped { MyRepository() }
+    DemoComposable(inputObject = myRepository)
 }
 
 @Composable
 fun DemoScopedViewModelComposable() {
-    val fakeScopedVM: FakeScopedViewModel = rememberScoped { FakeScopedViewModel() }
-    DemoComposable(inputObject = fakeScopedVM)
+    val myScopedVM: MyViewModel = rememberScoped { MyViewModel() }
+    DemoComposable(inputObject = myScopedVM)
 }
 ```
 
 Once you use the `rememberScoped` function, the same object will be restored as long as the Composable is part of the composition, even if it _temporarily_ leaves composition on configuration change (e.g. screen rotation, change to dark mode, etc.) or while being in the backstack.
 
 For ViewModels, on top of being forgotten when they're really not needed anymore, their coroutineScope will also be automatically cancelled.
-⚠️ ViewModels remembered with `rememberScoped` **should not be created** using any of the Compose `viewModel()` or `ViewModelProviders` factories, otherwise it will be retained in the scope of the screen regardless of the `rememberScoped`
+⚠️ ViewModels remembered with `rememberScoped` **should not be created** using any of the Compose `viewModel()` or `ViewModelProviders` factories, otherwise they will be retained in the scope of the screen regardless of the `rememberScoped`
 
 # Demo app
 
 ![Resaca-demo](https://user-images.githubusercontent.com/1936647/144597718-db7e8901-a726-4871-abf8-7fc53333a90e.gif)
 
 # Installation
+Add the Jitpack repo and include the library:
+
+```gradle
+   allprojects {
+       repositories {
+           [..]
+           maven { url "https://jitpack.io" }
+       }
+   }
+   dependencies {
+       // The latest version of the lib is available in the badget at the top, replace X.X.X with that version
+       implementation 'com.github.sebaslogen:resaca:X.X.X'
+   }
+```  
+
+## Alternative manual installation
 Only two files are needed and they can be found in the `resaca` module under the package `com.sebaslogen.resaca`, they are [ScopedViewModelContainer](https://github.com/sebaslogen/resaca/blob/main/ResacaApp/resaca/src/main/java/com/sebaslogen/resaca/ScopedViewModelContainer.kt) and [ScopedMemoizers](https://github.com/sebaslogen/resaca/blob/main/ResacaApp/resaca/src/main/java/com/sebaslogen/resaca/compose/ScopedMemoizers.kt).
+
 
 # Lifecycle
 This project uses a ViewModel as a container to store all scoped ViewModels and scoped objects.
