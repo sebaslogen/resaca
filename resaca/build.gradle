@@ -36,21 +36,21 @@ android {
         kotlinCompilerVersion versions.kotlin
         kotlinCompilerExtensionVersion versions.composeCompiler
     }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
 }
 
 dependencies {
 
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.appcompat:appcompat:1.4.0'
-    implementation 'com.google.android.material:material:1.4.0'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0'
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0"
+    implementation "androidx.core:core-ktx:$versions.coreKtx"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.kotlinxCoroutinesAndroid"
 
     // Compose dependencies
     implementation "androidx.compose.compiler:compiler:$versions.composeCompiler"
-    implementation "androidx.navigation:navigation-compose:$versions.navigation"
     // Integration with ViewModels
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.lifecycle"
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$versions.lifecycleViewmodelCompose"
 }
 

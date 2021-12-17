@@ -1,15 +1,12 @@
 package com.sebaslogen.resaca.compose
 
-import android.app.Activity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavBackStackEntry
 import com.sebaslogen.resaca.ScopedViewModelContainer
 import com.sebaslogen.resaca.ScopedViewModelContainer.Key
 import kotlinx.coroutines.Dispatchers
