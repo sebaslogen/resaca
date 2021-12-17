@@ -5,7 +5,7 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "resaca"
+rootProject.name = "resaca library"
 include ':resaca'
 if (!System.env.JITPACK) // Remove the sample app to reduce Jitpack builds
     include ':app'
