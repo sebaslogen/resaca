@@ -4,6 +4,8 @@ plugins {
     id 'maven-publish'
 }
 
+group = 'com.github.sebaslogen'
+
 android {
     compileSdk 31
 
