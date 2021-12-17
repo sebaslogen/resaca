@@ -49,7 +49,7 @@ Before                     |  After backstack navigation & configuration change
 
 
 # Installation
-Add the Jitpack repo and include the library:
+Add the Jitpack repo and include the library (less than 5Kb):
 
 ```gradle
    allprojects {
