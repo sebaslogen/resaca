@@ -59,7 +59,7 @@ Add the Jitpack repo and include the library:
 ```  
 
 ## Alternative manual installation
-Only two files are needed and they can be found in the `resaca` module under the package `com.sebaslogen.resaca`, they are [ScopedViewModelContainer](https://github.com/sebaslogen/resaca/blob/main/ResacaApp/resaca/src/main/java/com/sebaslogen/resaca/ScopedViewModelContainer.kt) and [ScopedMemoizers](https://github.com/sebaslogen/resaca/blob/main/ResacaApp/resaca/src/main/java/com/sebaslogen/resaca/compose/ScopedMemoizers.kt).
+Only two files are needed and they can be found in the `resaca` module under the package `com.sebaslogen.resaca`, they are [ScopedViewModelContainer](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/ScopedViewModelContainer.kt) and [ScopedMemoizers](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/compose/ScopedMemoizers.kt).
 
 
 # Lifecycle
@@ -84,7 +84,11 @@ Notes:
 
 ![Compose state scope](https://user-images.githubusercontent.com/1936647/144682707-dd06e2ee-5542-400b-9a8d-cb27fb7c28e8.png)
 
-Existing alternatives to `rememberScoped` objects in the diagram:
+This diagram shows the lifecycle of three Composables (A, B and C) with their respective objects scoped with the `rememberScoped` function.
+All these Composables are part of a Composable destination which is part of a Fragment which is part of an Activity which is part of the App.
+The horizontal arrows repesent different lifecycle events, events like: Composable being disposed, Composable screen going into the backstack, fragment going into the backstack, returning from backstack or Activity recreated after a configuration change.
+
+The existing alternatives to replicate the lifecycle of the objects in the diagram without using `rememberScoped` are:
 - Object A lifecycle could only be achieved using the Compose `viewModel()` or `ViewModelProviders` factories.
 - Object B lifecycle could only be achieved using the Compose `remember()` function.
 - Object C lifecycle could not simply be achieved neither by using ViewModel provider functions nor Compose `remember` functions.
