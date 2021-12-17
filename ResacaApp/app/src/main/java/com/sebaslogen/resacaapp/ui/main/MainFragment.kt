@@ -37,11 +37,7 @@ class MainFragment : Fragment() {
     }
 
     private fun navigateToFragmentTwo() {
-        parentFragmentManager
-            .beginTransaction()
-            .replace(R.id.container, FragmentTwo())
-            .addToBackStack(null)
-            .commit()
+        parentFragmentManager.navigateToFragmentTwo()
     }
 }
 

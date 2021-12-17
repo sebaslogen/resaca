@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.sebaslogen.resacaapp.ui.main.ComposeActivity
 import com.sebaslogen.resacaapp.ui.main.MainFragment
 import com.sebaslogen.resacaapp.ui.main.compose.DemoScreenInActivity
+import com.sebaslogen.resacaapp.ui.main.navigateToFragmentTwo
 
 class MainActivity : AppCompatActivity() {
 
@@ -34,6 +35,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun navigateToComposeActivity() {
         startActivity(Intent(this, ComposeActivity::class.java))
+    }
+
+    fun navigateToFragmentTwo() {
+        supportFragmentManager.navigateToFragmentTwo()
     }
 }
 

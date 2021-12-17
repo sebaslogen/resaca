@@ -14,7 +14,7 @@ import org.robolectric.annotation.Config
 
 @RunWith(AndroidJUnit4::class)
 @Config(instrumentedPackages = ["androidx.loader.content"])
-class ComposeFragmentRecreationTests : ComposeTestUtils {
+class ComposeFragmentBackstackNavigationTests : ComposeTestUtils {
 
     @get:Rule
     override val composeTestRule = createComposeRule()
@@ -22,7 +22,7 @@ class ComposeFragmentRecreationTests : ComposeTestUtils {
     private val fragmentComposeContainerTag = "FragmentComposeContentTestTag"
 
     @Test
-    fun `given MainActivity with Composables in a Fragment, when the activity is recreated, then the scoped objects are the same`() {
+    fun `given MainActivity with Composables in a Fragment, when I navigate to nested Fragment and back, then the scoped objects are the same`() {
         ActivityScenario.launch(MainActivity::class.java).use { scenario ->
             scenario.onActivity { activity: MainActivity ->
 
@@ -33,9 +33,11 @@ class ComposeFragmentRecreationTests : ComposeTestUtils {
                 val initialFakeScopedViewModelText =
                     retrieveTextFromNodeWithTestTag(tag = "FakeScopedViewModel Scoped", parentTestTag = fragmentComposeContainerTag)
 
-                // When we recreate the activity
-                activity.recreate()
+                // When I navigate to a nested fragment and back to initial screen
+                activity.navigateToFragmentTwo()
+                activity.onBackPressed()
                 printComposeUiTreeToLog(fragmentComposeContainerTag)
+
 
                 // Then the scoped objects on the first screen are still the same
                 onNodeWithTestTag(tag = "FakeRepo Scoped", parentTestTag = fragmentComposeContainerTag)
@@ -47,17 +49,18 @@ class ComposeFragmentRecreationTests : ComposeTestUtils {
     }
 
     @Test
-    fun `given MainActivity with Composables in a Fragment, when the activity is recreated, then the NOT scoped object changes`() {
+    fun `given MainActivity with Composables in a Fragment, when I navigate to nested Fragment and back, then the NOT scoped object changes`() {
         ActivityScenario.launch(MainActivity::class.java).use { scenario ->
             scenario.onActivity { activity: MainActivity ->
 
-                // Given the Activity shows a screen with scoped objects inside a Fragment
+                // Given the Activity shows a screen with scoped objects
                 printComposeUiTreeToLog(fragmentComposeContainerTag)
                 // Find the NOT scoped text field and grab its text
                 val initialFakeRepoText = retrieveTextFromNodeWithTestTag(tag = "FakeRepo Not scoped", parentTestTag = fragmentComposeContainerTag)
 
-                // When we recreate the activity
-                activity.recreate()
+                // When I navigate to a nested fragment and back to initial screen
+                activity.navigateToFragmentTwo()
+                activity.onBackPressed()
                 printComposeUiTreeToLog(fragmentComposeContainerTag)
 
                 // Then the text of the NOT scoped object is different from the original one because it's a new object

@@ -32,7 +32,7 @@ class ComposeActivityRecreationTests : ComposeTestUtils {
                 val initialFakeScopedRepoText = retrieveTextFromNodeWithTestTag("FakeRepo Scoped")
                 val initialFakeScopedViewModelText = retrieveTextFromNodeWithTestTag("FakeScopedViewModel Scoped")
 
-                // When recreate the activity
+                // When we recreate the activity
                 activity.recreate()
                 printComposeUiTreeToLog()
 
@@ -44,7 +44,7 @@ class ComposeActivityRecreationTests : ComposeTestUtils {
     }
 
     @Test
-    fun `when the activity is recreated, then the not scoped object changes`() {
+    fun `when the activity is recreated, then the NOT scoped object changes`() {
         ActivityScenario.launch(ComposeActivity::class.java).use { scenario ->
             scenario.onActivity { activity: ComposeActivity ->
 
@@ -53,11 +53,11 @@ class ComposeActivityRecreationTests : ComposeTestUtils {
                 // Find the NOT scoped text field and grab its text
                 val initialFakeRepoText = retrieveTextFromNodeWithTestTag("FakeRepo Not scoped")
 
-                // When recreate the activity
+                // When we recreate the activity
                 activity.recreate()
                 printComposeUiTreeToLog()
 
-                // Then the text of the not scoped object is different from the original one because it's a new object
+                // Then the text of the NOT scoped object is different from the original one because it's a new object
                 onNodeWithTestTag("FakeRepo Not scoped").assertIsDisplayed().assert(hasTextExactly(initialFakeRepoText).not())
             }
         }

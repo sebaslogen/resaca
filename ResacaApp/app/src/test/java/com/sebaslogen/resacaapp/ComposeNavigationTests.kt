@@ -49,7 +49,7 @@ class ComposeNavigationTests : ComposeTestUtils {
     }
 
     @Test
-    fun `when I navigate to nested screen and back, then the not scoped object changes`() {
+    fun `when I navigate to nested screen and back, then the NOT scoped object changes`() {
 
         // Given the starting screen with scoped objects
         composeTestRule.setContent {
@@ -66,7 +66,7 @@ class ComposeNavigationTests : ComposeTestUtils {
         navController.popBackStack()
         printComposeUiTreeToLog()
 
-        // Then the text of the not scoped object is different from the original one because it's a new object
+        // Then the text of the NOT scoped object is different from the original one because it's a new object
         onNodeWithTestTag("FakeRepo Not scoped").assertIsDisplayed().assert(hasTextExactly(initialFakeRepoText).not())
     }
 }
