@@ -9,4 +9,4 @@ dependencyResolutionManagement {
 rootProject.name = "resaca library"
 include ':resaca'
 if (!System.env.JITPACK) // Remove the sample app to reduce Jitpack builds
-    include ':app'
+    include ':sample'
