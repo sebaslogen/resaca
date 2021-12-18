@@ -21,6 +21,15 @@ import com.sebaslogen.resacaapp.ui.main.data.FakeScopedViewModel
 import com.sebaslogen.resacaapp.ui.main.toHexString
 import com.sebaslogen.resacaapp.ui.main.ui.theme.emojis
 
+/**
+ * The objective of these Composables is to instantiate
+ * fake business logic objects ([FakeRepo] or [FakeScopedViewModel]) and
+ * to represent on the screen their unique memory location by rendering:
+ * - the object's toString representation in a [Text] Composable
+ * - a unique color for the object's instance using [objectToColorInt] as background
+ * - a semi-unique emoji for the object's instance (limited to list of emojis available in [emojis])
+ */
+
 @Composable
 fun DemoNotScopedObjectComposable() {
     Box(
@@ -56,9 +65,11 @@ fun DemoComposable(
             .height(IntrinsicSize.Min),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        // Vertical label for the Scoping of the input object
         val scopedBannerText = if (scoped) "Scoped" else "Not scoped"
         Text(scopedBannerText, textAlign = TextAlign.Center, modifier = Modifier.rotate(-90f))
 
+        // Text representation of the input object
         val objectAddressName = remember { objectToShortStringWithoutPackageName(inputObject) }
         Text(
             modifier = Modifier
@@ -70,6 +81,7 @@ fun DemoComposable(
             text = "Composable that uses \n$objectType with address:\n$objectAddressName"
         )
 
+        // Emoji representation of the input object
         val objectAddressEmoji = remember { objectToEmoji(inputObject) }
         Text(
             modifier = Modifier

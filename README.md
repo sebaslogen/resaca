@@ -6,7 +6,7 @@ Scoping for objects and View Models in Android [Compose](https://developer.andro
 Resaca provides a simple way to retain a Jetpack ViewModel (or any other object) in memory in the scope of a `@Composable` function during configuration changes and also when the container Fragment or Compose Navigation destination goes into the backstack.
 
 # Why
-Compose allows the creation of fine grained UI components that can be easily reused like Lego pieces 🧱. Well architectured Android apps isolate functionality in small business logic components (like use cases, interactors, repositories, etc.) that are also reusable like Lego pieces 🧱.
+Compose allows the creation of fine grained UI components that can be easily reused like Lego pieces 🧱. Well architected Android apps isolate functionality in small business logic components (like use cases, interactors, repositories, etc.) that are also reusable like Lego pieces 🧱.
 
 Screens are built using Compose components together with business logic components, and the standard tool to connect these components is a [Jetpack ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel). Unfortunately, ViewModels can only be scoped to a whole screen, not to Compose components on the screen.
 
@@ -14,7 +14,7 @@ In practice this means that we are gluing UI Lego blocks with business logic Leg
 
 Until now...
 
-# Usage 
+# Usage
 Inside your `@Composable` function create and retrieve an object using `rememberScoped` to remember any type of object (including ViewModels).
 That's all 🪄✨
 
@@ -47,6 +47,7 @@ Before                     |  After backstack navigation & configuration change
 :-------------------------:|:-------------------------:
 <img width="429" alt="Before" src="https://user-images.githubusercontent.com/1936647/146558764-42333455-2dd8-43a9-932b-3249d42b7a7d.png">  |  <img width="430" alt="After" src="https://user-images.githubusercontent.com/1936647/146558775-8c77231c-ed0f-4f52-b9b8-cdf9029e106c.png">
 
+Demo app [documentation can be found here](https://github.com/sebaslogen/resaca/blob/main/sample/RADME.md).
 
 # Installation
 Add the Jitpack repo and include the library (less than 5Kb):
@@ -94,7 +95,7 @@ Notes:
 
 This diagram shows the lifecycle of three Composables (A, B and C) with their respective objects scoped with the `rememberScoped` function.
 All these Composables are part of a Composable destination which is part of a Fragment which is part of an Activity which is part of the App.
-The horizontal arrows repesent different lifecycle events, events like: Composable being disposed, Composable screen going into the backstack, fragment going into the backstack, returning from backstack or Activity recreated after a configuration change.
+The horizontal arrows represent different lifecycle events, events like: Composable being disposed, Composable screen going into the backstack, fragment going into the backstack, returning from backstack or Activity recreated after a configuration change.
 
 The existing alternatives to replicate the lifecycle of the objects in the diagram without using `rememberScoped` are:
 - Object A lifecycle could only be achieved using the Compose `viewModel()` or `ViewModelProviders` factories.
