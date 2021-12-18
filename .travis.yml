@@ -34,7 +34,7 @@ before_script:
   - echo y | ${TOOLS}/bin/sdkmanager "platforms;android-$BUILD_API" >/dev/null
 
 script:
-  - ./gradlew :app:cleanTestDebugUnitTest :app:testDebugUnitTest --tests "com.sebaslogen.resacaapp.*"
+  - ./gradlew :sample:cleanTestDebugUnitTest :sample:testDebugUnitTest --tests "com.sebaslogen.resacaapp.*"
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
