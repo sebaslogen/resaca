@@ -39,7 +39,7 @@ For ViewModels, on top of being forgotten when they're really not needed anymore
 ⚠️ ViewModels remembered with `rememberScoped` **should not be created** using any of the Compose `viewModel()` or `ViewModelProviders` factories, otherwise they will be retained in the scope of the screen regardless of the `rememberScoped`
 
 # Demo app
-Demo app [documentation can be found here](https://github.com/sebaslogen/resaca/blob/main/sample/RADME.md).
+Demo app [documentation can be found here](https://github.com/sebaslogen/resaca/blob/main/sample/README.md).
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/1936647/144597718-db7e8901-a726-4871-abf8-7fc53333a90e.gif" alt="Resaca-demo" width="340" height="802" />
