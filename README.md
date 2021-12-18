@@ -39,6 +39,8 @@ For ViewModels, on top of being forgotten when they're really not needed anymore
 ⚠️ ViewModels remembered with `rememberScoped` **should not be created** using any of the Compose `viewModel()` or `ViewModelProviders` factories, otherwise they will be retained in the scope of the screen regardless of the `rememberScoped`
 
 # Demo app
+Demo app [documentation can be found here](https://github.com/sebaslogen/resaca/blob/main/sample/RADME.md).
+
 <p align="center">
   <img src="https://user-images.githubusercontent.com/1936647/144597718-db7e8901-a726-4871-abf8-7fc53333a90e.gif" alt="Resaca-demo" width="340" height="802" />
 </p>
@@ -46,8 +48,6 @@ For ViewModels, on top of being forgotten when they're really not needed anymore
 Before                     |  After backstack navigation & configuration change
 :-------------------------:|:-------------------------:
 <img width="429" alt="Before" src="https://user-images.githubusercontent.com/1936647/146558764-42333455-2dd8-43a9-932b-3249d42b7a7d.png">  |  <img width="430" alt="After" src="https://user-images.githubusercontent.com/1936647/146558775-8c77231c-ed0f-4f52-b9b8-cdf9029e106c.png">
-
-Demo app [documentation can be found here](https://github.com/sebaslogen/resaca/blob/main/sample/RADME.md).
 
 # Installation
 Add the Jitpack repo and include the library (less than 5Kb):
