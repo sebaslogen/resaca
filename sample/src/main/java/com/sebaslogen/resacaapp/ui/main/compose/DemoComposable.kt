@@ -1,6 +1,5 @@
 package com.sebaslogen.resacaapp.ui.main.compose
 
-import androidx.annotation.ColorInt
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -18,8 +17,6 @@ import androidx.compose.ui.unit.sp
 import com.sebaslogen.resaca.compose.rememberScoped
 import com.sebaslogen.resacaapp.ui.main.data.FakeRepo
 import com.sebaslogen.resacaapp.ui.main.data.FakeScopedViewModel
-import com.sebaslogen.resacaapp.ui.main.toHexString
-import com.sebaslogen.resacaapp.ui.main.ui.theme.emojis
 
 /**
  * The objective of these Composables is to instantiate
@@ -30,6 +27,9 @@ import com.sebaslogen.resacaapp.ui.main.ui.theme.emojis
  * - a semi-unique emoji for the object's instance (limited to list of emojis available in [emojis])
  */
 
+/**
+ * Wraps the [DemoComposable] with a red border to indicate its content is not scoped
+ */
 @Composable
 fun DemoNotScopedObjectComposable() {
     Box(
@@ -92,21 +92,3 @@ fun DemoComposable(
         )
     }
 }
-
-/**
- * Convert the object's [hashCode] into a color
- */
-@ColorInt
-private fun objectToColorInt(inputObject: Any): Int =
-    android.graphics.Color.parseColor(
-        "#9F" + inputObject
-            .hashCode()
-            .toHexString()
-            .padStart(6, 'A')
-            .substring(0..5)
-    )
-
-private fun objectToEmoji(inputObject: Any): String = emojis[inputObject.hashCode() % emojis.size]
-
-private fun objectToShortStringWithoutPackageName(inputObject: Any): String =
-    inputObject.toString().removePrefix("com.sebaslogen.resacaapp.ui.main.data.")
