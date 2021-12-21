@@ -101,3 +101,9 @@ The existing alternatives to replicate the lifecycle of the objects in the diagr
 - Object A lifecycle could only be achieved using the Compose `viewModel()` or `ViewModelProviders` factories.
 - Object B lifecycle could only be achieved using the Compose `remember()` function.
 - Object C lifecycle could not simply be achieved neither by using ViewModel provider functions nor Compose `remember` functions.
+
+# What about dependency injection?
+This library has no influence in how your app provides or creates objects so it's dependency injection strategy and framework agnostic.
+
+With that out of the way here is a suggestion of how to provide objects in combination with this library:
+- When a Composable is used more than once in the same screen with the same input, then the same ViewModel (or business logic object) should be provided in the `rememberscoped` call to maintain consistency between items on screen. This will provide not only the same source of truth for final view states, but also for loading states where the ViewModel exposes the loading state to multiple Composable UI components to have consistent UI.
