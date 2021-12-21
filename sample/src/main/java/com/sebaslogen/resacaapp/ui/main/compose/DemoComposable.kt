@@ -70,7 +70,7 @@ fun DemoComposable(
         Text(scopedBannerText, textAlign = TextAlign.Center, modifier = Modifier.rotate(-90f))
 
         // Text representation of the input object
-        val objectAddressName = remember { objectToShortStringWithoutPackageName(inputObject) }
+        val objectAddressName = remember(inputObject) { objectToShortStringWithoutPackageName(inputObject) }
         Text(
             modifier = Modifier
                 .testTag("$objectType $scopedBannerText") // Semantics used for automated tests to find this node
@@ -82,7 +82,7 @@ fun DemoComposable(
         )
 
         // Emoji representation of the input object
-        val objectAddressEmoji = remember { objectToEmoji(inputObject) }
+        val objectAddressEmoji = remember(inputObject) { objectToEmoji(inputObject) }
         Text(
             modifier = Modifier
                 .padding(vertical = 18.dp, horizontal = 4.dp)

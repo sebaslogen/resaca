@@ -46,21 +46,27 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     private var isInForeground = true
 
     /**
-     * Generic objects container
+     * Container of object keys associated with their [ExternalKey],
+     * the [ExternalKey] will be used to track and store new versions of the object to be stored/restored
      */
-    private val scopedObjectsContainer = mutableMapOf<Key, Any>()
+    private val scopedObjectKeys = mutableMapOf<String, ExternalKey>()
 
     /**
-     * List of [Key]s for the objects that will be disposed (forgotten from this class so they can be garbage collected) in the near future
+     * Generic objects container
+     */
+    private val scopedObjectsContainer = mutableMapOf<String, Any>()
+
+    /**
+     * List of keys for the objects that will be disposed (forgotten from this class so they can be garbage collected) in the near future
      */
     private val markedForDisposal = ConcurrentSkipListSet<String>()
 
     /**
-     * List of [Job]s associated with an object [Key] that is scheduled to be disposed very soon, unless
+     * List of [Job]s associated with an object (through its key) that is scheduled to be disposed very soon, unless
      * the object is requested again (and [cancelDisposal] is triggered) or
      * the container of this [ScopedViewModelContainer] class goes to the background (making [isInForeground] false)
      */
-    private val disposingJobs = mutableMapOf<Key, Job>()
+    private val disposingJobs = mutableMapOf<String, Job>()
 
     /**
      * Time to wait until disposing an object from the [scopedObjectsContainer] after it has been scheduled for disposal
@@ -69,12 +75,21 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
 
     @Suppress("UNCHECKED_CAST")
     fun <T : Any> getOrBuildObject(
-        key: Key,
+        key: String,
+        externalKey: ExternalKey = ExternalKey(0),
         builder: () -> T
     ): T {
+        fun buildAndStoreObject() = builder.invoke().apply { scopedObjectsContainer[key] = this }
+
         cancelDisposal(key)
-        return scopedObjectsContainer[key] as? T
-            ?: builder.invoke().apply { scopedObjectsContainer[key] = this }
+
+        return if (scopedObjectKeys.containsKey(key) && (scopedObjectKeys[key] == externalKey)) {
+            // When the object is already present and the external key matches, then try to restore it
+            scopedObjectsContainer[key] as? T ?: buildAndStoreObject()
+        } else {
+            scopedObjectKeys[key] = externalKey // Set the external key used to track and store new versions of the object
+            buildAndStoreObject()
+        }
     }
 
     /**
@@ -82,8 +97,8 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      * that the object might be also disposed from this container only when the stored object
      * is not going to be used anymore (e.g. after configuration change or container fragment returning from backstack)
      */
-    fun onDisposedFromComposition(key: Key) {
-        markedForDisposal.add(key.value) // Marked to be disposed after onResume
+    fun onDisposedFromComposition(key: String) {
+        markedForDisposal.add(key) // Marked to be disposed after onResume
         scheduleToDisposeBeforeGoingToBackground(key) // Schedule to dispose this object before onPause
     }
 
@@ -91,7 +106,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      * Schedules the object referenced by this [key] in the [scopedObjectsContainer]
      * to be removed (so it can be garbage collected) if the screen associated with this is still in foreground ([isInForeground])
      */
-    private fun scheduleToDisposeBeforeGoingToBackground(key: Key) {
+    private fun scheduleToDisposeBeforeGoingToBackground(key: String) {
         scheduleToDispose(key = key)
     }
 
@@ -106,7 +121,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      */
     private fun scheduleToDisposeAfterReturningFromBackground() {
         markedForDisposal.forEach { key ->
-            scheduleToDispose(key = Key(key))
+            scheduleToDispose(key)
         }
     }
 
@@ -118,13 +133,13 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      * @param key Key of the object stored in either [scopedObjectsContainer] to be de-referenced for GC
      * @param removalCondition Last check at disposal time to prevent disposal when this condition is not met
      */
-    private fun scheduleToDispose(key: Key, removalCondition: () -> Boolean = { isInForeground }) {
+    private fun scheduleToDispose(key: String, removalCondition: () -> Boolean = { isInForeground }) {
         if (disposingJobs.containsKey(key)) return // Already disposing, quit
 
         val newDisposingJob = viewModelScope.launch {
             delay(disposeDelayTimeMillis)
             if (removalCondition()) {
-                markedForDisposal.remove(key.value)
+                markedForDisposal.remove(key)
                 scopedObjectsContainer.remove(key)
                     ?.also {
                         when (it) {
@@ -139,9 +154,9 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         disposingJobs[key] = newDisposingJob
     }
 
-    private fun cancelDisposal(key: Key) {
+    private fun cancelDisposal(key: String) {
         disposingJobs.remove(key)?.cancel() // Cancel scheduled disposal
-        markedForDisposal.remove(key.value) // Un-mark for disposal in case it's not yet scheduled for disposal
+        markedForDisposal.remove(key) // Un-mark for disposal in case it's not yet scheduled for disposal
     }
 
     /**
@@ -177,8 +192,15 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     }
 
     /**
-     * Unique Key to identify objects store in the [ScopedViewModelContainer]
+     * Unique Key to identify versions objects stored in the [ScopedViewModelContainer]
+     * When this external key does not match the one stored for an object's main key in [scopedObjectKeys],
+     * then the object is removed (just overwritten), the new instance is stored and
+     * the new external key is stored in [scopedObjectKeys]
      */
     @JvmInline
-    value class Key(val value: String)
+    value class ExternalKey(val value: Int) {
+        companion object {
+            fun from(objectInstance: Any?): ExternalKey = ExternalKey(objectInstance.hashCode())
+        }
+    }
 }

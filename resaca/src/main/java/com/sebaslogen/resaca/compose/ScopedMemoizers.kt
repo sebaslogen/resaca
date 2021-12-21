@@ -8,11 +8,9 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebaslogen.resaca.ScopedViewModelContainer
-import com.sebaslogen.resaca.ScopedViewModelContainer.Key
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
-
 
 /**
  * Return an object created with the provided [builder] function
@@ -22,7 +20,7 @@ import java.util.*
  * is present in [ScopedViewModelContainer] for this key it will be returned instead of calling [builder]
  */
 @Composable
-fun <T : Any> rememberScoped(builder: (() -> T)): T {
+fun <T : Any> rememberScoped(key: Any? = null, builder: (() -> T)): T {
     val scopedViewModelContainer: ScopedViewModelContainer = viewModel()
 
     // Observe this destination's lifecycle to detect screen resumed/paused/destroyed 
@@ -31,14 +29,16 @@ fun <T : Any> rememberScoped(builder: (() -> T)): T {
 
     // This key will be used to identify, retrieve and remove the stored object in the ScopedViewModelContainer
     // across recompositions, configuration changes and even process death
-    val key = Key(rememberSaveable { UUID.randomUUID().toString() })
+    val internalKey = rememberSaveable { UUID.randomUUID().toString() }
+    // The external key will be used to track and store new versions of the object
+    val externalKey = ScopedViewModelContainer.ExternalKey.from(key)
 
     // The object will be built the first time and retrieved in next calls or recompositions
-    val scopedObject: T = scopedViewModelContainer.getOrBuildObject(key, builder)
+    val scopedObject: T = scopedViewModelContainer.getOrBuildObject(key = internalKey, externalKey = externalKey, builder = builder)
 
     // Remove reference to object from ScopedViewModelContainer so it can be garbage collected when needed
-    DisposableEffect(key) {
-        onDispose { scopedViewModelContainer.onDisposedFromComposition(key) }
+    DisposableEffect(internalKey) {
+        onDispose { scopedViewModelContainer.onDisposedFromComposition(internalKey) }
     }
     return scopedObject
 }
