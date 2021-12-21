@@ -5,12 +5,12 @@
 # Resaca 🍹
 Scoping for objects and View Models in Android [Compose](https://developer.android.com/jetpack/compose)
 
-Resaca provides a simple way to retain a Jetpack ViewModel (or any other object) in memory in the scope of a `@Composable` function during configuration changes and also when the container Fragment or Compose Navigation destination goes into the backstack.
+Resaca provides a simple way to retain a Jetpack ViewModel (or any other object) in memory in the scope of a `@Composable` function across recompositions, during configuration changes and also when the container Fragment or Compose Navigation destination goes into the backstack.
 
 # Why
-Compose allows the creation of fine grained UI components that can be easily reused like Lego pieces 🧱. Well architected Android apps isolate functionality in small business logic components (like use cases, interactors, repositories, etc.) that are also reusable like Lego pieces 🧱.
+Compose allows the creation of fine grained UI components that can be easily reused like Lego blocks 🧱. Well architected Android apps isolate functionality in small business logic components (like use cases, interactors, repositories, etc.) that are also reusable like Lego blocks 🧱.
 
-Screens are built using Compose components together with business logic components, and the standard tool to connect these components is a [Jetpack ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel). Unfortunately, ViewModels can only be scoped to a whole screen, not to Compose components on the screen.
+Screens are built using Compose components together with business logic components, and the standard tool to connect these components is a [Jetpack ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel). Unfortunately, ViewModels can only be scoped to a whole screen (or larger scope), but not to smaller Compose components on the screen.
 
 In practice this means that we are gluing UI Lego blocks with business logic Lego blocks using a big glue class, the ViewModel 🗜.
 
