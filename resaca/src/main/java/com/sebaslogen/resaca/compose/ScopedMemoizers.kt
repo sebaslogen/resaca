@@ -16,8 +16,11 @@ import java.util.*
  * Return an object created with the provided [builder] function
  * and store this object in the [ScopedViewModelContainer] that will keep this
  * object in memory as long as needed
- * A key will be generated for this object in the Compose tree and if an object
- * is present in [ScopedViewModelContainer] for this key it will be returned instead of calling [builder]
+ * Internally, a key will be generated for this object in the Compose tree and if an object is present
+ * for this key in the [ScopedViewModelContainer], then it will be returned instead of calling [builder]
+ *
+ * @param key Changing [key] between compositions will produce and remember a new value by calling [builder]
+ * @param builder Function to produce a new value that will be remembered
  */
 @Composable
 fun <T : Any> rememberScoped(key: Any? = null, builder: (() -> T)): T {
