@@ -33,9 +33,20 @@ fun DemoScopedViewModelComposable() {
     val myScopedVM: MyViewModel = rememberScoped { MyViewModel() }
     DemoComposable(inputObject = myScopedVM)
 }
+
+@Composable
+fun DemoViewModelWithIdComposable() {
+    val scopedVMWithFirstId: MyViewModel = rememberScoped("myFirstId") { MyViewModel("myFirstId") }
+    val scopedVMWithSecondId: MyViewModel = rememberScoped("mySecondId") { MyViewModel("mySecondId") }
+    // We now have 2 ViewModels of the same type with different data inside the same Composable scope
+    DemoComposable(inputObject = scopedVMWithFirstId)
+    DemoComposable(inputObject = scopedVMWithSecondId)
+}
 ```
 
 Once you use the `rememberScoped` function, the same object will be restored as long as the Composable is part of the composition, even if it _temporarily_ leaves composition on configuration change (e.g. screen rotation, change to dark mode, etc.) or while being in the backstack.
+
+Optionally, a key can be provided to the call, `rememberScoped(key) { ... }`, to create multiple instance of the same class remembered in the same scope or to invalidate old instances when there is a recomposition with new data (e.g. a new id for your ViewModel).
 
 For ViewModels, on top of being forgotten when they're really not needed anymore, their coroutineScope will also be automatically cancelled.
 ⚠️ ViewModels remembered with `rememberScoped` **should not be created** using any of the Compose `viewModel()` or `ViewModelProviders` factories, otherwise they will be retained in the scope of the screen regardless of the `rememberScoped`
