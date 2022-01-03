@@ -23,19 +23,19 @@ That's all 🪄✨
 Example
 ```kotlin
 @Composable
-fun DemoScopedObjectComposable() {
+fun DemoScopedObject() {
     val myRepository: MyRepository = rememberScoped { MyRepository() }
     DemoComposable(inputObject = myRepository)
 }
 
 @Composable
-fun DemoScopedViewModelComposable() {
+fun DemoScopedViewModel() {
     val myScopedVM: MyViewModel = rememberScoped { MyViewModel() }
     DemoComposable(inputObject = myScopedVM)
 }
 
 @Composable
-fun DemoViewModelWithIdComposable() {
+fun DemoViewModelWithId() {
     val scopedVMWithFirstId: MyViewModel = rememberScoped("myFirstId") { MyViewModel("myFirstId") }
     val scopedVMWithSecondId: MyViewModel = rememberScoped("mySecondId") { MyViewModel("mySecondId") }
     // We now have 2 ViewModels of the same type with different data inside the same Composable scope
