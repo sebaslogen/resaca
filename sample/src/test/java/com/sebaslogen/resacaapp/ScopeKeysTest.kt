@@ -50,7 +50,7 @@ class ScopeKeysTest : ComposeTestUtils {
         onNodeWithTestTag("Button").performClick()
         printComposeUiTreeToLog()
 
-        // Then the text of the NOT scoped object is different from the original one because it's a new object
+        // Then the text of the scoped object is different from the original one because it's a new object after changing the key
         onNodeWithTestTag("FakeRepo Scoped").assertIsDisplayed()
             .assert(hasTextExactly(initialFakeScopedRepoText).not())
     }
