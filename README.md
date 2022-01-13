@@ -5,7 +5,7 @@
 # Resaca 🍹
 Scoping for objects and View Models in Android [Compose](https://developer.android.com/jetpack/compose)
 
-Resaca provides a simple way to retain a Jetpack ViewModel (or any other object) in memory in the scope of a `@Composable` function across recompositions, during configuration changes, and also when the container Fragment or Compose Navigation destination goes into the backstack.
+Resaca provides a simple way to keep a Jetpack ViewModel (or any other object) in memory during the lifecycle of a `@Composable` function. This means, across recompositions, during configuration changes, and also when the container Fragment or Compose Navigation destination goes into the backstack.
 
 # Why
 Compose allows the creation of fine-grained UI components that can be easily reused like Lego blocks 🧱. Well architected Android apps isolate functionality in small business logic components (like use cases, interactors, repositories, etc.) that are also reusable like Lego blocks 🧱.
