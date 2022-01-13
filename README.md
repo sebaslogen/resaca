@@ -83,10 +83,43 @@ Add the Jitpack repo and include the library (less than 5Kb):
 Only two files are needed and they can be found in the `resaca` module under the package `com.sebaslogen.resaca`, they are [ScopedViewModelContainer](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/ScopedViewModelContainer.kt) and [ScopedMemoizers](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/compose/ScopedMemoizers.kt).
 
 
-# Lifecycle
-This project uses a ViewModel as a container to store all scoped ViewModels and scoped objects.
+# Why not use remember?
+**[Remember](https://developer.android.com/reference/kotlin/androidx/compose/runtime/package-summary#remember(kotlin.Function0))** will keep our object alive as long as the Composable is not disposed of.
+Unfortunately, there are a few cases where our Composable will be disposed of and then added again, breaking the lifecycle parity with the remember function. 😢
 
-The `rememberScoped` functions will retain objects longer than the `remember` function but shorter than `rememberSaveable` because these objects are stored in memory (no serialization involved).
+_Pros_
+- Simple API
+
+_Cons_
+- remember value will NOT survive a configuration change
+- remember value will NOT survive when going into the backstack
+- remember value will NOT survive a process death
+
+**[RememberSaveable](https://developer.android.com/reference/kotlin/androidx/compose/runtime/saveable/package-summary#rememberSaveable(kotlin.Array,androidx.compose.runtime.saveable.Saver,kotlin.String,kotlin.Function0))** will follow the lifecycle of the Composable, even in the few cases where the Composable is temporarily disposed of. But the object we want to remember needs to implement Parcelable or the [Saver](https://developer.android.com/reference/kotlin/androidx/compose/runtime/saveable/Saver) interface in an additional class. 😢 Implementing these interfaces might not trivial.
+
+_Pros_
+- rememberSaveable value will survive a configuration change
+- rememberSaveable value will survive when going into the backstack
+- rememberSaveable value will survive a process death
+
+_Cons_
+- Complex integration work is required to correctly implement Parcelable or [Saver](https://developer.android.com/reference/kotlin/androidx/compose/runtime/saveable/Saver)
+
+# Lifecycle
+
+**[RememberScoped](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/compose/ScopedMemoizers.kt#L26)** function keeps objects in memory during the lifecycle of the Composable, even in a few cases where the Composable is disposed of, and then added again. Therefore, it will retain objects longer than the `remember` function but shorter than `rememberSaveable` because there is no serialization involved.
+
+_Pros_
+- Simple API
+- rememberScoped value will survive a configuration change
+- rememberScoped value will survive when going into the backstack
+
+_Cons_
+- rememberScoped value will NOT survive a process death
+
+
+## RememberScoped lifecycle internals
+This project uses a ViewModel as a container to store all scoped ViewModels and scoped objects.
 
 When a Composable is disposed of, we don't know for sure if it will return again later. So at the moment of disposal, we mark in our container the associated object to be disposed of after a small delay (currently 5 seconds). During the span of time of this delay, a few things can happen:
 - The Composable is not part of the composition anymore after the delay and the associated object is disposed of. 🚮
@@ -94,13 +127,13 @@ When a Composable is disposed of, we don't know for sure if it will return again
   - This can happen when the application goes through a configuration change and the container Activity is recreated.
   - Also when the Composable is part of a Fragment that has been pushed to the backstack.
   - And also when the Composable is part of a Compose Navigation destination that has been pushed to the backstack.
-- When the LifecycleOwner of the disposed Composable is resumed (e.g. screen comes back to foreground), then the disposal of the associated object is scheduled again to happen after a small delay. At this point two things can happen:
+- When the LifecycleOwner of the disposed Composable is resumed (e.g. Fragment comes back to foreground), then the disposal of the associated object is scheduled again to happen after a small delay. At this point two things can happen:
   - The Composable becomes part of the composition again and the `rememberScoped` function restores the associated object while also canceling any pending delayed disposal. 🎉
   - The Composable is not part of the composition anymore after the delay and the associated object is disposed of. 🚮
 
 Notes:
-- To know that the same Composable is being added to the composition again after being disposed of, we generate a random ID and store it with `rememberSaveable`, which survives recreation (and even process death).
-- To detect when the requester Composable is not needed anymore (has left composition and the screen for good), the ScopedViewModelContainer observes the resume/pause Lifecycle events of the owner of this ScopedViewModelContainer (i.e. Activity, Fragment, or Compose Navigation destination)
+- To know that the same Composable is being added to the composition again after being disposed of, we generate a random ID and store it with `rememberSaveable`, which survives recomposition, recreation and even process death.
+- To detect when the requester Composable is not needed anymore (has left composition and the screen for good), the ScopedViewModelContainer also observes the resume/pause Lifecycle events of the owner of this ScopedViewModelContainer (i.e. Activity, Fragment, or Compose Navigation destination)
 
 
 ## Lifecycle example
