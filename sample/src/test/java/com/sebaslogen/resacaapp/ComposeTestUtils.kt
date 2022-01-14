@@ -31,8 +31,10 @@ interface ComposeTestUtils {
         if (parentTestTag != null) {
             composeTestRule.onAllNodesWithTag(tag)
                 .filterToOne(hasParent(hasTestTag(parentTestTag)))
+                .assertIsDisplayed()
         } else {
             composeTestRule.onNodeWithTag(tag)
+                .assertIsDisplayed()
         }
 
     fun retrieveTextFromNodeWithTestTag(tag: String, parentTestTag: String? = null): String =
