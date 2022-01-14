@@ -12,11 +12,9 @@ import com.sebaslogen.resacaapp.ui.main.ScreensWithNavigation
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.annotation.Config
 
 
 @RunWith(AndroidJUnit4::class)
-@Config(instrumentedPackages = ["androidx.loader.content"])
 class ComposeNavigationTests : ComposeTestUtils {
 
     @get:Rule
