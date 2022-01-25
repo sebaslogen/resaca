@@ -2,6 +2,8 @@
 [![Release](https://jitpack.io/v/sebaslogen/resaca.svg)](https://jitpack.io/#sebaslogen/resaca)
 [![GitHub license](https://img.shields.io/github/license/sebaslogen/resaca)](https://github.com/sebaslogen/resaca/blob/main/LICENSE)
 
+Article about this library: [Every Composable deserves a ViewModel](https://engineering.q42.nl/compose/)
+
 # Resaca 🍹
 Scoping for objects and View Models in Android [Compose](https://developer.android.com/jetpack/compose)
 
