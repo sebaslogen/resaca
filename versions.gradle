@@ -10,14 +10,14 @@ versions.navigation = "2.4.0-rc01"
 versions.robolectric = "4.7.3"
 
 // Compose
-versions.composeCompiler = "1.1.0-rc03"
-versions.composeUi = "1.1.0-rc03"
+versions.composeCompiler = "1.1.0"
+versions.composeUi = "1.1.0"
 // Tooling support (Previews, etc.)
-versions.composeUiTooling = "1.1.0-rc03"
+versions.composeUiTooling = "1.1.0"
 // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
-versions.composeFoundation = "1.1.0-rc03"
+versions.composeFoundation = "1.1.0"
 // Material Design
-versions.composeMaterial = "1.1.0-rc03"
+versions.composeMaterial = "1.1.0"
 // Integration with activities
 versions.activityCompose = "1.3.1"
 // Integration with ViewModels
