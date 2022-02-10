@@ -64,7 +64,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.0'
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.kotlinxCoroutinesAndroid"
     implementation "androidx.activity:activity-compose:$versions.activityCompose"
 
     // Compose dependencies
@@ -81,7 +81,7 @@ dependencies {
     // Material Design
     implementation "androidx.compose.material:material:$versions.composeMaterial"
 
-    testImplementation 'junit:junit:4.+'
+    testImplementation "junit:junit:$versions.junit"
     testImplementation "org.robolectric:robolectric:$versions.robolectric"
     // Test rules and transitive dependencies:
     testImplementation("androidx.compose.ui:ui-test-junit4:$versions.composeUi")
