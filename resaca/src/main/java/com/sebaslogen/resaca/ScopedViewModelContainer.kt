@@ -1,6 +1,7 @@
 package com.sebaslogen.resaca
 
 import androidx.lifecycle.*
+import androidx.lifecycle.ViewModelClearer.clearViewModel
 import kotlinx.coroutines.*
 import java.util.concurrent.ConcurrentSkipListSet
 import kotlin.coroutines.CoroutineContext
@@ -127,8 +128,8 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
 
     /**
      * Dispose/Forget the object -if present- in [scopedObjectsContainer] after a small delay.
-     * We store the deletion job with the given [key] in the [disposingJobs] to make sure we don't schedule the same work twice
-     * An optional [removalCondition] is provided to check at removal time, to make sure no object is removed while in the background
+     * We store the deletion job with the given [key] in the [disposingJobs] to make sure we don't schedule the same work twice.
+     * An optional [removalCondition] is provided to check at removal time, e.g. to make sure no object is removed while in the background
      *
      * @param key Key of the object stored in either [scopedObjectsContainer] to be de-referenced for GC
      * @param removalCondition Last check at disposal time to prevent disposal when this condition is not met
@@ -141,9 +142,9 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
             if (removalCondition()) {
                 markedForDisposal.remove(key)
                 scopedObjectsContainer.remove(key)
-                    ?.also {
+                    ?.also { // Remove and clean up if possible
                         when (it) {
-                            is ViewModel -> it.viewModelScope.cancel()
+                            is ViewModel -> clearViewModel(it)
                             is CoroutineScope -> it.cancel()
                             is CoroutineContext -> it.cancel()
                         }
