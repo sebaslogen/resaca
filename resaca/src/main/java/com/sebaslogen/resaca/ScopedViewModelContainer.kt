@@ -3,6 +3,7 @@ package com.sebaslogen.resaca
 import androidx.lifecycle.*
 import androidx.lifecycle.ViewModelClearer.clearViewModel
 import kotlinx.coroutines.*
+import java.io.Closeable
 import java.util.concurrent.ConcurrentSkipListSet
 import kotlin.coroutines.CoroutineContext
 
@@ -142,17 +143,30 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
             if (removalCondition()) {
                 markedForDisposal.remove(key)
                 scopedObjectsContainer.remove(key)
-                    ?.also { // Remove and clean up if possible
-                        when (it) {
-                            is ViewModel -> clearViewModel(it)
-                            is CoroutineScope -> it.cancel()
-                            is CoroutineContext -> it.cancel()
-                        }
+                    ?.also {
+                        if (shouldClearDisposedObject(it)) clearDisposedObject(it)
                     }
             }
             disposingJobs.remove(key)
         }
         disposingJobs[key] = newDisposingJob
+    }
+
+    /**
+     * An object that is being disposed should also be cleared only if it was the last instance present in this container
+     */
+    private fun shouldClearDisposedObject(disposedObject: Any): Boolean = !scopedObjectsContainer.containsValue(disposedObject)
+
+    /**
+     * Clear, if possible, scoped object when disposing it
+     */
+    private fun clearDisposedObject(scopedObject: Any) {
+        when (scopedObject) {
+            is ViewModel -> clearViewModel(scopedObject)
+            is CoroutineScope -> scopedObject.cancel()
+            is CoroutineContext -> scopedObject.cancel()
+            is Closeable -> scopedObject.close()
+        }
     }
 
     private fun cancelDisposal(key: String) {
@@ -167,9 +181,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         // Cancel disposal jobs, all those references will be garbage collected anyway with this ViewModel
         disposingJobs.forEach { (_, job) -> job.cancel() }
         // Cancel all coroutines from ViewModels hosted in this object
-        scopedObjectsContainer.values.forEach { maybeScopedViewModel ->
-            if (maybeScopedViewModel is ViewModel) maybeScopedViewModel.viewModelScope.cancel()
-        }
+        scopedObjectsContainer.values.forEach { clearDisposedObject(it) }
         scopedObjectsContainer.clear() // Clear just in case this VM is leaked
         super.onCleared()
     }
