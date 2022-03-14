@@ -82,7 +82,7 @@ Add the Jitpack repo and include the library (less than 5Kb):
 ```  
 
 ## Alternative manual installation
-Only two files are needed and they can be found in the `resaca` module under the package `com.sebaslogen.resaca`, they are [ScopedViewModelContainer](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/ScopedViewModelContainer.kt) and [ScopedMemoizers](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/compose/ScopedMemoizers.kt).
+Only three files are needed and they can be found in the `resaca` module under the package `com.sebaslogen.resaca`. They are: [ScopedViewModelContainer](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/ScopedViewModelContainer.kt), [ScopedMemoizers](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/compose/ScopedMemoizers.kt) and [ViewModelClearer](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/ViewModelClearer.kt).
 
 
 # Why not use remember?
