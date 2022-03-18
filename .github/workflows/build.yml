@@ -6,7 +6,7 @@ on:
 
 jobs:
   test:
-    name: Run Unit Tests:
+    name: Run Unit Tests
     runs-on: ubuntu-latest
 
     steps:
