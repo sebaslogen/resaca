@@ -48,9 +48,9 @@ fun DemoViewModelWithId() {
 
 Once you use the `rememberScoped` function, the same object will be restored as long as the Composable is part of the composition, even if it _temporarily_ leaves composition on configuration change (e.g. screen rotation, change to dark mode, etc.) or while being in the backstack.
 
-For ViewModels, on top of being forgotten when they're really not needed anymore, their _coroutineScope_ will also be automatically canceled.
+For ViewModels, on top of being forgotten when they're really not needed anymore, their _coroutineScope_ will also be automatically canceled because ViewModel's `onCleared` method will be automatically called by this library.
 
-💡 _Optional key_: a key or id can be provided to the call, `rememberScoped(key) { ... }`, to invalidate an old remembered object when there is a recomposition with new data (e.g. a new id for your ViewModel) or to remember multiple instances of the same class in the same scope.
+💡 _Optional key_: a key or id can be provided to the call, `rememberScoped(key) { ... }`, to forget an old object when there is new input data during a recomposition (e.g. a new input id for your ViewModel) or to remember multiple instances of the same class in the same scope.
 
 ⚠️ ViewModels remembered with `rememberScoped` **should not be created** using any of the Compose `viewModel()` or `ViewModelProviders` factories, otherwise they will be retained in the scope of the screen regardless of the `rememberScoped`
 
