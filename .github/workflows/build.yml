@@ -16,6 +16,7 @@ jobs:
       - name: Set up our JDK environment
         uses: actions/setup-java@v3.0.0
         with:
+          distribution: 'temurin'
           java-version: '16'
           cache: 'gradle'
 
