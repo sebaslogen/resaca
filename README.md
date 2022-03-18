@@ -1,4 +1,4 @@
-[![Build Status](https://app.travis-ci.com/sebaslogen/resaca.svg?branch=main)](https://app.travis-ci.com/sebaslogen/resaca) 
+[![Build Status](https://github.com/sebaslogen/resaca/actions/workflows/build.yml/badge.svg)](https://github.com/sebaslogen/resaca/actions/workflows/build.yml)
 [![Release](https://jitpack.io/v/sebaslogen/resaca.svg)](https://jitpack.io/#sebaslogen/resaca)
 [![GitHub license](https://img.shields.io/github/license/sebaslogen/resaca)](https://github.com/sebaslogen/resaca/blob/main/LICENSE)
 
