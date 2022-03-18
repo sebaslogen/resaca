@@ -6,6 +6,7 @@ on:
 
 jobs:
   test:
+    name: Run Unit Tests:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,4 +20,4 @@ jobs:
           cache: 'gradle'
 
       - name: Run tests
-      - run: ./gradlew :sample:cleanTestDebugUnitTest :sample:testDebugUnitTest --tests "com.sebaslogen.resacaapp.*"
+        run: ./gradlew :sample:cleanTestDebugUnitTest :sample:testDebugUnitTest --tests "com.sebaslogen.resacaapp.*"
