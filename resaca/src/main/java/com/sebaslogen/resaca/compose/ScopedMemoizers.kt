@@ -23,7 +23,7 @@ import java.util.*
  * @param builder Function to produce a new value that will be remembered
  */
 @Composable
-fun <T : Any> rememberScoped(key: Any? = null, builder: (() -> T)): T {
+fun <T : Any> rememberScoped(key: Any? = null, builder: @Composable () -> T): T {
     val scopedViewModelContainer: ScopedViewModelContainer = viewModel()
 
     // Observe this destination's lifecycle to detect screen resumed/paused/destroyed 

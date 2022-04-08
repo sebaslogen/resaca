@@ -1,5 +1,6 @@
 package com.sebaslogen.resaca
 
+import androidx.compose.runtime.Composable
 import androidx.lifecycle.*
 import androidx.lifecycle.ViewModelClearer.clearViewModel
 import kotlinx.coroutines.*
@@ -76,11 +77,13 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     private val disposeDelayTimeMillis: Long = 5000
 
     @Suppress("UNCHECKED_CAST")
+    @Composable
     fun <T : Any> getOrBuildObject(
         key: String,
         externalKey: ExternalKey = ExternalKey(0),
-        builder: () -> T
+        builder: @Composable () -> T
     ): T {
+        @Composable
         fun buildAndStoreObject() = builder.invoke().apply { scopedObjectsContainer[key] = this }
 
         cancelDisposal(key)
