@@ -1,7 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 def versions = [:]
 
-versions.gradle = '7.1.0'
+versions.gradle = '7.2.1'
 versions.buildTools = "30.0.2"
 versions.kotlin = "1.6.10"
 versions.kotlinxCoroutinesAndroid = "1.6.0"
