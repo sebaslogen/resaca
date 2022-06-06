@@ -58,7 +58,7 @@ dependencies {
     implementation project(":resaca")
 
     implementation "androidx.core:core-ktx:$versions.coreKtx"
-    implementation 'androidx.appcompat:appcompat:1.4.0'
+    implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.2'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.0'

@@ -4,9 +4,9 @@ def versions = [:]
 versions.gradle = '7.2.1'
 versions.buildTools = "30.0.2"
 versions.kotlin = "1.6.10"
-versions.kotlinxCoroutinesAndroid = "1.6.0"
-versions.coreKtx = "1.7.0"
-versions.navigation = "2.4.1"
+versions.kotlinxCoroutinesAndroid = "1.6.1"
+versions.coreKtx = '1.8.0'
+versions.navigation = "2.4.2"
 versions.junit = "4.13.2"
 versions.robolectric = "4.7.3"
 
