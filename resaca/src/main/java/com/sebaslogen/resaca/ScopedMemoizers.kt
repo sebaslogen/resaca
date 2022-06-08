@@ -1,4 +1,4 @@
-package com.sebaslogen.resaca.compose
+package com.sebaslogen.resaca
 
 import android.app.Activity
 import android.content.Context
@@ -9,7 +9,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.sebaslogen.resaca.ScopedViewModelContainer
+import com.sebaslogen.resaca.compose.RememberScopedObserver
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*

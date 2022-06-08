@@ -14,7 +14,10 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sebaslogen.resaca.compose.rememberScoped
+import androidx.lifecycle.*
+import com.sebaslogen.resaca.hilt.compose.viewModelScoped
+import com.sebaslogen.resaca.rememberScoped
+import com.sebaslogen.resacaapp.ui.main.data.FakeInjectedViewModel
 import com.sebaslogen.resacaapp.ui.main.data.FakeRepo
 import com.sebaslogen.resacaapp.ui.main.data.FakeScopedViewModel
 import com.sebaslogen.resacaapp.viewModelsClearedCounter
@@ -52,6 +55,12 @@ fun DemoScopedObjectComposable() {
 fun DemoScopedViewModelComposable() {
     val fakeScopedVM: FakeScopedViewModel = rememberScoped { FakeScopedViewModel(viewModelsClearedCounter) }
     DemoComposable(inputObject = fakeScopedVM, objectType = "FakeScopedViewModel", scoped = true)
+}
+
+@Composable
+fun DemoScopedInjectedViewModelComposable(id: String) {
+    val fakeInjectedVM: FakeInjectedViewModel = viewModelScoped()
+    DemoComposable(inputObject = fakeInjectedVM, objectType = "FakeInjectedViewModel $id", scoped = true)
 }
 
 @Composable

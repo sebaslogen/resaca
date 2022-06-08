@@ -4,6 +4,7 @@ import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
@@ -21,10 +22,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.sebaslogen.resacaapp.ui.main.compose.DemoNotScopedObjectComposable
+import com.sebaslogen.resacaapp.ui.main.compose.DemoScopedInjectedViewModelComposable
 import com.sebaslogen.resacaapp.ui.main.compose.DemoScopedObjectComposable
 import com.sebaslogen.resacaapp.ui.main.compose.DemoScopedViewModelComposable
 import com.sebaslogen.resacaapp.ui.main.ui.theme.ResacaAppTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ComposeActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,12 +55,18 @@ fun ScreensWithNavigation(navController: NavHostController = rememberNavControll
     }
 }
 
+// TODO: docs: Hilt App -> Activity/Fragment Hilt -> VM Hilt + Inject -> Constructor Inject
+
 @Composable
 private fun ComposeScreenWithNavigation(navController: NavHostController) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         DemoNotScopedObjectComposable()
         DemoScopedObjectComposable()
         DemoScopedViewModelComposable()
+        if (!isSystemInDarkTheme()) { // TODO: Add this for demo and fix tests
+            DemoScopedInjectedViewModelComposable("0")
+            DemoScopedInjectedViewModelComposable("1") // Injecting the same type twice will reuse the existing instance
+        }
         NavigationButtons(navController)
     }
 }
