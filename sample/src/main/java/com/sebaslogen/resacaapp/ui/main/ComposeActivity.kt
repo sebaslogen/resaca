@@ -63,9 +63,9 @@ private fun ComposeScreenWithNavigation(navController: NavHostController) {
         DemoNotScopedObjectComposable()
         DemoScopedObjectComposable()
         DemoScopedViewModelComposable()
-        if (!isSystemInDarkTheme()) { // TODO: Add this for demo and fix tests
-            DemoScopedInjectedViewModelComposable("0")
-            DemoScopedInjectedViewModelComposable("1") // Injecting the same type twice will reuse the existing instance
+        // The Hilt Injected ViewModel is only shown in light mode, to demo how the ViewModel is properly garbage collected in a different config (dark mode)
+        if (!isSystemInDarkTheme()) { // TODO: Fix tests
+            DemoScopedInjectedViewModelComposable()
         }
         NavigationButtons(navController)
     }
