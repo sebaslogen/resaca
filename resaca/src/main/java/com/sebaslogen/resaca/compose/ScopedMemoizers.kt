@@ -1,7 +1,11 @@
 package com.sebaslogen.resaca.compose
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -67,8 +71,16 @@ private inline fun ObserveComposableDisposal(containerKey: String, scopedViewMod
  */
 @Composable
 private fun ObserveLifecycleWithScopedViewModelContainer(scopedViewModelContainer: ScopedViewModelContainer) {
-    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    // Observe state of configuration changes when disposing
+    val context = LocalContext.current
+    DisposableEffect(context) {
+        onDispose {
+            scopedViewModelContainer.setChangingConfigurationState(context.findActivity().isChangingConfigurations)
+        }
+    }
 
+    // Observe general lifecycle events (resume, pause, destroy, etc.)
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
     // Use LaunchedEffect to make sure we have a coroutine scope to run on main-thread
     // and to add the observer again every time the lifecycle or the ScopedViewModelContainer change
     LaunchedEffect(lifecycle, scopedViewModelContainer) {
@@ -76,4 +88,17 @@ private fun ObserveLifecycleWithScopedViewModelContainer(scopedViewModelContaine
             lifecycle.addObserver(scopedViewModelContainer)
         }
     }
+}
+
+private fun Context.findActivity(): Activity {
+    var ctx = this
+    while (ctx is ContextWrapper) {
+        if (ctx is Activity) {
+            return ctx
+        }
+        ctx = ctx.baseContext
+    }
+    throw IllegalStateException(
+        "Expected an activity context for detecting configuration changes for a NavBackStackEntry but instead found: $ctx"
+    )
 }

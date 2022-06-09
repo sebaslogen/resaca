@@ -49,6 +49,12 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     private var isInForeground = true
 
     /**
+     * Mark whether the Activity containing this class is changing configuration and use this
+     * information to dispose objects that are completely gone after a configuration change
+     */
+    private var isChangingConfiguration = false
+
+    /**
      * Container of object keys associated with their [ExternalKey],
      * the [ExternalKey] will be used to track and store new versions of the object to be stored/restored
      */
@@ -136,9 +142,10 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      * An optional [removalCondition] is provided to check at removal time, e.g. to make sure no object is removed while in the background
      *
      * @param key Key of the object stored in either [scopedObjectsContainer] to be de-referenced for GC
-     * @param removalCondition Last check at disposal time to prevent disposal when this condition is not met
+     * @param removalCondition Last check at disposal time to prevent disposal when this condition is not met.
+     *                          By default we want to remove only when scope is in the foreground or when recreating due configuration changes
      */
-    private fun scheduleToDispose(key: String, removalCondition: () -> Boolean = { isInForeground }) {
+    private fun scheduleToDispose(key: String, removalCondition: () -> Boolean = { isInForeground || isChangingConfiguration }) {
         if (disposingJobs.containsKey(key)) return // Already disposing, quit
 
         val newDisposingJob = viewModelScope.launch {
@@ -193,6 +200,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         when (event) {
             Lifecycle.Event.ON_RESUME -> { // Note Fragment View creation happens before this onResume
                 isInForeground = true
+                isChangingConfiguration = false // Clear this flag when the scope is resumed
                 scheduleToDisposeAfterReturningFromBackground()
             }
             Lifecycle.Event.ON_PAUSE -> {
@@ -205,6 +213,10 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
                 // No-Op: the other lifecycle event are irrelevant for this class
             }
         }
+    }
+
+    fun setChangingConfigurationState(newState: Boolean) {
+        isChangingConfiguration = newState
     }
 
     /**
