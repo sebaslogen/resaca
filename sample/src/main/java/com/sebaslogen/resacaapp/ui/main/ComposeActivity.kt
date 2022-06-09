@@ -28,6 +28,9 @@ import com.sebaslogen.resacaapp.ui.main.compose.DemoScopedViewModelComposable
 import com.sebaslogen.resacaapp.ui.main.ui.theme.ResacaAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
+const val rememberScopedDestination = "rememberScopedDestination"
+const val viewModelScopedDestination = "viewModelScopedDestination"
+
 @AndroidEntryPoint
 class ComposeActivity : ComponentActivity() {
 
@@ -45,12 +48,12 @@ class ComposeActivity : ComponentActivity() {
 
 @Composable
 fun ScreensWithNavigation(navController: NavHostController = rememberNavController()) {
-    NavHost(navController = navController, startDestination = "first") {
-        composable("first") {
-            ComposeScreenWithNavigation(navController)
+    NavHost(navController = navController, startDestination = rememberScopedDestination) {
+        composable(rememberScopedDestination) {
+            ComposeScreenWithRememberScoped(navController)
         }
-        composable("second") {
-            ComposeScreenWithNavigation(navController)
+        composable(viewModelScopedDestination) {
+            ComposeScreenWithViewModelScoped(navController)
         }
     }
 }
@@ -58,11 +61,19 @@ fun ScreensWithNavigation(navController: NavHostController = rememberNavControll
 // TODO: docs: Hilt App -> Activity/Fragment Hilt -> VM Hilt + Inject -> Constructor Inject
 
 @Composable
-private fun ComposeScreenWithNavigation(navController: NavHostController) {
+private fun ComposeScreenWithRememberScoped(navController: NavHostController) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         DemoNotScopedObjectComposable()
         DemoScopedObjectComposable()
         DemoScopedViewModelComposable()
+        NavigationButtons(navController)
+    }
+}
+
+@Composable
+private fun ComposeScreenWithViewModelScoped(navController: NavHostController) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        DemoNotScopedObjectComposable()
         // The Hilt Injected ViewModel is only shown in light mode, to demo how the ViewModel is properly garbage collected in a different config (dark mode)
         if (!isSystemInDarkTheme()) { // TODO: Fix tests
             DemoScopedInjectedViewModelComposable()
@@ -74,12 +85,12 @@ private fun ComposeScreenWithNavigation(navController: NavHostController) {
 @Composable
 fun NavigationButtons(navController: NavHostController) {
     Button(modifier = Modifier.padding(vertical = 4.dp),
-        onClick = { navController.navigate("first") }) {
-        Text(text = "Push first destination")
+        onClick = { navController.navigate(rememberScopedDestination) }) {
+        Text(text = "Push rememberScoped destination")
     }
     Button(modifier = Modifier.padding(vertical = 4.dp),
-        onClick = { navController.navigate("second") }) {
-        Text(text = "Push second destination")
+        onClick = { navController.navigate(viewModelScopedDestination) }) {
+        Text(text = "Push Hilt viewModelScoped destination")
     }
     val activity = (LocalContext.current as? Activity)
     Button(modifier = Modifier.padding(vertical = 4.dp),
