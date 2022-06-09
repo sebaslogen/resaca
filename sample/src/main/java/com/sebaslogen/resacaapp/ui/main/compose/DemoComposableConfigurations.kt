@@ -53,5 +53,5 @@ fun DemoScopedViewModelComposable() {
 @Composable
 fun DemoScopedInjectedViewModelComposable() {
     val fakeInjectedVM: FakeInjectedViewModel = viewModelScoped()
-    DemoComposable(inputObject = fakeInjectedVM, objectType = "FakeInjectedViewModel", scoped = true)
+    DemoComposable(inputObject = fakeInjectedVM, objectType = "Hilt FakeInjectedViewModel", scoped = true)
 }

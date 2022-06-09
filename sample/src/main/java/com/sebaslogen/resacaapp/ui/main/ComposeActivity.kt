@@ -74,6 +74,10 @@ private fun ComposeScreenWithRememberScoped(navController: NavHostController) {
 private fun ComposeScreenWithViewModelScoped(navController: NavHostController) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         DemoNotScopedObjectComposable()
+        Text(
+            modifier = Modifier.padding(8.dp),
+            text = "The Hilt ViewModel below will be shown in light mode and garbage collected in dark mode"
+        )
         // The Hilt Injected ViewModel is only shown in light mode, to demo how the ViewModel is properly garbage collected in a different config (dark mode)
         if (!isSystemInDarkTheme()) { // TODO: Fix tests
             DemoScopedInjectedViewModelComposable()
@@ -84,7 +88,7 @@ private fun ComposeScreenWithViewModelScoped(navController: NavHostController) {
 
 @Composable
 fun NavigationButtons(navController: NavHostController) {
-    Button(modifier = Modifier.padding(vertical = 4.dp),
+    Button(modifier = Modifier.padding(top = 16.dp, bottom = 4.dp),
         onClick = { navController.navigate(rememberScopedDestination) }) {
         Text(text = "Push rememberScoped destination")
     }
