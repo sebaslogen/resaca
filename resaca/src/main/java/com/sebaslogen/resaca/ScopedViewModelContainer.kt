@@ -151,7 +151,12 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      *
      * @param key Key of the object stored in either [scopedObjectsContainer] to be de-referenced for GC
      * @param removalCondition Last check at disposal time to prevent disposal when this condition is not met.
-     *                          By default we want to remove only when scope is in the foreground or when recreating due configuration changes
+     *
+     *                          By default we want to remove only when:
+     *                          - scope is in the foreground, because if it's in the background it might be needed again when returning to foreground,
+     *                          in that case the decision will be deferred to [scheduleToDisposeAfterReturningFromBackground]
+     *                          - or when recreating due configuration changes, because after a configuration change, the [cancelDisposal] should have been
+     *                          called once the scoped object was requested again, the fact that this is still scheduled means it's not needed in the new config.
      */
     private fun scheduleToDispose(key: String, removalCondition: () -> Boolean = { isInForeground || isChangingConfiguration }) {
         if (disposingJobs.containsKey(key)) return // Already disposing, quit
