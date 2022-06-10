@@ -9,6 +9,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sebaslogen.resacaapp.ui.main.ScreensWithNavigation
+import com.sebaslogen.resacaapp.ui.main.rememberScopedDestination
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -36,7 +37,7 @@ class ComposeNavigationTests : ComposeTestUtils {
         val initialFakeScopedViewModelText = retrieveTextFromNodeWithTestTag("FakeScopedViewModel Scoped")
 
         // When I navigate to a nested screen and back to initial screen
-        navController.navigate("first")
+        navController.navigate(rememberScopedDestination)
         printComposeUiTreeToLog()
         navController.popBackStack()
         printComposeUiTreeToLog()
@@ -59,7 +60,7 @@ class ComposeNavigationTests : ComposeTestUtils {
         val initialFakeRepoText = retrieveTextFromNodeWithTestTag("FakeRepo Not scoped")
 
         // When I navigate to a nested screen and back to initial screen
-        navController.navigate("first")
+        navController.navigate(rememberScopedDestination)
         printComposeUiTreeToLog()
         navController.popBackStack()
         printComposeUiTreeToLog()

@@ -5,12 +5,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sebaslogen.resacaapp.ui.main.ScreensWithNavigation
+import com.sebaslogen.resacaapp.ui.main.rememberScopedDestination
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class ClearScopedViewModels : ComposeTestUtils {
+class ClearScopedViewModelTests : ComposeTestUtils {
 
     @get:Rule
     override val composeTestRule = createComposeRule()
@@ -28,7 +29,7 @@ class ClearScopedViewModels : ComposeTestUtils {
         printComposeUiTreeToLog()
 
         // When I navigate to a nested screen with a scoped ViewModel and back to initial screen
-        navController.navigate("first")
+        navController.navigate(rememberScopedDestination)
         val initialAmountOfViewModelsCleared = viewModelsClearedCounter.get()
         printComposeUiTreeToLog()
         navController.popBackStack()

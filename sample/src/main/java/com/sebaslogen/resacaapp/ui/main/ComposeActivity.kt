@@ -4,6 +4,7 @@ import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
@@ -21,18 +22,31 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.sebaslogen.resacaapp.ui.main.compose.DemoNotScopedObjectComposable
+import com.sebaslogen.resacaapp.ui.main.compose.DemoScopedInjectedViewModelComposable
 import com.sebaslogen.resacaapp.ui.main.compose.DemoScopedObjectComposable
 import com.sebaslogen.resacaapp.ui.main.compose.DemoScopedViewModelComposable
 import com.sebaslogen.resacaapp.ui.main.ui.theme.ResacaAppTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+const val rememberScopedDestination = "rememberScopedDestination"
+const val viewModelScopedDestination = "viewModelScopedDestination"
+
+
+@AndroidEntryPoint // This annotation is required for Hilt to work anywhere inside this Activity
 class ComposeActivity : ComponentActivity() {
+
+    companion object {
+        const val START_DESTINATION = "START_DESTINATION"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             ResacaAppTheme {
                 Surface(color = MaterialTheme.colors.background) {
-                    ScreensWithNavigation()
+                    val startDestination = intent.extras?.getString(START_DESTINATION) ?: rememberScopedDestination
+                    ScreensWithNavigation(startDestination = startDestination)
                 }
             }
         }
@@ -40,19 +54,19 @@ class ComposeActivity : ComponentActivity() {
 }
 
 @Composable
-fun ScreensWithNavigation(navController: NavHostController = rememberNavController()) {
-    NavHost(navController = navController, startDestination = "first") {
-        composable("first") {
-            ComposeScreenWithNavigation(navController)
+fun ScreensWithNavigation(navController: NavHostController = rememberNavController(), startDestination: String = rememberScopedDestination) {
+    NavHost(navController = navController, startDestination = startDestination) {
+        composable(rememberScopedDestination) {
+            ComposeScreenWithRememberScoped(navController)
         }
-        composable("second") {
-            ComposeScreenWithNavigation(navController)
+        composable(viewModelScopedDestination) {
+            ComposeScreenWithViewModelScoped(navController)
         }
     }
 }
 
 @Composable
-private fun ComposeScreenWithNavigation(navController: NavHostController) {
+private fun ComposeScreenWithRememberScoped(navController: NavHostController) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         DemoNotScopedObjectComposable()
         DemoScopedObjectComposable()
@@ -62,14 +76,31 @@ private fun ComposeScreenWithNavigation(navController: NavHostController) {
 }
 
 @Composable
+private fun ComposeScreenWithViewModelScoped(navController: NavHostController) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        DemoNotScopedObjectComposable()
+        Text(
+            modifier = Modifier.padding(8.dp),
+            text = "The Hilt ViewModel below will be shown in light mode and garbage collected in dark mode"
+        )
+        DemoScopedObjectComposable()
+        // The Hilt Injected ViewModel is only shown in light mode, to demo how the ViewModel is properly garbage collected in a different config (dark mode)
+        if (!isSystemInDarkTheme()) {
+            DemoScopedInjectedViewModelComposable()
+        }
+        NavigationButtons(navController)
+    }
+}
+
+@Composable
 fun NavigationButtons(navController: NavHostController) {
-    Button(modifier = Modifier.padding(vertical = 4.dp),
-        onClick = { navController.navigate("first") }) {
-        Text(text = "Push first destination")
+    Button(modifier = Modifier.padding(top = 16.dp, bottom = 4.dp),
+        onClick = { navController.navigate(rememberScopedDestination) }) {
+        Text(text = "Push rememberScoped destination")
     }
     Button(modifier = Modifier.padding(vertical = 4.dp),
-        onClick = { navController.navigate("second") }) {
-        Text(text = "Push second destination")
+        onClick = { navController.navigate(viewModelScopedDestination) }) {
+        Text(text = "Push Hilt viewModelScoped destination")
     }
     val activity = (LocalContext.current as? Activity)
     Button(modifier = Modifier.padding(vertical = 4.dp),

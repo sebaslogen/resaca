@@ -1,6 +1,8 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin' // TODO: Add to resaca-hilt usage documentation
 }
 
 android {
@@ -55,15 +57,14 @@ android {
 
 dependencies {
 
-    implementation project(":resaca")
+    implementation project(":resacahilt")
 
     implementation "androidx.core:core-ktx:$versions.coreKtx"
     implementation 'androidx.appcompat:appcompat:1.4.2'
-    implementation 'com.google.android.material:material:1.4.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.2'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.0'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0'
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.0'
+    implementation 'com.google.android.material:material:1.6.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.1'
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.kotlinxCoroutinesAndroid"
     implementation "androidx.activity:activity-compose:$versions.activityCompose"
 
@@ -80,6 +81,11 @@ dependencies {
     implementation "androidx.compose.foundation:foundation:$versions.composeFoundation"
     // Material Design
     implementation "androidx.compose.material:material:$versions.composeMaterial"
+
+    // Hilt dependencies // TODO: Add to resaca-hilt usage documentation
+    implementation "com.google.dagger:hilt-android:$versions.hiltAndroid"
+    kapt "com.google.dagger:hilt-compiler:$versions.hiltCompiler"
+
 
     testImplementation "junit:junit:$versions.junit"
     testImplementation "org.robolectric:robolectric:$versions.robolectric"

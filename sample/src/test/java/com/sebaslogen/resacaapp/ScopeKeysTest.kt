@@ -14,7 +14,7 @@ import androidx.compose.ui.test.hasTextExactly
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.sebaslogen.resaca.compose.rememberScoped
+import com.sebaslogen.resaca.rememberScoped
 import com.sebaslogen.resacaapp.ui.main.compose.DemoComposable
 import com.sebaslogen.resacaapp.ui.main.data.FakeRepo
 import org.junit.Rule

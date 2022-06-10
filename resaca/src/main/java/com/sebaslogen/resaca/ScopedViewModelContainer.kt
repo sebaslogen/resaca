@@ -104,6 +104,14 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     }
 
     /**
+     * Get the first instance of the requested type available in this container. Null if none is found
+     */
+    inline fun <reified T : Any> getFirstViewModelWithTypeOrNull(): T? = getStoredValues().filterIsInstance<T>().firstOrNull()
+
+    @PublishedApi
+    internal fun getStoredValues(): Collection<Any> = scopedObjectsContainer.values
+
+    /**
      * Triggered when a Composable that stored an object in this class is disposed and signals this container
      * that the object might be also disposed from this container only when the stored object
      * is not going to be used anymore (e.g. after configuration change or container fragment returning from backstack)
@@ -143,7 +151,12 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      *
      * @param key Key of the object stored in either [scopedObjectsContainer] to be de-referenced for GC
      * @param removalCondition Last check at disposal time to prevent disposal when this condition is not met.
-     *                          By default we want to remove only when scope is in the foreground or when recreating due configuration changes
+     *
+     *                          By default we want to remove only when:
+     *                          - scope is in the foreground, because if it's in the background it might be needed again when returning to foreground,
+     *                          in that case the decision will be deferred to [scheduleToDisposeAfterReturningFromBackground]
+     *                          - or when recreating due configuration changes, because after a configuration change, the [cancelDisposal] should have been
+     *                          called once the scoped object was requested again, the fact that this is still scheduled means it's not needed in the new config.
      */
     private fun scheduleToDispose(key: String, removalCondition: () -> Boolean = { isInForeground || isChangingConfiguration }) {
         if (disposingJobs.containsKey(key)) return // Already disposing, quit
