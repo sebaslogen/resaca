@@ -8,7 +8,7 @@ import org.robolectric.shadows.ShadowLog
 
 interface ComposeTestUtils {
 
-    abstract val composeTestRule: ComposeContentTestRule
+    val composeTestRule: ComposeContentTestRule
 
     @Before
     @Throws(Exception::class)
@@ -27,14 +27,16 @@ interface ComposeTestUtils {
         }
     }
 
-    fun onNodeWithTestTag(tag: String, parentTestTag: String? = null) =
+    fun onNodeWithTestTag(tag: String, parentTestTag: String? = null, assertDisplayed: Boolean = true) =
         if (parentTestTag != null) {
             composeTestRule.onAllNodesWithTag(tag)
-                .filterToOne(hasParent(hasTestTag(parentTestTag)))
-                .assertIsDisplayed()
+                .filterToOne(hasParent(hasTestTag(parentTestTag))).apply {
+                    if (assertDisplayed) assertIsDisplayed()
+                }
         } else {
-            composeTestRule.onNodeWithTag(tag)
-                .assertIsDisplayed()
+            composeTestRule.onNodeWithTag(tag).apply {
+                if (assertDisplayed) assertIsDisplayed()
+            }
         }
 
     fun retrieveTextFromNodeWithTestTag(tag: String, parentTestTag: String? = null): String =

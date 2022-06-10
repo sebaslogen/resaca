@@ -31,15 +31,22 @@ import dagger.hilt.android.AndroidEntryPoint
 const val rememberScopedDestination = "rememberScopedDestination"
 const val viewModelScopedDestination = "viewModelScopedDestination"
 
-@AndroidEntryPoint
+
+@AndroidEntryPoint // This annotation is required for Hilt to work anywhere inside this Activity
 class ComposeActivity : ComponentActivity() {
+
+    companion object {
+        const val START_DESTINATION = "START_DESTINATION"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             ResacaAppTheme {
                 Surface(color = MaterialTheme.colors.background) {
-                    ScreensWithNavigation()
+                    val startDestination = intent.extras?.getString(START_DESTINATION) ?: rememberScopedDestination
+                    ScreensWithNavigation(startDestination = startDestination)
                 }
             }
         }
@@ -47,8 +54,8 @@ class ComposeActivity : ComponentActivity() {
 }
 
 @Composable
-fun ScreensWithNavigation(navController: NavHostController = rememberNavController()) {
-    NavHost(navController = navController, startDestination = rememberScopedDestination) {
+fun ScreensWithNavigation(navController: NavHostController = rememberNavController(), startDestination: String = rememberScopedDestination) {
+    NavHost(navController = navController, startDestination = startDestination) {
         composable(rememberScopedDestination) {
             ComposeScreenWithRememberScoped(navController)
         }
@@ -57,8 +64,6 @@ fun ScreensWithNavigation(navController: NavHostController = rememberNavControll
         }
     }
 }
-
-// TODO: docs: Hilt App -> Activity/Fragment Hilt -> VM Hilt + Inject -> Constructor Inject
 
 @Composable
 private fun ComposeScreenWithRememberScoped(navController: NavHostController) {
@@ -78,8 +83,9 @@ private fun ComposeScreenWithViewModelScoped(navController: NavHostController) {
             modifier = Modifier.padding(8.dp),
             text = "The Hilt ViewModel below will be shown in light mode and garbage collected in dark mode"
         )
+        DemoScopedObjectComposable()
         // The Hilt Injected ViewModel is only shown in light mode, to demo how the ViewModel is properly garbage collected in a different config (dark mode)
-        if (!isSystemInDarkTheme()) { // TODO: Fix tests
+        if (!isSystemInDarkTheme()) {
             DemoScopedInjectedViewModelComposable()
         }
         NavigationButtons(navController)
