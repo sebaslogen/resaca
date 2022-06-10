@@ -51,7 +51,7 @@ class HiltViewModelTests : ComposeTestUtils {
     @Test
     fun `when the activity is recreated, then the scoped object and Hilt injected scoped ViewModel are the same`() {
 
-        // Given the starting screen with Hilt injected ViewModel scoped that is ONLY shown in light mode
+        // Given the starting screen with Hilt injected ViewModel scoped
         val launchIntent = Intent(ApplicationProvider.getApplicationContext(), ComposeActivity::class.java).apply {
             putExtra(START_DESTINATION, viewModelScopedDestination)
         }
