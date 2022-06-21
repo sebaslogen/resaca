@@ -18,7 +18,7 @@ Until now...
 
 # Usage
 Inside your `@Composable` function create and retrieve a ViewModel using `viewModelScoped` to remember any `@HiltViewModel` annotated ViewModel.
-That's all 🪄✨
+That plus the standard Hilt configuration is all that's needed 🪄✨
 
 Example
 ```kotlin
@@ -33,13 +33,23 @@ Once you use the `viewModelScoped` function, the same object will be restored as
 
 ⚠️ ViewModels provided with `viewModelScoped` **should not be created** using any of the Hilt `hiltViewModel()` or Compose `viewModel()` nor `ViewModelProviders` factories, otherwise they will be retained in the scope of the screen regardless of `viewModelScoped`.
 
+# Basic Hilt setup
+To use the `viewModelScoped` function you need to follow these 3 Hilt configuration steps:
+- Annotate your application class with `@HiltAndroidApp`.
+- Annotate with `@AndroidEntryPoint` the Activity class that will contain the Composables with the ViewModel.
+- Annotate your ViewModel class with `@HiltViewModel` and the constructor with `@Inject`. [See example here](https://github.com/sebaslogen/resaca/blob/main/sample/src/main/java/com/sebaslogen/resacaapp/ui/main/data/FakeInjectedViewModel.kt).
+
+**Optionally: Annotate with `@Inject` any other class that is part of your ViewModel's constructor.*
+
+For a complete guide to Hilt check the official documentation. Here are the [quick-start](https://dagger.dev/hilt/quick-start) and the [Hilt ViewModel](https://dagger.dev/hilt/view-model) docs.
+
 # Sample use cases
 Here are some sample use cases reported by the users of this library:
 - ❤️ Isolated and stateful UI components like a **favorite button** that are widely used across the screens. This `FavoriteViewModel` can be very small, focused and only require an id to work without affecting the rest of the screen's UI and state.
 
 
 # Installation
-Add the Jitpack repo and include the library (less than 5Kb):
+Add the Jitpack repo and include the library:
 
 ```gradle
    allprojects {
