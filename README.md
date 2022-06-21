@@ -91,6 +91,16 @@ Add the Jitpack repo and include the library (less than 5Kb):
 ## Alternative manual installation
 Only 4 files are needed and they can be found in the `resaca` module under the package `com.sebaslogen.resaca`. They are: [RememberScopedObserver](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/RememberScopedObserver.kt), [ScopedViewModelContainer](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/ScopedViewModelContainer.kt), [ScopedMemoizers](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/compose/ScopedMemoizers.kt) and [ViewModelClearer](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/ViewModelClearer.kt).
 
+# What about dependency injection?
+This library does not influence how your app provides or creates objects so it's dependency injection strategy and framework agnostic.
+
+Nevertheless, this library supports the main **dependency injection frameworks**:
+- [**HILT**](https://dagger.dev/hilt/quick-start) (Dagger) support is povided through a small extension of this library: **resaca-hilt**. [Documentation and installation instructions here](https://github.com/sebaslogen/resaca/tree/main/resacahilt/README.md).
+- [**Koin**](https://insert-koin.io/) is out of the box supported by simply changing the way you request a dependency. Instaead of using the `getViewModel` function from Koin, you have to use the standard way of getting a dependency from Koin. Like in this example: `val viewModel: MyViewModel = rememberScoped(myId) { get { parametersOf(myId) } }`
+
+With that out of the way here are a few suggestions of how to provide objects in combination with this library:
+- When a Composable is used more than once in the same screen with the same input, then the same ViewModel (or business logic object) should be provided in the `rememberscoped` call to maintain consistency between items on the screen. This will provide not only the same source of truth for final view states, but also for loading states where the ViewModel exposes the loading state to multiple Composable UI components to have consistent UI.
+- When using the Lazy* family of Composables it is recommended that you use `rememberScoped` outside the scope of Composables created by Lazy constructors (e.g. LazyColumn) because there is a risk that a lazy initialized Composable will be disposed of when it is not visible anymore (e.g. scrolled away) and that will also dispose of the `rememberScoped` object (after a few seconds), this might not be the intended behavior. For more info see Compose's [State Hoisting](https://developer.android.com/jetpack/compose/state#state-hoisting).
 
 # Why not use remember?
 **[Remember](https://developer.android.com/reference/kotlin/androidx/compose/runtime/package-summary#remember(kotlin.Function0))** will keep our object alive as long as the Composable is not disposed of.
@@ -157,10 +167,3 @@ The existing alternatives to replicate the lifecycle of the objects in the diagr
 - Object A lifecycle could only be achieved using the Compose `viewModel()` or `ViewModelProviders` factories.
 - Object B lifecycle could only be achieved using the Compose `remember()` function.
 - Object C lifecycle could not simply be achieved neither by using ViewModel provider functions nor Compose `remember` functions.
-
-# What about dependency injection?
-This library does not influence how your app provides or creates objects so it's dependency injection strategy and framework agnostic.
-
-With that out of the way here are a few suggestions of how to provide objects in combination with this library:
-- When a Composable is used more than once in the same screen with the same input, then the same ViewModel (or business logic object) should be provided in the `rememberscoped` call to maintain consistency between items on the screen. This will provide not only the same source of truth for final view states, but also for loading states where the ViewModel exposes the loading state to multiple Composable UI components to have consistent UI.
-- When using the Lazy* family of Composables it is recommended that you use `rememberScoped` outside the scope of Composables created by Lazy constructors (e.g. LazyColumn) because there is a risk that a lazy initialized Composable will be disposed of when it is not visible anymore (e.g. scrolled away) and that will also dispose of the `rememberScoped` object (after a few seconds), this might not be the intended behavior. For more info see Compose's [State Hoisting](https://developer.android.com/jetpack/compose/state#state-hoisting).
