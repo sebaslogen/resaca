@@ -12,15 +12,15 @@ import com.sebaslogen.resaca.ScopedViewModelContainer
  * [onForgotten] callback: when the object is not part of composition anymore.
  *
  * @param scopedViewModelContainer the container that stores the object remembered together with this [RememberScopedObserver]
- * @param containerKey the key to find the object remembered together with this [RememberScopedObserver] inside the provided [scopedViewModelContainer]
+ * @param positionalMemoizationKey the key to find the object remembered together with this [RememberScopedObserver] inside the provided [scopedViewModelContainer]
  */
 class RememberScopedObserver(
     private val scopedViewModelContainer: ScopedViewModelContainer,
-    private val containerKey: String
+    private val positionalMemoizationKey: String
 ) : RememberObserver {
 
     private fun onDisposed() {
-        scopedViewModelContainer.onDisposedFromComposition(containerKey)
+        scopedViewModelContainer.onDisposedFromComposition(positionalMemoizationKey)
     }
 
     override fun onAbandoned() {

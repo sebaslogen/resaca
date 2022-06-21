@@ -85,20 +85,20 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     @Suppress("UNCHECKED_CAST")
     @Composable
     fun <T : Any> getOrBuildObject(
-        key: String,
+        positionalMemoizationKey: String,
         externalKey: ExternalKey = ExternalKey(0),
         builder: @Composable () -> T
     ): T {
         @Composable
-        fun buildAndStoreObject() = builder.invoke().apply { scopedObjectsContainer[key] = this }
+        fun buildAndStoreObject() = builder.invoke().apply { scopedObjectsContainer[positionalMemoizationKey] = this }
 
-        cancelDisposal(key)
+        cancelDisposal(positionalMemoizationKey)
 
-        return if (scopedObjectKeys.containsKey(key) && (scopedObjectKeys[key] == externalKey)) {
+        return if (scopedObjectKeys.containsKey(positionalMemoizationKey) && (scopedObjectKeys[positionalMemoizationKey] == externalKey)) {
             // When the object is already present and the external key matches, then try to restore it
-            scopedObjectsContainer[key] as? T ?: buildAndStoreObject()
+            scopedObjectsContainer[positionalMemoizationKey] as? T ?: buildAndStoreObject()
         } else {
-            scopedObjectKeys[key] = externalKey // Set the external key used to track and store new versions of the object
+            scopedObjectKeys[positionalMemoizationKey] = externalKey // Set the external key used to track and store new versions of the object
             buildAndStoreObject()
         }
     }

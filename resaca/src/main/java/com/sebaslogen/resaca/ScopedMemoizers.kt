@@ -29,8 +29,8 @@ fun <T : Any> rememberScoped(key: Any? = null, builder: @Composable () -> T): T 
     val scopedViewModelContainer: ScopedViewModelContainer = viewModel()
 
     // This key will be used to identify, retrieve and remove the stored object in the ScopedViewModelContainer
-    // across recompositions, configuration changes and even process death
-    val internalContainerKey: String = rememberSaveable { UUID.randomUUID().toString() }
+    // across recompositions and configuration changes
+    val positionalMemoizationKey: String = rememberSaveable { UUID.randomUUID().toString() }
     // The external key will be used to track and store new versions of the object, based on [key] input parameter
     val externalKey: ScopedViewModelContainer.ExternalKey = ScopedViewModelContainer.ExternalKey.from(key)
 
@@ -39,10 +39,10 @@ fun <T : Any> rememberScoped(key: Any? = null, builder: @Composable () -> T): T 
     ObserveLifecycleWithScopedViewModelContainer(scopedViewModelContainer)
     // Observe the lifecycle of this Composable to detect disposal (with onAbandoned & onForgotten)
     // and remember or forget this object correctly from the container (so it can be garbage collected when needed)
-    ObserveComposableDisposal(internalContainerKey, scopedViewModelContainer)
+    ObserveComposableDisposal(positionalMemoizationKey, scopedViewModelContainer)
 
     // The object will be built the first time and retrieved in next calls or recompositions
-    return scopedViewModelContainer.getOrBuildObject(key = internalContainerKey, externalKey = externalKey, builder = builder)
+    return scopedViewModelContainer.getOrBuildObject(positionalMemoizationKey = positionalMemoizationKey, externalKey = externalKey, builder = builder)
 }
 
 /**
@@ -52,8 +52,8 @@ fun <T : Any> rememberScoped(key: Any? = null, builder: @Composable () -> T): T 
  */
 @Composable
 @Suppress("NOTHING_TO_INLINE")
-private inline fun ObserveComposableDisposal(containerKey: String, scopedViewModelContainer: ScopedViewModelContainer) {
-    remember(containerKey) { RememberScopedObserver(scopedViewModelContainer, containerKey) }
+private inline fun ObserveComposableDisposal(positionalMemoizationKey: String, scopedViewModelContainer: ScopedViewModelContainer) {
+    remember(positionalMemoizationKey) { RememberScopedObserver(scopedViewModelContainer, positionalMemoizationKey) }
 }
 
 /**
