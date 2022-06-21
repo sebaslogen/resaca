@@ -33,6 +33,8 @@ Once you use the `viewModelScoped` function, the same object will be restored as
 
 ⚠️ ViewModels provided with `viewModelScoped` **should not be created** using any of the Hilt `hiltViewModel()` or Compose `viewModel()` nor `ViewModelProviders` factories, otherwise they will be retained in the scope of the screen regardless of `viewModelScoped`.
 
+❕ Due to the keyed factory limitations mentioned below, any call to `viewModelScoped` from a new location in the Compose code (_inside the same Activity_) will return the same instance of the ViewModel instead of a new instance per call location.
+
 # Basic Hilt setup
 To use the `viewModelScoped` function you need to follow these 3 Hilt configuration steps:
 - Annotate your application class with `@HiltAndroidApp`.
