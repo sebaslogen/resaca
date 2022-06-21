@@ -58,8 +58,8 @@ For ViewModels, in addition to being forgotten when they're really not needed an
 
 # Sample use cases
 Here are some sample use cases reported by the users of this library:
-- Multiple instances of the same type of ViewModel in a screen with a **view-pager**. This screen will have multiple sub-pages that use the same ViewModel class with different ids. For example, a screen of holiday destinations with multiple pages and each page with its own `HolidayDestinationViewModel`.
-- Isolated and stateful UI components like a **favorite button** that are widely used across the screens. This `FavoriteViewModel` can be very small, focused and only require an id to work without affecting the rest of the screen's UI and state.
+- 📃📄 Multiple instances of the same type of ViewModel in a screen with a **view-pager**. This screen will have multiple sub-pages that use the same ViewModel class with different ids. For example, a screen of holiday destinations with multiple pages and each page with its own `HolidayDestinationViewModel`.
+- ❤️ Isolated and stateful UI components like a **favorite button** that are widely used across the screens. This `FavoriteViewModel` can be very small, focused and only require an id to work without affecting the rest of the screen's UI and state.
 
 # Demo app
 Demo app [documentation can be found here](https://github.com/sebaslogen/resaca/blob/main/sample/README.md).
@@ -95,8 +95,8 @@ Only 4 files are needed and they can be found in the `resaca` module under the p
 This library does not influence how your app provides or creates objects so it's dependency injection strategy and framework agnostic.
 
 Nevertheless, this library supports the main **dependency injection frameworks**:
-- [**HILT**](https://dagger.dev/hilt/quick-start) (Dagger) support is povided through a small extension of this library: **resaca-hilt**. [Documentation and installation instructions here](https://github.com/sebaslogen/resaca/tree/main/resacahilt/README.md).
-- [**Koin**](https://insert-koin.io/) is out of the box supported by simply changing the way you request a dependency. Instaead of using the `getViewModel` function from Koin, you have to use the standard way of getting a dependency from Koin. Like in this example: `val viewModel: MyViewModel = rememberScoped(myId) { get { parametersOf(myId) } }`
+- [**HILT**](https://dagger.dev/hilt/quick-start) 🗡️ (Dagger) support is povided through a small extension of this library: **resaca-hilt**. [Documentation and installation instructions here](https://github.com/sebaslogen/resaca/tree/main/resacahilt/README.md).
+- [**Koin**](https://insert-koin.io/) 🪙 is out of the box supported by simply changing the way you request a dependency. Instaead of using the `getViewModel` function from Koin, you have to use the standard way of getting a dependency from Koin. Like in this example: `val viewModel: MyViewModel = rememberScoped(myId) { get { parametersOf(myId) } }`
 
 With that out of the way here are a few suggestions of how to provide objects in combination with this library:
 - When a Composable is used more than once in the same screen with the same input, then the same ViewModel (or business logic object) should be provided in the `rememberscoped` call to maintain consistency between items on the screen. This will provide not only the same source of truth for final view states, but also for loading states where the ViewModel exposes the loading state to multiple Composable UI components to have consistent UI.
