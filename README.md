@@ -16,7 +16,7 @@ Compose allows the creation of fine-grained UI components that can be easily reu
 
 Screens are built using Compose components together with business logic components, and the standard tool to connect these two types of components is a [Jetpack ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel). Unfortunately, ViewModels can only be scoped to a whole screen (or larger scope), but not to smaller Compose components on the screen.
 
-In practice, this means that we are gluing UI Lego blocks with business logic Lego blocks using a big glue class, the ViewModel 🗜.
+In practice, this means that we are gluing UI Lego blocks with business logic Lego blocks using a big glue class for the whole screen, the ViewModel 🗜.
 
 Until now...
 
@@ -39,22 +39,27 @@ fun DemoScopedViewModel() {
 }
 
 @Composable
-fun DemoViewModelWithId() {
-    val scopedVMWithFirstId: MyViewModel = rememberScoped("myFirstId") { MyViewModel("myFirstId") }
-    val scopedVMWithSecondId: MyViewModel = rememberScoped("mySecondId") { MyViewModel("mySecondId") }
+fun DemoViewModelWithKey() {
+    val scopedVMWithFirstKey: MyViewModel = rememberScoped("myFirstKey") { MyViewModel("myFirstKey") }
+    val scopedVMWithSecondKey: MyViewModel = rememberScoped("mySecondKey") { MyViewModel("mySecondKey") }
     // We now have 2 ViewModels of the same type with different data inside the same Composable scope
-    DemoComposable(inputObject = scopedVMWithFirstId)
-    DemoComposable(inputObject = scopedVMWithSecondId)
+    DemoComposable(inputObject = scopedVMWithFirstKey)
+    DemoComposable(inputObject = scopedVMWithSecondKey)
 }
 ```
 
 Once you use the `rememberScoped` function, the same object will be restored as long as the Composable is part of the composition, even if it _temporarily_ leaves composition on configuration change (e.g. screen rotation, change to dark mode, etc.) or while being in the backstack.
 
-For ViewModels, on top of being forgotten when they're really not needed anymore, their _coroutineScope_ will also be automatically canceled because ViewModel's `onCleared` method will be automatically called by this library.
+For ViewModels, in addition to being forgotten when they're really not needed anymore, their _coroutineScope_ will also be automatically canceled because ViewModel's `onCleared` method will be automatically called by this library.
 
-💡 _Optional key_: a key or id can be provided to the call, `rememberScoped(key) { ... }`, to forget an old object when there is new input data during a recomposition (e.g. a new input id for your ViewModel) or to remember multiple instances of the same class in the same scope.
+💡 _Optional key_: a key can be provided to the call, `rememberScoped(key) { ... }`. This makes possible to forget an old object when there is new input data during a recomposition (e.g. a new input id for your ViewModel) or to remember multiple instances of the same class in the same scope.
 
-⚠️ ViewModels remembered with `rememberScoped` **should not be created** using any of the Compose `viewModel()` or `ViewModelProviders` factories, otherwise they will be retained in the scope of the screen regardless of the `rememberScoped`
+⚠️ ViewModels remembered with `rememberScoped` **should not be created** using any of the Compose `viewModel()` or `ViewModelProviders` factories, otherwise they will be retained in the scope of the screen regardless of `rememberScoped`.
+
+# Sample use cases
+Here are some sample use cases reported by the users of this library:
+- Multiple instances of the same type of ViewModel in a screen with a **view-pager**. This screen will have multiple sub-pages that use the same ViewModel class with different ids. For example, a screen of holiday destinations with multiple pages and each page with its own `HolidayDestinationViewModel`.
+- Isolated and stateful UI components like a **favorite button** that are widely used across the screens. This `FavoriteViewModel` can be very small, focused and only require an id to work without affecting the rest of the screen's UI and state.
 
 # Demo app
 Demo app [documentation can be found here](https://github.com/sebaslogen/resaca/blob/main/sample/README.md).
@@ -84,45 +89,45 @@ Add the Jitpack repo and include the library (less than 5Kb):
 ```  
 
 ## Alternative manual installation
-Only three files are needed and they can be found in the `resaca` module under the package `com.sebaslogen.resaca`. They are: [ScopedViewModelContainer](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/ScopedViewModelContainer.kt), [ScopedMemoizers](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/compose/ScopedMemoizers.kt) and [ViewModelClearer](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/ViewModelClearer.kt).
+Only 4 files are needed and they can be found in the `resaca` module under the package `com.sebaslogen.resaca`. They are: [RememberScopedObserver](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/RememberScopedObserver.kt), [ScopedViewModelContainer](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/ScopedViewModelContainer.kt), [ScopedMemoizers](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/compose/ScopedMemoizers.kt) and [ViewModelClearer](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/ViewModelClearer.kt).
 
 
 # Why not use remember?
 **[Remember](https://developer.android.com/reference/kotlin/androidx/compose/runtime/package-summary#remember(kotlin.Function0))** will keep our object alive as long as the Composable is not disposed of.
 Unfortunately, there are a few cases where our Composable will be disposed of and then added again, breaking the lifecycle parity with the remember function. 😢
 
-_Pros_
+**_Pros_**
 - Simple API
 
-_Cons_
-- remember value will NOT survive a configuration change
-- remember value will NOT survive when going into the backstack
-- remember value will NOT survive a process death
+**_Cons_**
+- remember value will **NOT** survive a configuration change
+- remember value will **NOT** survive when going into the backstack
+- remember value will **NOT** survive a process death
 
 **[RememberSaveable](https://developer.android.com/reference/kotlin/androidx/compose/runtime/saveable/package-summary#rememberSaveable(kotlin.Array,androidx.compose.runtime.saveable.Saver,kotlin.String,kotlin.Function0))** will follow the lifecycle of the Composable, even in the few cases where the Composable is temporarily disposed of. But the object we want to remember needs to implement Parcelable or the [Saver](https://developer.android.com/reference/kotlin/androidx/compose/runtime/saveable/Saver) interface in an additional class. 😢 Implementing these interfaces might not trivial.
 
-_Pros_
+**_Pros_**
 - rememberSaveable value will survive a configuration change
 - rememberSaveable value will survive when going into the backstack
 - rememberSaveable value will survive a process death
 
-_Cons_
-- Complex integration work is required to correctly implement Parcelable or [Saver](https://developer.android.com/reference/kotlin/androidx/compose/runtime/saveable/Saver)
+**_Cons_**
+- **Complex** integration work is required to correctly implement Parcelable or [Saver](https://developer.android.com/reference/kotlin/androidx/compose/runtime/saveable/Saver)
 
 # Lifecycle
 
 **[RememberScoped](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/compose/ScopedMemoizers.kt#L26)** function keeps objects in memory during the lifecycle of the Composable, even in a few cases where the Composable is disposed of, and then added again. Therefore, it will retain objects longer than the `remember` function but shorter than `rememberSaveable` because there is no serialization involved.
 
-_Pros_
+**_Pros_**
 - Simple API
 - rememberScoped value will survive a configuration change
 - rememberScoped value will survive when going into the backstack
 
-_Cons_
-- rememberScoped value will NOT survive a process death
+**_Cons_**
+- rememberScoped value will **NOT** survive a process death
 
 
-## RememberScoped lifecycle internals
+## RememberScoped lifecycle internal implementation details
 This project uses a ViewModel as a container to store all scoped ViewModels and scoped objects.
 
 When a Composable is disposed of, we don't know for sure if it will return again later. So at the moment of disposal, we mark in our container the associated object to be disposed of after a small delay (currently 5 seconds). During the span of time of this delay, a few things can happen:
