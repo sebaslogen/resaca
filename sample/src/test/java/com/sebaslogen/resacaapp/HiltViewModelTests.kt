@@ -9,7 +9,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sebaslogen.resacaapp.ui.main.ComposeActivity
 import com.sebaslogen.resacaapp.ui.main.ComposeActivity.Companion.START_DESTINATION
-import com.sebaslogen.resacaapp.ui.main.viewModelScopedDestination
+import com.sebaslogen.resacaapp.ui.main.hiltViewModelScopedDestination
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -26,7 +26,7 @@ class HiltViewModelTests : ComposeTestUtils {
 
         // Given the starting screen with Hilt injected ViewModel scoped that is ONLY shown in light mode
         val launchIntent = Intent(ApplicationProvider.getApplicationContext(), ComposeActivity::class.java).apply {
-            putExtra(START_DESTINATION, viewModelScopedDestination)
+            putExtra(START_DESTINATION, hiltViewModelScopedDestination)
         }
         ActivityScenario.launch<ComposeActivity>(launchIntent).use { scenario ->
             scenario.onActivity { activity: ComposeActivity ->
@@ -53,7 +53,7 @@ class HiltViewModelTests : ComposeTestUtils {
 
         // Given the starting screen with Hilt injected ViewModel scoped
         val launchIntent = Intent(ApplicationProvider.getApplicationContext(), ComposeActivity::class.java).apply {
-            putExtra(START_DESTINATION, viewModelScopedDestination)
+            putExtra(START_DESTINATION, hiltViewModelScopedDestination)
         }
         ActivityScenario.launch<ComposeActivity>(launchIntent).use { scenario ->
             scenario.onActivity { activity: ComposeActivity ->

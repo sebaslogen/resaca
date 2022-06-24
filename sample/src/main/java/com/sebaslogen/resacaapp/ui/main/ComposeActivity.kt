@@ -29,7 +29,7 @@ import com.sebaslogen.resacaapp.ui.main.ui.theme.ResacaAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 const val rememberScopedDestination = "rememberScopedDestination"
-const val viewModelScopedDestination = "viewModelScopedDestination"
+const val hiltViewModelScopedDestination = "hiltViewModelScopedDestination"
 
 
 @AndroidEntryPoint // This annotation is required for Hilt to work anywhere inside this Activity
@@ -59,7 +59,7 @@ fun ScreensWithNavigation(navController: NavHostController = rememberNavControll
         composable(rememberScopedDestination) {
             ComposeScreenWithRememberScoped(navController)
         }
-        composable(viewModelScopedDestination) {
+        composable(hiltViewModelScopedDestination) {
             ComposeScreenWithViewModelScoped(navController)
         }
     }
@@ -99,8 +99,8 @@ fun NavigationButtons(navController: NavHostController) {
         Text(text = "Push rememberScoped destination")
     }
     Button(modifier = Modifier.padding(vertical = 4.dp),
-        onClick = { navController.navigate(viewModelScopedDestination) }) {
-        Text(text = "Push Hilt viewModelScoped destination")
+        onClick = { navController.navigate(hiltViewModelScopedDestination) }) {
+        Text(text = "Push Hilt hiltViewModelScoped destination")
     }
     val activity = (LocalContext.current as? Activity)
     Button(modifier = Modifier.padding(vertical = 4.dp),

@@ -2,7 +2,7 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-kapt'
-    id 'dagger.hilt.android.plugin' // TODO: Add to resaca-hilt usage documentation
+    id 'dagger.hilt.android.plugin'
 }
 
 android {
@@ -82,7 +82,7 @@ dependencies {
     // Material Design
     implementation "androidx.compose.material:material:$versions.composeMaterial"
 
-    // Hilt dependencies // TODO: Add to resaca-hilt usage documentation
+    // Hilt dependencies
     implementation "com.google.dagger:hilt-android:$versions.hiltAndroid"
     kapt "com.google.dagger:hilt-compiler:$versions.hiltCompiler"
 
