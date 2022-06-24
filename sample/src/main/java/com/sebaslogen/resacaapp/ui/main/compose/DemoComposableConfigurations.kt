@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.sebaslogen.resaca.hilt.compose.viewModelScoped
+import com.sebaslogen.resaca.hilt.hiltViewModelScoped
 import com.sebaslogen.resaca.rememberScoped
 import com.sebaslogen.resacaapp.ui.main.data.FakeInjectedViewModel
 import com.sebaslogen.resacaapp.ui.main.data.FakeRepo
@@ -52,6 +52,6 @@ fun DemoScopedViewModelComposable() {
 
 @Composable
 fun DemoScopedInjectedViewModelComposable() {
-    val fakeInjectedVM: FakeInjectedViewModel = viewModelScoped()
+    val fakeInjectedVM: FakeInjectedViewModel = hiltViewModelScoped()
     DemoComposable(inputObject = fakeInjectedVM, objectType = "Hilt FakeInjectedViewModel", scoped = true)
 }

@@ -1,4 +1,4 @@
-package com.sebaslogen.resaca.hilt.compose
+package com.sebaslogen.resaca.hilt
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
@@ -26,16 +26,16 @@ import dagger.hilt.android.lifecycle.HiltViewModel
  * Support for keys in the Hilt library is still WIP. See https://github.com/google/dagger/issues/2328
  */
 @Composable
-inline fun <reified T : ViewModel> viewModelScoped(): T {
+inline fun <reified T : ViewModel> hiltViewModelScoped(): T {
     val viewModel: T = rememberScoped {
-        viewModelFactoryWithRestoration()
+        hiltViewModelFactoryWithRestoration()
     }
     return viewModel
 }
 
 @Composable
 @PublishedApi
-internal inline fun <reified T : ViewModel> viewModelFactoryWithRestoration(): T =
+internal inline fun <reified T : ViewModel> hiltViewModelFactoryWithRestoration(): T =
     tryToRestoreScopedViewModel() // The requested ViewModel already exists and it's probably a singleton, return the one stored in our container
         ?: createHiltViewModelFactory().create(T::class.java) // Otherwise create one using a factory
 
