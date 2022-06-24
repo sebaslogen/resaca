@@ -98,7 +98,8 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
             // When the object is already present and the external key matches, then try to restore it
             scopedObjectsContainer[positionalMemoizationKey] as? T ?: buildAndStoreObject()
         } else {
-            scopedObjectKeys[positionalMemoizationKey] = externalKey // Set the external key used to track and store new versions of the object
+            scopedObjectKeys[positionalMemoizationKey] = externalKey // Set the external key used to track and store the new object version
+            scopedObjectsContainer[positionalMemoizationKey]?.let { clearDisposedObject(it) } // Old object needs to be cleared before it's forgotten
             buildAndStoreObject()
         }
     }
@@ -235,7 +236,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     /**
      * Unique Key to identify versions objects stored in the [ScopedViewModelContainer]
      * When this external key does not match the one stored for an object's main key in [scopedObjectKeys],
-     * then the object is removed (just overwritten), the new instance is stored and
+     * then the old object is cleared, the new instance is stored (replacing old instance in storage) and
      * the new external key is stored in [scopedObjectKeys]
      */
     @JvmInline
