@@ -84,7 +84,7 @@ Add the Jitpack repo and include the library (less than 5Kb):
    }
    dependencies {
        // The latest version of the lib is available in the badget at the top, replace X.X.X with that version
-       implementation 'com.github.sebaslogen:resaca:X.X.X'
+       implementation 'com.github.sebaslogen.resaca:resaca:X.X.X'
    }
 ```  
 
