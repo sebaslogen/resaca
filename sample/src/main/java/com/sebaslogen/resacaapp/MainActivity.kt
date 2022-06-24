@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger
 /**
  * Global counter to track the number of scoped ViewModels ([FakeScopedViewModel]) that have been correctly cleared
  */
-val viewModelsClearedCounter = AtomicInteger(0)
+val viewModelsClearedGloballySharedCounter = AtomicInteger(0)
 
 class MainActivity : AppCompatActivity() {
 

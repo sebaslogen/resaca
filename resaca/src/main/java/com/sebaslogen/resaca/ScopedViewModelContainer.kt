@@ -3,6 +3,7 @@ package com.sebaslogen.resaca
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.*
 import androidx.lifecycle.ViewModelClearer.clearViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.*
 import java.io.Closeable
 import java.util.concurrent.ConcurrentSkipListSet
@@ -104,6 +105,32 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         }
     }
 
+    @Composable
+    fun <T : ViewModel> getOrBuildViewModel(
+        modelClass: Class<T>,
+        positionalMemoizationKey: String,
+        externalKey: ExternalKey = ExternalKey(0)
+    ): T {
+
+        cancelDisposal(positionalMemoizationKey)
+
+        val originallyStoredObjectOwner = scopedObjectsContainer[positionalMemoizationKey]
+        val owner = if (scopedObjectKeys.containsKey(positionalMemoizationKey)
+            && (scopedObjectKeys[positionalMemoizationKey] == externalKey)
+            && originallyStoredObjectOwner is ScopedViewModelStoreOwner
+        ) {
+            // When the object is already present and the external key matches, then try to restore it using the existing ViewModelStoreOwner
+            originallyStoredObjectOwner
+        } else {
+            scopedObjectKeys[positionalMemoizationKey] = externalKey // Set the external key used to track and store the new object version
+            originallyStoredObjectOwner?.let { clearDisposedObject(it) } // Old object needs to be cleared before it's forgotten
+            val newOwner = ScopedViewModelStoreOwner()
+            scopedObjectsContainer[positionalMemoizationKey] = newOwner
+            newOwner
+        }
+        return viewModel(modelClass = modelClass, viewModelStoreOwner = owner)
+    }
+
     /**
      * Get the first instance of the requested type available in this container. Null if none is found
      */
@@ -186,6 +213,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      */
     private fun clearDisposedObject(scopedObject: Any) {
         when (scopedObject) {
+            is ScopedViewModelStoreOwner -> scopedObject.clear()
             is ViewModel -> clearViewModel(scopedObject)
             is CoroutineScope -> scopedObject.cancel()
             is CoroutineContext -> scopedObject.cancel()

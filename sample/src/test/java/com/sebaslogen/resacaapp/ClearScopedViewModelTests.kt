@@ -30,11 +30,11 @@ class ClearScopedViewModelTests : ComposeTestUtils {
 
         // When I navigate to a nested screen with a scoped ViewModel and back to initial screen
         navController.navigate(rememberScopedDestination)
-        val initialAmountOfViewModelsCleared = viewModelsClearedCounter.get()
+        val initialAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
         printComposeUiTreeToLog()
         navController.popBackStack()
         printComposeUiTreeToLog() // This seems to be needed to trigger recomposition
-        val finalAmountOfViewModelsCleared = viewModelsClearedCounter.get()
+        val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
 
         // Then the scoped ViewModel from the second screen is cleared
         assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 1) {

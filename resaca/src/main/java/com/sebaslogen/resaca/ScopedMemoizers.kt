@@ -8,6 +8,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebaslogen.resaca.compose.RememberScopedObserver
 import kotlinx.coroutines.Dispatchers
@@ -34,15 +37,59 @@ fun <T : Any> rememberScoped(key: Any? = null, builder: @Composable () -> T): T 
     // The external key will be used to track and store new versions of the object, based on [key] input parameter
     val externalKey: ScopedViewModelContainer.ExternalKey = ScopedViewModelContainer.ExternalKey.from(key)
 
+    ObserveLifecycles(scopedViewModelContainer, positionalMemoizationKey)
+
+    // The object will be built the first time and retrieved in next calls or recompositions
+    return scopedViewModelContainer.getOrBuildObject(
+        positionalMemoizationKey = positionalMemoizationKey,
+        externalKey = externalKey,
+        builder = builder
+    )
+}
+
+/**
+ * Return a [ViewModel] created with the [ViewModelProvider] and a custom [ScopedViewModelStoreOwner].
+ * The [ViewModel] will be stored by the [ViewModelProvider] in the [ViewModelStore] that's part of the [ScopedViewModelStoreOwner]
+ * and the custom [ScopedViewModelStoreOwner] will be the object stored the [ScopedViewModelContainer] that will be in charge of
+ * keeping this objects in memory for as long as needed.
+ *
+ * Internally, a key will be generated for this [ScopedViewModelStoreOwner] in the Compose tree and if a [ScopedViewModelStoreOwner] is present
+ * for this key in the [ScopedViewModelContainer], then it will be used to invoke [ViewModelProvider] to return an existing [ViewModel],
+ * instead of creating a new [ScopedViewModelStoreOwner] that produces a new [ViewModel] instance when keys don't match.
+ *
+ * @param key Changing [key] between compositions will produce and remember a new [ViewModel]
+ */
+@Composable
+inline fun <reified T : ViewModel> viewModelScoped(key: Any? = null): T {
+    require(key !is Function0<*>) { "The Key for viewModelScoped should not be a lambda" }
+
+    val scopedViewModelContainer: ScopedViewModelContainer = viewModel()
+
+    // This key will be used to identify, retrieve and remove the stored object in the ScopedViewModelContainer
+    // across recompositions and configuration changes
+    val positionalMemoizationKey: String = rememberSaveable { UUID.randomUUID().toString() }
+    // The external key will be used to track and store new versions of the object, based on [key] input parameter
+    val externalKey: ScopedViewModelContainer.ExternalKey = ScopedViewModelContainer.ExternalKey.from(key)
+
+    ObserveLifecycles(scopedViewModelContainer, positionalMemoizationKey)
+
+    // The object will be built the first time and retrieved in next calls or recompositions
+    return scopedViewModelContainer.getOrBuildViewModel(
+        modelClass = T::class.java,
+        positionalMemoizationKey = positionalMemoizationKey,
+        externalKey = externalKey
+    )
+}
+
+@Composable
+@PublishedApi
+internal fun ObserveLifecycles(scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: String) {
     // Observe this destination's lifecycle to detect screen resumed/paused/destroyed
     // and remember or forget this object correctly from the container (so it can be garbage collected when needed)
     ObserveLifecycleWithScopedViewModelContainer(scopedViewModelContainer)
     // Observe the lifecycle of this Composable to detect disposal (with onAbandoned & onForgotten)
     // and remember or forget this object correctly from the container (so it can be garbage collected when needed)
     ObserveComposableDisposal(positionalMemoizationKey, scopedViewModelContainer)
-
-    // The object will be built the first time and retrieved in next calls or recompositions
-    return scopedViewModelContainer.getOrBuildObject(positionalMemoizationKey = positionalMemoizationKey, externalKey = externalKey, builder = builder)
 }
 
 /**

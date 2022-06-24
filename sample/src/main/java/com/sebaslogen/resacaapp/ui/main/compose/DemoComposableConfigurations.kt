@@ -7,12 +7,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
 import com.sebaslogen.resaca.hilt.hiltViewModelScoped
 import com.sebaslogen.resaca.rememberScoped
+import com.sebaslogen.resaca.viewModelScoped
 import com.sebaslogen.resacaapp.ui.main.data.FakeInjectedViewModel
 import com.sebaslogen.resacaapp.ui.main.data.FakeRepo
 import com.sebaslogen.resacaapp.ui.main.data.FakeScopedViewModel
-import com.sebaslogen.resacaapp.viewModelsClearedCounter
 
 
 /**
@@ -44,9 +45,14 @@ fun DemoScopedObjectComposable() {
     DemoComposable(inputObject = fakeRepo, objectType = "FakeRepo", scoped = true)
 }
 
+/**
+ * Create a [ViewModel] with the [viewModelScoped] function and with no external parameters/dependencies required by the constructor
+ * Note: To use Koin or other way of providing dependencies you can use rememberScoped like this:
+ *        val fakeScopedVM: FakeScopedViewModel = rememberScoped { FakeScopedViewModel(viewModelsClearedCounter) }
+ */
 @Composable
 fun DemoScopedViewModelComposable() {
-    val fakeScopedVM: FakeScopedViewModel = rememberScoped { FakeScopedViewModel(viewModelsClearedCounter) }
+    val fakeScopedVM: FakeScopedViewModel = viewModelScoped()
     DemoComposable(inputObject = fakeScopedVM, objectType = "FakeScopedViewModel", scoped = true)
 }
 
