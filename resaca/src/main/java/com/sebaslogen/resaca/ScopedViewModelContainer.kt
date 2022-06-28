@@ -112,9 +112,39 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         externalKey: ExternalKey = ExternalKey(0),
         builder: @DisallowComposableCalls () -> T
     ): T {
+        return getOrBuildViewModel(
+            modelClass = modelClass,
+            positionalMemoizationKey = positionalMemoizationKey,
+            externalKey = externalKey,
+            factory = ScopedViewModelProvider.viewModelFactoryFor(builder)
+        )
+    }
+
+    @Composable
+    fun <T : ViewModel> getOrBuildViewModel(
+        modelClass: Class<T>,
+        positionalMemoizationKey: String,
+        externalKey: ExternalKey = ExternalKey(0)
+    ): T {
+        return getOrBuildViewModel(
+            modelClass = modelClass,
+            positionalMemoizationKey = positionalMemoizationKey,
+            externalKey = externalKey,
+            factory = ViewModelProvider.NewInstanceFactory.instance
+        )
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    @Composable
+    fun <T : ViewModel> getOrBuildViewModel(
+        modelClass: Class<T>,
+        positionalMemoizationKey: String,
+        externalKey: ExternalKey = ExternalKey(0),
+        factory: ViewModelProvider.Factory
+    ): T {
         @Composable
         fun buildAndStoreViewModelProvider(originalScopedViewModelProvider: ScopedViewModelProvider<*>?): T {
-            val newScopedViewModelProvider = ScopedViewModelProvider(modelClass, builder)
+            val newScopedViewModelProvider = ScopedViewModelProvider(modelClass = modelClass, factory = factory)
             scopedObjectsContainer[positionalMemoizationKey] = newScopedViewModelProvider
 
             // Clean-up: old object needs to be cleared before it's forgotten
@@ -138,40 +168,6 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
                 buildAndStoreViewModelProvider(originalScopedViewModelProvider)
             }
         return viewModel
-    }
-
-    @Composable
-    fun <T : ViewModel> getOrBuildViewModel(
-        modelClass: Class<T>,
-        positionalMemoizationKey: String,
-        externalKey: ExternalKey = ExternalKey(0)
-    ): T {
-
-        cancelDisposal(positionalMemoizationKey)
-
-        val originalViewModelStore = scopedObjectsContainer[positionalMemoizationKey]
-        val viewModelStore =
-            if (scopedObjectKeys.containsKey(positionalMemoizationKey)
-                && (scopedObjectKeys[positionalMemoizationKey] == externalKey)
-                && originalViewModelStore is ViewModelStore
-            ) {
-                // When the object is already present and the external key matches, then try to restore it using the existing ViewModelStore
-                originalViewModelStore
-            } else {
-                // Replace/Update key: set the new external key used to track and store the new object version
-                scopedObjectKeys[positionalMemoizationKey] = externalKey
-
-                // Replace/Update value stored
-                val newViewModelStore = ViewModelStore()
-                scopedObjectsContainer[positionalMemoizationKey] = newViewModelStore
-
-                // Clean-up: old object needs to be cleared before it's forgotten
-                originalViewModelStore?.let { clearDisposedObject(it) }
-                newViewModelStore
-            }
-        val provider = ViewModelProvider(viewModelStore, ViewModelProvider.NewInstanceFactory.instance)
-        @Suppress("ReplaceGetOrSet")
-        return provider.get(modelClass)
     }
 
     /**
