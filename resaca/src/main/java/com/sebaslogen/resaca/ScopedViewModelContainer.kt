@@ -191,14 +191,16 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
 
         val newDisposingJob = viewModelScope.launch {
             delay(disposeDelayTimeMillis)
-            if (removalCondition()) {
-                markedForDisposal.remove(key)
-                scopedObjectsContainer.remove(key)
-                    ?.also {
-                        if (shouldClearDisposedObject(it)) clearDisposedObject(it)
-                    }
+            withContext(NonCancellable) { // We treat the disposal/remove/clear block as an atomic transaction
+                if (removalCondition()) {
+                    markedForDisposal.remove(key)
+                    scopedObjectsContainer.remove(key)
+                        ?.also {
+                            if (shouldClearDisposedObject(it)) clearDisposedObject(it)
+                        }
+                }
+                disposingJobs.remove(key)
             }
-            disposingJobs.remove(key)
         }
         disposingJobs[key] = newDisposingJob
     }
