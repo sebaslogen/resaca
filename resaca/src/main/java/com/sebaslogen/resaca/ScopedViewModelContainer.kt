@@ -116,7 +116,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
             modelClass = modelClass,
             positionalMemoizationKey = positionalMemoizationKey,
             externalKey = externalKey,
-            factory = ScopedViewModelProvider.viewModelFactoryFor(builder)
+            factory = ScopedViewModelOwner.viewModelFactoryFor(builder)
         )
     }
 
@@ -143,29 +143,29 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         factory: ViewModelProvider.Factory
     ): T {
         @Composable
-        fun buildAndStoreViewModelProvider(originalScopedViewModelProvider: ScopedViewModelProvider<*>?): T {
-            val newScopedViewModelProvider = ScopedViewModelProvider(modelClass = modelClass, factory = factory)
-            scopedObjectsContainer[positionalMemoizationKey] = newScopedViewModelProvider
+        fun buildAndStoreScopedViewModelOwner(originalScopedViewModelOwner: ScopedViewModelOwner<*>?): T {
+            val newScopedViewModelOwner = ScopedViewModelOwner(modelClass = modelClass, factory = factory)
+            scopedObjectsContainer[positionalMemoizationKey] = newScopedViewModelOwner
 
             // Clean-up: old object needs to be cleared before it's forgotten
-            originalScopedViewModelProvider?.let { clearDisposedObject(it) }
-            return newScopedViewModelProvider.viewModel
+            originalScopedViewModelOwner?.let { clearDisposedObject(it) }
+            return newScopedViewModelOwner.viewModel
         }
 
         cancelDisposal(positionalMemoizationKey)
 
-        val originalScopedViewModelProvider: ScopedViewModelProvider<*>? = scopedObjectsContainer[positionalMemoizationKey] as? ScopedViewModelProvider<*>
+        val originalScopedViewModelOwner: ScopedViewModelOwner<*>? = scopedObjectsContainer[positionalMemoizationKey] as? ScopedViewModelOwner<*>
         val viewModel: T =
             if (scopedObjectKeys.containsKey(positionalMemoizationKey)
                 && (scopedObjectKeys[positionalMemoizationKey] == externalKey)
-                && originalScopedViewModelProvider is ScopedViewModelProvider<*>
+                && originalScopedViewModelOwner is ScopedViewModelOwner<*>
             ) {
                 // When the object is already present and the external key matches, then try to restore it using the existing ViewModelStore
-                originalScopedViewModelProvider.viewModel as? T ?: buildAndStoreViewModelProvider(originalScopedViewModelProvider)
+                originalScopedViewModelOwner.viewModel as? T ?: buildAndStoreScopedViewModelOwner(originalScopedViewModelOwner)
             } else {
                 // Replace/Update key: set the new external key used to track and store the new object version
                 scopedObjectKeys[positionalMemoizationKey] = externalKey
-                buildAndStoreViewModelProvider(originalScopedViewModelProvider)
+                buildAndStoreScopedViewModelOwner(originalScopedViewModelOwner)
             }
         return viewModel
     }
@@ -254,8 +254,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      */
     private fun clearDisposedObject(scopedObject: Any) {
         when (scopedObject) {
-            is ViewModelStore -> scopedObject.clear()
-            is ScopedViewModelProvider<*> -> scopedObject.clear()
+            is ScopedViewModelOwner<*> -> scopedObject.clear()
             is CoroutineScope -> scopedObject.cancel()
             is CoroutineContext -> scopedObject.cancel()
             is Closeable -> scopedObject.close()

@@ -14,7 +14,7 @@ import androidx.lifecycle.ViewModelStore
  * The clear function of [ViewModel]s is not public, only a [ViewModelStore] can trigger it and the [ViewModelStore]
  * can only be read/written with a [ViewModelProvider].
  */
-class ScopedViewModelProvider<T : ViewModel>(private val modelClass: Class<T>, private val factory: ViewModelProvider.Factory) {
+class ScopedViewModelOwner<T : ViewModel>(private val modelClass: Class<T>, private val factory: ViewModelProvider.Factory) {
 
     val viewModel: T
         @Suppress("ReplaceGetOrSet")
