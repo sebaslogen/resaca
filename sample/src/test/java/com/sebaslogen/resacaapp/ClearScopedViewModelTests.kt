@@ -19,7 +19,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
     lateinit var navController: NavHostController
 
     @Test
-    fun `when I navigate to nested screen and back, then the scoped ViewModel of the second screen is cleared`() {
+    fun `when I navigate to nested screen and back, then the 2 scoped ViewModels of the second screen is cleared`() {
 
         // Given the starting screen with scoped objects
         composeTestRule.setContent {
@@ -37,9 +37,9 @@ class ClearScopedViewModelTests : ComposeTestUtils {
         val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
 
         // Then the scoped ViewModel from the second screen is cleared
-        assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 1) {
+        assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 2) {
             "The amount of FakeScopedViewModel(s) that where cleared after back navigation ($finalAmountOfViewModelsCleared) " +
-                    "was not one number higher that the amount before navigating ($initialAmountOfViewModelsCleared)"
+                    "was not two numbers higher that the amount before navigating ($initialAmountOfViewModelsCleared)"
         }
     }
 }

@@ -24,20 +24,16 @@ import java.util.*
  * Internally, a key will be generated for this object in the Compose tree and if an object is present
  * for this key in the [ScopedViewModelContainer], then it will be returned instead of calling [builder]
  *
- * @param key Changing [key] between compositions will produce and remember a new value by calling [builder]
- * @param builder Function to produce a new value that will be remembered
+ * @param key Key to track the version of the store object. Changing [key] between compositions will produce and remember a new value by calling [builder].
+ * @param builder Factory function to produce a new value that will be remembered.
  */
 @Composable
 fun <T : Any> rememberScoped(key: Any? = null, builder: @Composable () -> T): T {
-    val scopedViewModelContainer: ScopedViewModelContainer = viewModel()
 
-    // This key will be used to identify, retrieve and remove the stored object in the ScopedViewModelContainer
-    // across recompositions and configuration changes
-    val positionalMemoizationKey: String = rememberSaveable { UUID.randomUUID().toString() }
-    // The external key will be used to track and store new versions of the object, based on [key] input parameter
-    val externalKey: ScopedViewModelContainer.ExternalKey = ScopedViewModelContainer.ExternalKey.from(key)
+    // TODO: Warn and later crash with ViewModel return type builder in this function
 
-    ObserveLifecycles(scopedViewModelContainer, positionalMemoizationKey)
+    val (scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: String, externalKey: ScopedViewModelContainer.ExternalKey) =
+        generateKeysAndObserveLifecycle(key)
 
     // The object will be built the first time and retrieved in next calls or recompositions
     return scopedViewModelContainer.getOrBuildObject(
@@ -57,12 +53,54 @@ fun <T : Any> rememberScoped(key: Any? = null, builder: @Composable () -> T): T 
  * for this key in the [ScopedViewModelContainer], then it will be used to invoke [ViewModelProvider] to return an existing [ViewModel],
  * instead of creating a new [ViewModelStore] that produces a new [ViewModel] instance when the keys don't match.
  *
- * @param key Changing [key] between compositions will produce and remember a new [ViewModel]
+ * @param key Key to track the version of the [ViewModel]. Changing [key] between compositions will produce and remember a new [ViewModel].
+ */
+@Composable
+inline fun <reified T : ViewModel> viewModelScoped(key: Any? = null, noinline builder: @DisallowComposableCalls () -> T): T {
+    require(key !is Function0<*>) { "The Key for viewModelScoped should not be a lambda" }
+
+    val (scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: String, externalKey: ScopedViewModelContainer.ExternalKey) =
+        generateKeysAndObserveLifecycle(key)
+
+    // The object will be built the first time and retrieved in next calls or recompositions
+    return scopedViewModelContainer.getOrBuildViewModel(
+        modelClass = T::class.java,
+        positionalMemoizationKey = positionalMemoizationKey,
+        externalKey = externalKey,
+        builder = builder
+    )
+}
+
+/**
+ * Return a [ViewModel] provided by the [ViewModelProvider] and a [ViewModelStore].
+ * The [ViewModel] will be created and stored by the [ViewModelProvider] in the [ViewModelStore].
+ * The [ViewModelStore] will be the object stored in the [ScopedViewModelContainer] and
+ * the [ScopedViewModelContainer] will be in charge of keeping the [ViewModelStore] and its [ViewModel] in memory for as long as needed.
+ *
+ * Internally, a key will be generated for this [ViewModelStore] in the Compose tree and if a [ViewModelStore] is present
+ * for this key in the [ScopedViewModelContainer], then it will be used to invoke [ViewModelProvider] to return an existing [ViewModel],
+ * instead of creating a new [ViewModelStore] that produces a new [ViewModel] instance when the keys don't match.
+ *
+ * @param key Key to track the version of the [ViewModel]. Changing [key] between compositions will produce and remember a new [ViewModel].
  */
 @Composable
 inline fun <reified T : ViewModel> viewModelScoped(key: Any? = null): T {
     require(key !is Function0<*>) { "The Key for viewModelScoped should not be a lambda" }
 
+    val (scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: String, externalKey: ScopedViewModelContainer.ExternalKey) =
+        generateKeysAndObserveLifecycle(key)
+
+    // The object will be built the first time and retrieved in next calls or recompositions
+    return scopedViewModelContainer.getOrBuildViewModel(
+        modelClass = T::class.java,
+        positionalMemoizationKey = positionalMemoizationKey,
+        externalKey = externalKey
+    )
+}
+
+@Composable
+@PublishedApi
+internal inline fun generateKeysAndObserveLifecycle(key: Any?): Triple<ScopedViewModelContainer, String, ScopedViewModelContainer.ExternalKey> {
     val scopedViewModelContainer: ScopedViewModelContainer = viewModel()
 
     // This key will be used to identify, retrieve and remove the stored object in the ScopedViewModelContainer
@@ -73,12 +111,7 @@ inline fun <reified T : ViewModel> viewModelScoped(key: Any? = null): T {
 
     ObserveLifecycles(scopedViewModelContainer, positionalMemoizationKey)
 
-    // The object will be built the first time and retrieved in next calls or recompositions
-    return scopedViewModelContainer.getOrBuildViewModel(
-        modelClass = T::class.java,
-        positionalMemoizationKey = positionalMemoizationKey,
-        externalKey = externalKey
-    )
+    return Triple(scopedViewModelContainer, positionalMemoizationKey, externalKey)
 }
 
 @Composable

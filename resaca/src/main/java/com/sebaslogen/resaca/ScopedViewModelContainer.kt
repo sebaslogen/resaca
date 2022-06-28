@@ -1,8 +1,8 @@
 package com.sebaslogen.resaca
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisallowComposableCalls
 import androidx.lifecycle.*
-import androidx.lifecycle.ViewModelClearer.clearViewModel
 import kotlinx.coroutines.*
 import java.io.Closeable
 import java.util.concurrent.ConcurrentSkipListSet
@@ -102,6 +102,42 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
             scopedObjectsContainer[positionalMemoizationKey]?.let { clearDisposedObject(it) } // Old object needs to be cleared before it's forgotten
             buildAndStoreObject()
         }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    @Composable
+    fun <T : ViewModel> getOrBuildViewModel(
+        modelClass: Class<T>,
+        positionalMemoizationKey: String,
+        externalKey: ExternalKey = ExternalKey(0),
+        builder: @DisallowComposableCalls () -> T
+    ): T {
+        @Composable
+        fun buildAndStoreViewModelProvider(originalScopedViewModelProvider: ScopedViewModelProvider<*>?): T {
+            val newScopedViewModelProvider = ScopedViewModelProvider(modelClass, builder)
+            scopedObjectsContainer[positionalMemoizationKey] = newScopedViewModelProvider
+
+            // Clean-up: old object needs to be cleared before it's forgotten
+            originalScopedViewModelProvider?.let { clearDisposedObject(it) }
+            return newScopedViewModelProvider.viewModel
+        }
+
+        cancelDisposal(positionalMemoizationKey)
+
+        val originalScopedViewModelProvider: ScopedViewModelProvider<*>? = scopedObjectsContainer[positionalMemoizationKey] as? ScopedViewModelProvider<*>
+        val viewModel: T =
+            if (scopedObjectKeys.containsKey(positionalMemoizationKey)
+                && (scopedObjectKeys[positionalMemoizationKey] == externalKey)
+                && originalScopedViewModelProvider is ScopedViewModelProvider<*>
+            ) {
+                // When the object is already present and the external key matches, then try to restore it using the existing ViewModelStore
+                originalScopedViewModelProvider.viewModel as? T ?: buildAndStoreViewModelProvider(originalScopedViewModelProvider)
+            } else {
+                // Replace/Update key: set the new external key used to track and store the new object version
+                scopedObjectKeys[positionalMemoizationKey] = externalKey
+                buildAndStoreViewModelProvider(originalScopedViewModelProvider)
+            }
+        return viewModel
     }
 
     @Composable
@@ -223,7 +259,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     private fun clearDisposedObject(scopedObject: Any) {
         when (scopedObject) {
             is ViewModelStore -> scopedObject.clear()
-            is ViewModel -> clearViewModel(scopedObject)
+            is ScopedViewModelProvider<*> -> scopedObject.clear()
             is CoroutineScope -> scopedObject.cancel()
             is CoroutineContext -> scopedObject.cancel()
             is Closeable -> scopedObject.close()

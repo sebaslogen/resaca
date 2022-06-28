@@ -14,6 +14,7 @@ import com.sebaslogen.resaca.viewModelScoped
 import com.sebaslogen.resacaapp.ui.main.data.FakeInjectedViewModel
 import com.sebaslogen.resacaapp.ui.main.data.FakeRepo
 import com.sebaslogen.resacaapp.ui.main.data.FakeScopedViewModel
+import com.sebaslogen.resacaapp.viewModelsClearedGloballySharedCounter
 
 
 /**
@@ -47,13 +48,21 @@ fun DemoScopedObjectComposable() {
 
 /**
  * Create a [ViewModel] with the [viewModelScoped] function and with no external parameters/dependencies required by the constructor
- * Note: To use Koin or other way of providing dependencies you can use rememberScoped like this:
- *        val fakeScopedVM: FakeScopedViewModel = rememberScoped { FakeScopedViewModel(viewModelsClearedCounter) }
  */
 @Composable
 fun DemoScopedViewModelComposable() {
     val fakeScopedVM: FakeScopedViewModel = viewModelScoped()
     DemoComposable(inputObject = fakeScopedVM, objectType = "FakeScopedViewModel", scoped = true)
+}
+
+/**
+ * Create a [ViewModel] with the [viewModelScoped] function and use a provided builder with parameters/dependencies required by the constructor
+ * Note: This is useful for frameworks like Koin or other way of providing dependencies
+ */
+@Composable
+fun DemoScopedParametrizedViewModelComposable() {
+    val fakeScopedParametrizedVM: FakeScopedViewModel = viewModelScoped { FakeScopedViewModel(viewModelsClearedGloballySharedCounter) }
+    DemoComposable(inputObject = fakeScopedParametrizedVM, objectType = "FakeScopedParametrizedViewModel", scoped = true)
 }
 
 @Composable

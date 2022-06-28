@@ -35,6 +35,7 @@ class ComposeNavigationTests : ComposeTestUtils {
         // Find the scoped text fields and grab their texts
         val initialFakeScopedRepoText = retrieveTextFromNodeWithTestTag("FakeRepo Scoped")
         val initialFakeScopedViewModelText = retrieveTextFromNodeWithTestTag("FakeScopedViewModel Scoped")
+        val initialFakeScopedParametrizedViewModelText = retrieveTextFromNodeWithTestTag(tag = "FakeScopedParametrizedViewModel Scoped")
 
         // When I navigate to a nested screen and back to initial screen
         navController.navigate(rememberScopedDestination)
@@ -45,6 +46,7 @@ class ComposeNavigationTests : ComposeTestUtils {
         // Then the scoped objects on the first screen are still the same
         onNodeWithTestTag("FakeRepo Scoped").assertIsDisplayed().assertTextEquals(initialFakeScopedRepoText)
         onNodeWithTestTag("FakeScopedViewModel Scoped").assertIsDisplayed().assertTextEquals(initialFakeScopedViewModelText)
+        onNodeWithTestTag("FakeScopedParametrizedViewModel Scoped").assertTextEquals(initialFakeScopedParametrizedViewModelText)
     }
 
     @Test
