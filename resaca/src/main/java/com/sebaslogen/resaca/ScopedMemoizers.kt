@@ -48,14 +48,14 @@ fun <T : Any> rememberScoped(key: Any? = null, builder: @Composable () -> T): T 
 }
 
 /**
- * Return a [ViewModel] created with the [ViewModelProvider] and a custom [ScopedViewModelStoreOwner].
- * The [ViewModel] will be stored by the [ViewModelProvider] in the [ViewModelStore] that's part of the [ScopedViewModelStoreOwner]
- * and the custom [ScopedViewModelStoreOwner] will be the object stored the [ScopedViewModelContainer] that will be in charge of
- * keeping this objects in memory for as long as needed.
+ * Return a [ViewModel] provided by the [ViewModelProvider] and a [ViewModelStore].
+ * The [ViewModel] will be created and stored by the [ViewModelProvider] in the [ViewModelStore].
+ * The [ViewModelStore] will be the object stored in the [ScopedViewModelContainer] and
+ * the [ScopedViewModelContainer] will be in charge of keeping the [ViewModelStore] and its [ViewModel] in memory for as long as needed.
  *
- * Internally, a key will be generated for this [ScopedViewModelStoreOwner] in the Compose tree and if a [ScopedViewModelStoreOwner] is present
+ * Internally, a key will be generated for this [ViewModelStore] in the Compose tree and if a [ViewModelStore] is present
  * for this key in the [ScopedViewModelContainer], then it will be used to invoke [ViewModelProvider] to return an existing [ViewModel],
- * instead of creating a new [ScopedViewModelStoreOwner] that produces a new [ViewModel] instance when keys don't match.
+ * instead of creating a new [ViewModelStore] that produces a new [ViewModel] instance when the keys don't match.
  *
  * @param key Changing [key] between compositions will produce and remember a new [ViewModel]
  */

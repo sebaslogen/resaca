@@ -3,7 +3,6 @@ package com.sebaslogen.resaca
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.*
 import androidx.lifecycle.ViewModelClearer.clearViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.*
 import java.io.Closeable
 import java.util.concurrent.ConcurrentSkipListSet
@@ -114,21 +113,29 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
 
         cancelDisposal(positionalMemoizationKey)
 
-        val originallyStoredObjectOwner = scopedObjectsContainer[positionalMemoizationKey]
-        val owner = if (scopedObjectKeys.containsKey(positionalMemoizationKey)
-            && (scopedObjectKeys[positionalMemoizationKey] == externalKey)
-            && originallyStoredObjectOwner is ScopedViewModelStoreOwner
-        ) {
-            // When the object is already present and the external key matches, then try to restore it using the existing ViewModelStoreOwner
-            originallyStoredObjectOwner
-        } else {
-            scopedObjectKeys[positionalMemoizationKey] = externalKey // Set the external key used to track and store the new object version
-            originallyStoredObjectOwner?.let { clearDisposedObject(it) } // Old object needs to be cleared before it's forgotten
-            val newOwner = ScopedViewModelStoreOwner()
-            scopedObjectsContainer[positionalMemoizationKey] = newOwner
-            newOwner
-        }
-        return viewModel(modelClass = modelClass, viewModelStoreOwner = owner)
+        val originalViewModelStore = scopedObjectsContainer[positionalMemoizationKey]
+        val viewModelStore =
+            if (scopedObjectKeys.containsKey(positionalMemoizationKey)
+                && (scopedObjectKeys[positionalMemoizationKey] == externalKey)
+                && originalViewModelStore is ViewModelStore
+            ) {
+                // When the object is already present and the external key matches, then try to restore it using the existing ViewModelStore
+                originalViewModelStore
+            } else {
+                // Replace/Update key: set the new external key used to track and store the new object version
+                scopedObjectKeys[positionalMemoizationKey] = externalKey
+
+                // Replace/Update value stored
+                val newViewModelStore = ViewModelStore()
+                scopedObjectsContainer[positionalMemoizationKey] = newViewModelStore
+
+                // Clean-up: old object needs to be cleared before it's forgotten
+                originalViewModelStore?.let { clearDisposedObject(it) }
+                newViewModelStore
+            }
+        val provider = ViewModelProvider(viewModelStore, ViewModelProvider.NewInstanceFactory.instance)
+        @Suppress("ReplaceGetOrSet")
+        return provider.get(modelClass)
     }
 
     /**
@@ -215,7 +222,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      */
     private fun clearDisposedObject(scopedObject: Any) {
         when (scopedObject) {
-            is ScopedViewModelStoreOwner -> scopedObject.clear()
+            is ViewModelStore -> scopedObject.clear()
             is ViewModel -> clearViewModel(scopedObject)
             is CoroutineScope -> scopedObject.cancel()
             is CoroutineContext -> scopedObject.cancel()
