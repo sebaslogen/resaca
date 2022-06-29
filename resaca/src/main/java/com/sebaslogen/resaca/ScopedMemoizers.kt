@@ -103,6 +103,7 @@ inline fun <reified T : ViewModel> viewModelScoped(key: Any? = null): T {
 }
 
 @Composable
+@Suppress("NOTHING_TO_INLINE")
 inline fun generateKeysAndObserveLifecycle(key: Any?): Triple<ScopedViewModelContainer, String, ScopedViewModelContainer.ExternalKey> {
     val scopedViewModelContainer: ScopedViewModelContainer = viewModel()
 
@@ -118,8 +119,9 @@ inline fun generateKeysAndObserveLifecycle(key: Any?): Triple<ScopedViewModelCon
 }
 
 @Composable
+@Suppress("NOTHING_TO_INLINE")
 @PublishedApi
-internal fun ObserveLifecycles(scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: String) {
+internal inline fun ObserveLifecycles(scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: String) {
     // Observe this destination's lifecycle to detect screen resumed/paused/destroyed
     // and remember or forget this object correctly from the container (so it can be garbage collected when needed)
     ObserveLifecycleWithScopedViewModelContainer(scopedViewModelContainer)
@@ -135,7 +137,8 @@ internal fun ObserveLifecycles(scopedViewModelContainer: ScopedViewModelContaine
  */
 @Composable
 @Suppress("NOTHING_TO_INLINE")
-private inline fun ObserveComposableDisposal(positionalMemoizationKey: String, scopedViewModelContainer: ScopedViewModelContainer) {
+@PublishedApi
+internal inline fun ObserveComposableDisposal(positionalMemoizationKey: String, scopedViewModelContainer: ScopedViewModelContainer) {
     remember(positionalMemoizationKey) { RememberScopedObserver(scopedViewModelContainer, positionalMemoizationKey) }
 }
 
@@ -153,7 +156,9 @@ private inline fun ObserveComposableDisposal(positionalMemoizationKey: String, s
  * Note2: Adding the same observer [scopedViewModelContainer] twice to the lifecycle has no effect
  */
 @Composable
-private fun ObserveLifecycleWithScopedViewModelContainer(scopedViewModelContainer: ScopedViewModelContainer) {
+@Suppress("NOTHING_TO_INLINE")
+@PublishedApi
+internal inline fun ObserveLifecycleWithScopedViewModelContainer(scopedViewModelContainer: ScopedViewModelContainer) {
     // Observe state of configuration changes when disposing
     val context = LocalContext.current
     DisposableEffect(context) {
@@ -173,7 +178,8 @@ private fun ObserveLifecycleWithScopedViewModelContainer(scopedViewModelContaine
     }
 }
 
-private fun Context.findActivity(): Activity {
+@PublishedApi
+internal fun Context.findActivity(): Activity {
     var ctx = this
     while (ctx is ContextWrapper) {
         if (ctx is Activity) {
