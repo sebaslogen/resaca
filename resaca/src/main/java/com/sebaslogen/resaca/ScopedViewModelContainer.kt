@@ -171,14 +171,6 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     }
 
     /**
-     * Get the first instance of the requested type available in this container. Null if none is found
-     */
-    inline fun <reified T : Any> getFirstViewModelWithTypeOrNull(): T? = getStoredValues().filterIsInstance<T>().firstOrNull()
-
-    @PublishedApi
-    internal fun getStoredValues(): Collection<Any> = scopedObjectsContainer.values
-
-    /**
      * Triggered when a Composable that stored an object in this class is disposed and signals this container
      * that the object might be also disposed from this container only when the stored object
      * is not going to be used anymore (e.g. after configuration change or container fragment returning from backstack)
