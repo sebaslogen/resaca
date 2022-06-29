@@ -120,8 +120,8 @@ Add the Jitpack repo and include the library (less than 5Kb):
 Only 4 files are needed and they can be found in the `resaca` module under the package `com.sebaslogen.resaca`. They
 are: [RememberScopedObserver](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/RememberScopedObserver.kt)
 , [ScopedViewModelContainer](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/ScopedViewModelContainer.kt)
-, [ScopedMemoizers](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/compose/ScopedMemoizers.kt)
-and [ViewModelClearer](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/ViewModelClearer.kt).
+, [ScopedMemoizers](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/ScopedMemoizers.kt)
+and [ScopedViewModelOwner](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/ScopedViewModelOwner.kt).
 
 # What about dependency injection?
 
@@ -131,7 +131,7 @@ Nevertheless, this library supports the main **dependency injection frameworks**
 
 - [**HILT**](https://dagger.dev/hilt/quick-start) 🗡️ (Dagger) support is povided through a small extension of this library: **resaca-hilt**
   . [Documentation and installation instructions here](https://github.com/sebaslogen/resaca/tree/main/resacahilt/README.md).
-- [**Koin**](https://insert-koin.io/) 🪙 is out of the box supported by simply changing the way you request a dependency. Instaead of using the `getViewModel`
+- [**Koin**](https://insert-koin.io/) 🪙 is out of the box supported by simply changing the way you request a dependency. Instead of using the `getViewModel`
   function from Koin, you have to use the standard way of getting a dependency from Koin. Like in this
   example: `val viewModel: MyViewModel = viewModelScoped(myId) { get { parametersOf(myId) } }`
 
