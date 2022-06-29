@@ -87,7 +87,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     fun <T : Any> getOrBuildObject(
         positionalMemoizationKey: String,
         externalKey: ExternalKey = ExternalKey(0),
-        builder: @Composable () -> T
+        builder: @DisallowComposableCalls () -> T
     ): T {
         @Composable
         fun buildAndStoreObject() = builder.invoke().apply { scopedObjectsContainer[positionalMemoizationKey] = this }

@@ -28,7 +28,7 @@ import java.util.*
  * @param builder Factory function to produce a new value that will be remembered.
  */
 @Composable
-fun <T : Any> rememberScoped(key: Any? = null, builder: @Composable () -> T): T {
+fun <T : Any> rememberScoped(key: Any? = null, builder: @DisallowComposableCalls () -> T): T {
 
     // TODO: Warn and later crash with ViewModel return type builder in this function
 
