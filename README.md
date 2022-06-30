@@ -137,13 +137,12 @@ Nevertheless, this library supports the main **dependency injection frameworks**
 
 With that out of the way here are a few suggestions of how to provide objects in combination with this library:
 
-- When a Composable is used more than once in the same screen with the same input, then the same ViewModel (or business logic object) should be provided in
-  the `rememberscoped` call to maintain consistency between items on the screen. This will provide not only the same source of truth for final view states, but
-  also for loading states where the ViewModel exposes the loading state to multiple Composable UI components to have consistent UI.
 - When using the Lazy* family of Composables it is recommended that you use `rememberScoped`/`viewModelScoped` outside the scope of Composables created by Lazy
   constructors (e.g. LazyColumn) because there is a risk that a lazy initialized Composable will be disposed of when it is not visible anymore (e.g. scrolled
   away) and that will also dispose of the `rememberScoped`/`viewModelScoped` object (after a few seconds), this might not be the intended behavior. For more
   info see Compose's [State Hoisting](https://developer.android.com/jetpack/compose/state#state-hoisting).
+- When a Composable is used more than once in the same screen with the same input, then the ViewModel (or business logic object) should be provided only once
+  with `viewModelScoped` at a higher level in the tree using Compose's [State Hoisting](https://developer.android.com/jetpack/compose/state#state-hoisting).
 
 # Why not use remember?
 

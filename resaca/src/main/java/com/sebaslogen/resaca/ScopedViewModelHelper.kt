@@ -23,12 +23,12 @@ object ScopedViewModelHelper {
         }
 
     /**
-     * Returns a new [ViewModel] of type [T] or creates a new one if none was present in the [scopedObjectsContainer].
+     * Returns an existing [ViewModel] of type [T] or creates a new one if none was present in the [scopedObjectsContainer].
      *
      * This function will also compare [positionalMemoizationKey] and [externalKey] to determine
      * if a new instance of [T] needs to be created or an existing one can be returned.
      *
-     * The creation of the [ViewModel] will  be done with a [ViewModelProvider] and stored inside
+     * The creation of the [ViewModel] will be done with a [ViewModelProvider] and stored inside
      * a [ViewModelStore] which will be the actual object stored in the [scopedObjectsContainer].
      */
     @Composable
@@ -71,6 +71,39 @@ object ScopedViewModelHelper {
                 ViewModelProvider(store = newViewModelStore, factory = factory).get(modelClass)
             }
         return viewModel
+    }
+
+    /**
+     * Returns an existing [ViewModel] of type [T] or creates a new one if none was present in the [scopedObjectsContainer].
+     *
+     * The creation of the [ViewModel] will be done with a [ViewModelProvider] and stored inside
+     * a [ViewModelStore] which will be the actual object stored in the [scopedObjectsContainer].
+     *
+     * Note: There is no support for keys in this method because Hilt instances are singletons in the container scope (Activity/Fragment/Nav. destination),
+     *      so the same object will always be returned once created and until disposal of the Composables using it.
+     *      Support for keys in the Hilt library is still WIP. See https://github.com/google/dagger/issues/2328
+     */
+    @Composable
+    inline fun <T : ViewModel> getOrBuildHiltViewModel(
+        modelClass: Class<T>,
+        positionalMemoizationKey: String,
+        externalKey: ScopedViewModelContainer.ExternalKey = ScopedViewModelContainer.ExternalKey(),
+        factory: ViewModelProvider.Factory,
+        scopedObjectsContainer: MutableMap<String, Any>,
+        scopedObjectKeys: MutableMap<String, ScopedViewModelContainer.ExternalKey>,
+        cancelDisposal: ((String) -> Unit)
+    ): T {
+        cancelDisposal(positionalMemoizationKey)
+
+        val newViewModelStore = scopedObjectsContainer.values.filterIsInstance<ViewModelStore>().firstOrNull() ?: ViewModelStore()
+
+        // Set the new external key used to track and store the new object version
+        scopedObjectKeys[positionalMemoizationKey] = externalKey
+
+        scopedObjectsContainer[positionalMemoizationKey] = newViewModelStore
+
+        @Suppress("ReplaceGetOrSet")
+        return ViewModelProvider(store = newViewModelStore, factory = factory).get(modelClass)
     }
 
     /**

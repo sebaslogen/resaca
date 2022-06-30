@@ -156,6 +156,23 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         cancelDisposal = ::cancelDisposal
     )
 
+    @Suppress("UNCHECKED_CAST")
+    @Composable
+    fun <T : ViewModel> getOrBuildHiltViewModel(
+        modelClass: Class<T>,
+        positionalMemoizationKey: String,
+        externalKey: ExternalKey = ExternalKey(),
+        factory: ViewModelProvider.Factory
+    ): T = ScopedViewModelHelper.getOrBuildHiltViewModel(
+        modelClass = modelClass,
+        positionalMemoizationKey = positionalMemoizationKey,
+        externalKey = externalKey,
+        factory = factory,
+        scopedObjectsContainer = scopedObjectsContainer,
+        scopedObjectKeys = scopedObjectKeys,
+        cancelDisposal = ::cancelDisposal
+    )
+
     /**
      * Clear, if possible, scoped object when disposing it
      */

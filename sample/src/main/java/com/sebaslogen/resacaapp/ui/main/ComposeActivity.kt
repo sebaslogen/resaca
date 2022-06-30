@@ -79,6 +79,7 @@ private fun ComposeScreenWithViewModelScoped(navController: NavHostController) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         DemoNotScopedObjectComposable()
         DemoScopedObjectComposable()
+        DemoScopedInjectedViewModelComposable()
         Text(
             modifier = Modifier.padding(8.dp),
             text = "The Hilt ViewModel below will be shown in light mode and garbage collected in dark mode"
