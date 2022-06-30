@@ -29,8 +29,7 @@ import java.util.*
  */
 @Composable
 fun <T : Any> rememberScoped(key: Any? = null, builder: @DisallowComposableCalls () -> T): T {
-
-    // TODO: Warn and later crash with ViewModel return type builder in this function
+    require(key !is Function0<*>) { "The Key for viewModelScoped should not be a lambda" }
 
     val (scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: String, externalKey: ScopedViewModelContainer.ExternalKey) =
         generateKeysAndObserveLifecycle(key)
