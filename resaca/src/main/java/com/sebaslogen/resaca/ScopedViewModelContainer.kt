@@ -105,9 +105,10 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
             originalObject as? T ?: buildAndStoreObject()
         } else {
             scopedObjectKeys[positionalMemoizationKey] = externalKey // Set the external key used to track and store the new object version
-            val newObject = buildAndStoreObject()
-            originalObject?.let { clearDisposedObject(it) } // Old object needs to be cleared before it's forgotten
-            newObject
+            scopedObjectsContainer.remove(positionalMemoizationKey)?.also {
+                if (shouldClearDisposedObject(it)) clearDisposedObject(it) // Old object may need to be cleared before it's forgotten
+            }
+            buildAndStoreObject()
         }
     }
 
@@ -220,8 +221,6 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         disposingJobs[key] = newDisposingJob
     }
 
-    // TODO: does this check work on VMs?
-    // TODO: do we need this check also on ScopedViewModelHelper.getOrBuildViewModel?
     /**
      * An object that is being disposed should also be cleared only if it was the last instance present in this container
      */

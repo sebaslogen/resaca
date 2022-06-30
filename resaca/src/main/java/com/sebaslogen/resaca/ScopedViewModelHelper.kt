@@ -61,11 +61,12 @@ object ScopedViewModelHelper {
                 // Replace/Update key: set the new external key used to track and store the new object version
                 scopedObjectKeys[positionalMemoizationKey] = externalKey
 
+                scopedObjectsContainer.remove(positionalMemoizationKey)?.also {
+                    clearDisposedObject(it) // Clean-up if needed: the old object is cleared before it's forgotten
+                }
+
                 val newViewModelStore = ViewModelStore()
                 scopedObjectsContainer[positionalMemoizationKey] = newViewModelStore
-
-                // Clean-up: if needed, the old object is cleared before it's forgotten
-                originalViewModelStore?.let { clearDisposedObject(it) }
 
                 @Suppress("ReplaceGetOrSet")
                 ViewModelProvider(store = newViewModelStore, factory = factory).get(modelClass)
