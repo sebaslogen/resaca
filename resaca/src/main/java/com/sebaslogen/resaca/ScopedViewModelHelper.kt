@@ -79,8 +79,9 @@ object ScopedViewModelHelper {
      * The creation of the [ViewModel] will be done with a [ViewModelProvider] and stored inside
      * a [ViewModelStore] which will be the actual object stored in the [scopedObjectsContainer].
      *
-     * Note: There is no support for keys in this method because Hilt instances are singletons in the container scope (Activity/Fragment/Nav. destination),
-     *      so the same object will always be returned once created and until disposal of the Composables using it.
+     * Note: There is no support for keys in Hilt therefore the same [ViewModelStore] is used for all
+     *      Hilt ViewModels in the container scope (Activity/Fragment/Nav. destination),
+     *      and the same object will always be returned once created and until disposal of the Composables using it.
      *      Support for keys in the Hilt library is still WIP. See https://github.com/google/dagger/issues/2328
      */
     @Composable
