@@ -1,3 +1,5 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package com.sebaslogen.resaca.hilt
 
 import androidx.compose.runtime.Composable
@@ -46,7 +48,6 @@ inline fun <reified T : ViewModel> hiltViewModelScoped(): T {
  * Otherwise, assume the container Fragment or Activity is properly annotated with @[AndroidEntryPoint]
  * and use its factory, if all else fails then use the default factory.
  */
-@Suppress("NOTHING_TO_INLINE")
 @Composable
 inline fun createHiltViewModelFactory(
     viewModelStoreOwner: ViewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {

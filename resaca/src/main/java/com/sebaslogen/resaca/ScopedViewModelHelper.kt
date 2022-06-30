@@ -5,10 +5,6 @@ import androidx.compose.runtime.DisallowComposableCalls
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.cancel
-import java.io.Closeable
-import kotlin.coroutines.CoroutineContext
 
 
 /**
@@ -39,7 +35,7 @@ object ScopedViewModelHelper {
     inline fun <T : ViewModel> getOrBuildViewModel(
         modelClass: Class<T>,
         positionalMemoizationKey: String,
-        externalKey: ScopedViewModelContainer.ExternalKey = ScopedViewModelContainer.ExternalKey(0),
+        externalKey: ScopedViewModelContainer.ExternalKey = ScopedViewModelContainer.ExternalKey(),
         factory: ViewModelProvider.Factory,
         scopedObjectsContainer: MutableMap<String, Any>,
         scopedObjectKeys: MutableMap<String, ScopedViewModelContainer.ExternalKey>,
@@ -58,12 +54,15 @@ object ScopedViewModelHelper {
                 @Suppress("ReplaceGetOrSet")
                 ViewModelProvider(store = originalViewModelStore, factory = factory).get(modelClass)
             } else {
-                // Replace/Update key: set the new external key used to track and store the new object version
-                scopedObjectKeys[positionalMemoizationKey] = externalKey
-
-                scopedObjectsContainer.remove(positionalMemoizationKey)?.also {
-                    clearDisposedObject(it) // Clean-up if needed: the old object is cleared before it's forgotten
+                // Clean-up if needed: the old object is cleared before it's forgotten
+                scopedObjectKeys.remove(positionalMemoizationKey)?.also { originalExternalKey ->
+                    originalViewModelStore?.let {
+                        clearLastDisposedViewModel(originalViewModelStore, originalExternalKey, scopedObjectKeys)
+                    }
                 }
+
+                // Set the new external key used to track and store the new object version
+                scopedObjectKeys[positionalMemoizationKey] = externalKey
 
                 val newViewModelStore = ViewModelStore()
                 scopedObjectsContainer[positionalMemoizationKey] = newViewModelStore
@@ -75,16 +74,20 @@ object ScopedViewModelHelper {
     }
 
     /**
-     * Clear, if possible, scoped object when disposing it
+     * Check if the given [originalExternalKey] is the last one inside [scopedObjectKeys] and if so,
+     * clear the [ViewModelStore] and therefore the [ViewModel] inside.
      */
-    @Suppress("NOTHING_TO_INLINE")
-    inline fun clearDisposedObject(scopedObject: Any) {
-        when (scopedObject) {
-            is ViewModelStore -> scopedObject.clear()
-            is CoroutineScope -> scopedObject.cancel()
-            is CoroutineContext -> scopedObject.cancel()
-            is Closeable -> scopedObject.close()
+    @PublishedApi
+    internal inline fun clearLastDisposedViewModel(
+        viewModelStore: ViewModelStore,
+        originalExternalKey: ScopedViewModelContainer.ExternalKey,
+        scopedObjectKeys: MutableMap<String, ScopedViewModelContainer.ExternalKey>
+    ) {
+        if (originalExternalKey.isDefaultKey) {
+            viewModelStore.clear()
+        } else {
+            val keyFound = scopedObjectKeys.any { (_, storedExternalKey) -> storedExternalKey == originalExternalKey }
+            if (!keyFound) viewModelStore.clear()
         }
     }
-
 }

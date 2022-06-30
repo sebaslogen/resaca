@@ -1,3 +1,5 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package com.sebaslogen.resaca
 
 import android.app.Activity
@@ -100,7 +102,6 @@ inline fun <reified T : ViewModel> viewModelScoped(key: Any? = null): T {
 }
 
 @Composable
-@Suppress("NOTHING_TO_INLINE")
 inline fun generateKeysAndObserveLifecycle(key: Any?): Triple<ScopedViewModelContainer, String, ScopedViewModelContainer.ExternalKey> {
     val scopedViewModelContainer: ScopedViewModelContainer = viewModel()
 
@@ -116,7 +117,6 @@ inline fun generateKeysAndObserveLifecycle(key: Any?): Triple<ScopedViewModelCon
 }
 
 @Composable
-@Suppress("NOTHING_TO_INLINE")
 @PublishedApi
 internal inline fun ObserveLifecycles(scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: String) {
     // Observe this destination's lifecycle to detect screen resumed/paused/destroyed
@@ -133,7 +133,6 @@ internal inline fun ObserveLifecycles(scopedViewModelContainer: ScopedViewModelC
  * and then this observer is remembered to connect the observer's callbacks to the lifecycle of this Composable
  */
 @Composable
-@Suppress("NOTHING_TO_INLINE")
 @PublishedApi
 internal inline fun ObserveComposableDisposal(positionalMemoizationKey: String, scopedViewModelContainer: ScopedViewModelContainer) {
     remember(positionalMemoizationKey) { RememberScopedObserver(scopedViewModelContainer, positionalMemoizationKey) }
@@ -153,7 +152,6 @@ internal inline fun ObserveComposableDisposal(positionalMemoizationKey: String, 
  * Note2: Adding the same observer [scopedViewModelContainer] twice to the lifecycle has no effect
  */
 @Composable
-@Suppress("NOTHING_TO_INLINE")
 @PublishedApi
 internal inline fun ObserveLifecycleWithScopedViewModelContainer(scopedViewModelContainer: ScopedViewModelContainer) {
     // Observe state of configuration changes when disposing

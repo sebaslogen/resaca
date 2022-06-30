@@ -4,9 +4,10 @@ import android.app.Activity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisallowComposableCalls
 import androidx.lifecycle.*
-import com.sebaslogen.resaca.ScopedViewModelHelper.clearDisposedObject
 import kotlinx.coroutines.*
+import java.io.Closeable
 import java.util.concurrent.ConcurrentSkipListSet
+import kotlin.coroutines.CoroutineContext
 
 /**
  * [ViewModel] class used to store objects and [ViewModel]s as long as the
@@ -91,7 +92,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     @Composable
     fun <T : Any> getOrBuildObject(
         positionalMemoizationKey: String,
-        externalKey: ExternalKey = ExternalKey(0),
+        externalKey: ExternalKey = ExternalKey(),
         builder: @DisallowComposableCalls () -> T
     ): T {
         @Composable
@@ -117,7 +118,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     fun <T : ViewModel> getOrBuildViewModel(
         modelClass: Class<T>,
         positionalMemoizationKey: String,
-        externalKey: ExternalKey = ExternalKey(0),
+        externalKey: ExternalKey = ExternalKey(),
         builder: @DisallowComposableCalls () -> T
     ): T = getOrBuildViewModel(
         modelClass = modelClass,
@@ -130,7 +131,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     fun <T : ViewModel> getOrBuildViewModel(
         modelClass: Class<T>,
         positionalMemoizationKey: String,
-        externalKey: ExternalKey = ExternalKey(0)
+        externalKey: ExternalKey = ExternalKey()
     ): T = getOrBuildViewModel(
         modelClass = modelClass,
         positionalMemoizationKey = positionalMemoizationKey,
@@ -143,7 +144,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     fun <T : ViewModel> getOrBuildViewModel(
         modelClass: Class<T>,
         positionalMemoizationKey: String,
-        externalKey: ExternalKey = ExternalKey(0),
+        externalKey: ExternalKey = ExternalKey(),
         factory: ViewModelProvider.Factory
     ): T = ScopedViewModelHelper.getOrBuildViewModel(
         modelClass = modelClass,
@@ -154,6 +155,19 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         scopedObjectKeys = scopedObjectKeys,
         cancelDisposal = ::cancelDisposal
     )
+
+    /**
+     * Clear, if possible, scoped object when disposing it
+     */
+    @Suppress("NOTHING_TO_INLINE")
+    private inline fun clearDisposedObject(scopedObject: Any) {
+        when (scopedObject) {
+            is ViewModelStore -> scopedObject.clear()
+            is CoroutineScope -> scopedObject.cancel()
+            is CoroutineContext -> scopedObject.cancel()
+            is Closeable -> scopedObject.close()
+        }
+    }
 
     /**
      * Triggered when a Composable that stored an object in this class is disposed and signals this container
@@ -210,6 +224,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
             withContext(NonCancellable) { // We treat the disposal/remove/clear block as an atomic transaction
                 if (removalCondition()) {
                     markedForDisposal.remove(key)
+                    scopedObjectKeys.remove(key)
                     scopedObjectsContainer.remove(key)
                         ?.also {
                             if (shouldClearDisposedObject(it)) clearDisposedObject(it)
@@ -273,7 +288,11 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      * the new external key is stored in [scopedObjectKeys]
      */
     @JvmInline
-    value class ExternalKey(val value: Int) {
+    value class ExternalKey(private val value: Int = 0) {
+
+        val isDefaultKey: Boolean
+            get() = value == 0
+
         companion object {
             fun from(objectInstance: Any?): ExternalKey = ExternalKey(objectInstance.hashCode())
         }

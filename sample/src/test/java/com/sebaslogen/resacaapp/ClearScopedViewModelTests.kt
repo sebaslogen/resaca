@@ -25,7 +25,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
     lateinit var navController: NavHostController
 
     @Test
-    fun `when I navigate to nested screen and back, then the 2 scoped ViewModels of the second screen is cleared`() {
+    fun `when I navigate to nested screen and back, then the 2 scoped ViewModels of the second screen are cleared`() {
 
         // Given the starting screen with scoped objects
         composeTestRule.setContent {
