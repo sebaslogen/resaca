@@ -1,17 +1,21 @@
 package com.sebaslogen.resaca
 
+import android.app.Activity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisallowComposableCalls
 import androidx.lifecycle.*
+import com.sebaslogen.resaca.ScopedViewModelHelper.clearDisposedObject
 import kotlinx.coroutines.*
-import java.io.Closeable
 import java.util.concurrent.ConcurrentSkipListSet
-import kotlin.coroutines.CoroutineContext
 
 /**
  * [ViewModel] class used to store objects and [ViewModel]s as long as the
  * requester doesn't completely leave composition (even temporary)
  * or the scope of this [ViewModel] is cleared.
+ *
+ * ************************
+ * * Composable lifecycle *
+ * ************************
  *
  * The lifecycle of a Composable doesn't match the one from this ViewModel nor Activities/Fragments, it's alive
  * as long it's part of the composition and in some cases even after temporary leaving composition.
@@ -36,9 +40,10 @@ import kotlin.coroutines.CoroutineContext
  *
  *
  * To detect when the requester Composable is not needed anymore (has left composition and
- * the screen for good), this class observes the [Lifecycle] of the owner of
- * this [ScopedViewModelContainer] (i.e. Activity, Fragment or Compose Navigation destination)
- *
+ * the screen for good), this class observes
+ * - the [Lifecycle] of the owner of this [ScopedViewModelContainer] (i.e. Activity, Fragment or Compose Navigation destination)
+ * - the foreground/background state of the container [LifecycleOwner]
+ * - the configuration changing state of the container [Activity]
  */
 class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
 
@@ -94,13 +99,15 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
 
         cancelDisposal(positionalMemoizationKey)
 
+        val originalObject = scopedObjectsContainer[positionalMemoizationKey]
         return if (scopedObjectKeys.containsKey(positionalMemoizationKey) && (scopedObjectKeys[positionalMemoizationKey] == externalKey)) {
             // When the object is already present and the external key matches, then try to restore it
-            scopedObjectsContainer[positionalMemoizationKey] as? T ?: buildAndStoreObject()
+            originalObject as? T ?: buildAndStoreObject()
         } else {
             scopedObjectKeys[positionalMemoizationKey] = externalKey // Set the external key used to track and store the new object version
-            scopedObjectsContainer[positionalMemoizationKey]?.let { clearDisposedObject(it) } // Old object needs to be cleared before it's forgotten
-            buildAndStoreObject()
+            val newObject = buildAndStoreObject()
+            originalObject?.let { clearDisposedObject(it) } // Old object needs to be cleared before it's forgotten
+            newObject
         }
     }
 
@@ -111,28 +118,24 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         positionalMemoizationKey: String,
         externalKey: ExternalKey = ExternalKey(0),
         builder: @DisallowComposableCalls () -> T
-    ): T {
-        return getOrBuildViewModel(
-            modelClass = modelClass,
-            positionalMemoizationKey = positionalMemoizationKey,
-            externalKey = externalKey,
-            factory = ScopedViewModelOwner.viewModelFactoryFor(builder)
-        )
-    }
+    ): T = getOrBuildViewModel(
+        modelClass = modelClass,
+        positionalMemoizationKey = positionalMemoizationKey,
+        externalKey = externalKey,
+        factory = ScopedViewModelHelper.viewModelFactoryFor(builder)
+    )
 
     @Composable
     fun <T : ViewModel> getOrBuildViewModel(
         modelClass: Class<T>,
         positionalMemoizationKey: String,
         externalKey: ExternalKey = ExternalKey(0)
-    ): T {
-        return getOrBuildViewModel(
-            modelClass = modelClass,
-            positionalMemoizationKey = positionalMemoizationKey,
-            externalKey = externalKey,
-            factory = ViewModelProvider.NewInstanceFactory.instance
-        )
-    }
+    ): T = getOrBuildViewModel(
+        modelClass = modelClass,
+        positionalMemoizationKey = positionalMemoizationKey,
+        externalKey = externalKey,
+        factory = ViewModelProvider.NewInstanceFactory.instance
+    )
 
     @Suppress("UNCHECKED_CAST")
     @Composable
@@ -141,34 +144,15 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         positionalMemoizationKey: String,
         externalKey: ExternalKey = ExternalKey(0),
         factory: ViewModelProvider.Factory
-    ): T {
-        @Composable
-        fun buildAndStoreScopedViewModelOwner(originalScopedViewModelOwner: ScopedViewModelOwner<*>?): T {
-            val newScopedViewModelOwner = ScopedViewModelOwner(modelClass = modelClass, factory = factory)
-            scopedObjectsContainer[positionalMemoizationKey] = newScopedViewModelOwner
-
-            // Clean-up: old object needs to be cleared before it's forgotten
-            originalScopedViewModelOwner?.let { clearDisposedObject(it) }
-            return newScopedViewModelOwner.viewModel
-        }
-
-        cancelDisposal(positionalMemoizationKey)
-
-        val originalScopedViewModelOwner: ScopedViewModelOwner<*>? = scopedObjectsContainer[positionalMemoizationKey] as? ScopedViewModelOwner<*>
-        val viewModel: T =
-            if (scopedObjectKeys.containsKey(positionalMemoizationKey)
-                && (scopedObjectKeys[positionalMemoizationKey] == externalKey)
-                && originalScopedViewModelOwner is ScopedViewModelOwner<*>
-            ) {
-                // When the object is already present and the external key matches, then try to restore it using the existing ViewModelStore
-                originalScopedViewModelOwner.viewModel as? T ?: buildAndStoreScopedViewModelOwner(originalScopedViewModelOwner)
-            } else {
-                // Replace/Update key: set the new external key used to track and store the new object version
-                scopedObjectKeys[positionalMemoizationKey] = externalKey
-                buildAndStoreScopedViewModelOwner(originalScopedViewModelOwner)
-            }
-        return viewModel
-    }
+    ): T = ScopedViewModelHelper.getOrBuildViewModel(
+        modelClass = modelClass,
+        positionalMemoizationKey = positionalMemoizationKey,
+        externalKey = externalKey,
+        factory = factory,
+        scopedObjectsContainer = scopedObjectsContainer,
+        scopedObjectKeys = scopedObjectKeys,
+        cancelDisposal = ::cancelDisposal
+    )
 
     /**
      * Triggered when a Composable that stored an object in this class is disposed and signals this container
@@ -236,22 +220,12 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         disposingJobs[key] = newDisposingJob
     }
 
+    // TODO: does this check work on VMs?
+    // TODO: do we need this check also on ScopedViewModelHelper.getOrBuildViewModel?
     /**
      * An object that is being disposed should also be cleared only if it was the last instance present in this container
      */
     private fun shouldClearDisposedObject(disposedObject: Any): Boolean = !scopedObjectsContainer.containsValue(disposedObject)
-
-    /**
-     * Clear, if possible, scoped object when disposing it
-     */
-    private fun clearDisposedObject(scopedObject: Any) {
-        when (scopedObject) {
-            is ScopedViewModelOwner<*> -> scopedObject.clear()
-            is CoroutineScope -> scopedObject.cancel()
-            is CoroutineContext -> scopedObject.cancel()
-            is Closeable -> scopedObject.close()
-        }
-    }
 
     private fun cancelDisposal(key: String) {
         disposingJobs.remove(key)?.cancel() // Cancel scheduled disposal
