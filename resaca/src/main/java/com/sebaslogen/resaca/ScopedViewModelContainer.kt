@@ -88,6 +88,9 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      */
     private val disposeDelayTimeMillis: Long = 5000
 
+    /**
+     * Restore or build an object of type [T] using the provided [builder] as the factory
+     */
     @Suppress("UNCHECKED_CAST")
     @Composable
     fun <T : Any> getOrBuildObject(
@@ -113,6 +116,21 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     }
 
     /**
+     * Restore or build a [ViewModel] using the default factory for ViewModels without constructor parameters
+     */
+    @Composable
+    fun <T : ViewModel> getOrBuildViewModel(
+        modelClass: Class<T>,
+        positionalMemoizationKey: String,
+        externalKey: ExternalKey = ExternalKey()
+    ): T = getOrBuildViewModel(
+        modelClass = modelClass,
+        positionalMemoizationKey = positionalMemoizationKey,
+        externalKey = externalKey,
+        factory = ViewModelProvider.NewInstanceFactory.instance
+    )
+
+    /**
      * Restore or build a [ViewModel] using the provided [builder] as the factory
      */
     @Suppress("UNCHECKED_CAST")
@@ -127,21 +145,6 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
         factory = ScopedViewModelHelper.viewModelFactoryFor(builder)
-    )
-
-    /**
-     * Restore or build a [ViewModel] using the default factory for ViewModels without constructor parameters
-     */
-    @Composable
-    fun <T : ViewModel> getOrBuildViewModel(
-        modelClass: Class<T>,
-        positionalMemoizationKey: String,
-        externalKey: ExternalKey = ExternalKey()
-    ): T = getOrBuildViewModel(
-        modelClass = modelClass,
-        positionalMemoizationKey = positionalMemoizationKey,
-        externalKey = externalKey,
-        factory = ViewModelProvider.NewInstanceFactory.instance
     )
 
     @Suppress("UNCHECKED_CAST")
