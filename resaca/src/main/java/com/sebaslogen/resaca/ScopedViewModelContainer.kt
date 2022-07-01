@@ -64,24 +64,24 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      * Container of object keys associated with their [ExternalKey],
      * the [ExternalKey] will be used to track and store new versions of the object to be stored/restored
      */
-    private val scopedObjectKeys = mutableMapOf<String, ExternalKey>()
+    private val scopedObjectKeys: MutableMap<String, ExternalKey> = mutableMapOf()
 
     /**
      * Generic objects container
      */
-    private val scopedObjectsContainer = mutableMapOf<String, Any>()
+    private val scopedObjectsContainer: MutableMap<String, Any> = mutableMapOf()
 
     /**
      * List of keys for the objects that will be disposed (forgotten from this class so they can be garbage collected) in the near future
      */
-    private val markedForDisposal = ConcurrentSkipListSet<String>()
+    private val markedForDisposal: ConcurrentSkipListSet<String> = ConcurrentSkipListSet<String>()
 
     /**
      * List of [Job]s associated with an object (through its key) that is scheduled to be disposed very soon, unless
      * the object is requested again (and [cancelDisposal] is triggered) or
      * the container of this [ScopedViewModelContainer] class goes to the background (making [isInForeground] false)
      */
-    private val disposingJobs = mutableMapOf<String, Job>()
+    private val disposingJobs: MutableMap<String, Job> = mutableMapOf()
 
     /**
      * Time to wait until disposing an object from the [scopedObjectsContainer] after it has been scheduled for disposal
@@ -144,7 +144,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         modelClass = modelClass,
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
-        factory = ScopedViewModelHelper.viewModelFactoryFor(builder)
+        factory = ScopedViewModelOwner.viewModelFactoryFor(builder)
     )
 
     @Suppress("UNCHECKED_CAST")
@@ -154,7 +154,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         positionalMemoizationKey: String,
         externalKey: ExternalKey = ExternalKey(),
         factory: ViewModelProvider.Factory
-    ): T = ScopedViewModelHelper.getOrBuildViewModel(
+    ): T = ScopedViewModelProvider.getOrBuildViewModel(
         modelClass = modelClass,
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
@@ -171,7 +171,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         positionalMemoizationKey: String,
         externalKey: ExternalKey = ExternalKey(),
         factory: ViewModelProvider.Factory
-    ): T = ScopedViewModelHelper.getOrBuildHiltViewModel(
+    ): T = ScopedViewModelProvider.getOrBuildHiltViewModel(
         modelClass = modelClass,
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
@@ -261,10 +261,10 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     /**
      * An object that is being disposed should also be cleared only if it was the last instance present in this container
      */
-    private fun clearLastDisposedObject(disposedObject: Any) {
-        if (disposedObject is ViewModelStore) { // TODO
-            ScopedViewModelHelper.clearLastDisposedViewModel(viewModelStore = disposedObject)
-        } else if (!scopedObjectsContainer.containsValue(disposedObject)) {
+    private fun clearLastDisposedObject(disposedObject: Any, objectsContainer: List<Any> = scopedObjectsContainer.values.toList()) {
+        if (disposedObject is ScopedViewModelOwner<*>) {
+            ScopedViewModelProvider.clearLastDisposedViewModel(scopedViewModelOwner = disposedObject, objectsContainer = objectsContainer)
+        } else if (!objectsContainer.contains(disposedObject)) {
             clearDisposedObject(disposedObject)
         }
     }
@@ -281,7 +281,11 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         // Cancel disposal jobs, all those references will be garbage collected anyway with this ViewModel
         disposingJobs.forEach { (_, job) -> job.cancel() }
         // Cancel all coroutines, Closeables and ViewModels hosted in this object
-        scopedObjectsContainer.values.forEach { clearLastDisposedObject(it) }
+        val objectsToClear: MutableList<Any> = scopedObjectsContainer.values.toMutableList()
+        while (objectsToClear.isNotEmpty()) {
+            val lastObject = objectsToClear.removeLast()
+            clearLastDisposedObject(lastObject, objectsToClear)
+        }
         scopedObjectsContainer.clear() // Clear just in case this VM is leaked
         super.onCleared()
     }
