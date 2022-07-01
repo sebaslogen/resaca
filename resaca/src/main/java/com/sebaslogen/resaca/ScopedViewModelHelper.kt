@@ -53,16 +53,12 @@ object ScopedViewModelHelper {
                 // When the object is already present and the external key matches, then return the existing one in the ViewModelStore
                 @Suppress("ReplaceGetOrSet")
                 ViewModelProvider(store = originalViewModelStore, factory = factory).get(modelClass)
-            } else {
-                // Clean-up if needed: the old object is cleared before it's forgotten
-                scopedObjectKeys.remove(positionalMemoizationKey)?.also { originalExternalKey ->
-                    originalViewModelStore?.let {
-                        clearLastDisposedViewModel(originalViewModelStore, originalExternalKey, scopedObjectKeys)
-                    }
-                }
-
+            } else { // First time ViewModel creation or externalKey changed
                 // Set the new external key used to track and store the new object version
                 scopedObjectKeys[positionalMemoizationKey] = externalKey
+
+                // Clean-up if needed: the old object is cleared before it's forgotten
+                originalViewModelStore?.let { clearLastDisposedViewModel(originalViewModelStore) }
 
                 val newViewModelStore = ViewModelStore()
                 scopedObjectsContainer[positionalMemoizationKey] = newViewModelStore
@@ -108,20 +104,24 @@ object ScopedViewModelHelper {
     }
 
     /**
+     * TODO
+     *
+     *
+     * WIP
+     *
      * Check if the given [originalExternalKey] is the last one inside [scopedObjectKeys] and if so,
      * clear the [ViewModelStore] and therefore the [ViewModel] inside.
      */
     @PublishedApi
     internal inline fun clearLastDisposedViewModel(
         viewModelStore: ViewModelStore,
-        originalExternalKey: ScopedViewModelContainer.ExternalKey,
-        scopedObjectKeys: MutableMap<String, ScopedViewModelContainer.ExternalKey>
     ) {
-        if (originalExternalKey.isDefaultKey) {
-            viewModelStore.clear()
-        } else {
-            val keyFound = scopedObjectKeys.any { (_, storedExternalKey) -> storedExternalKey == originalExternalKey }
-            if (!keyFound) viewModelStore.clear()
-        }
+        viewModelStore.clear()
+//        if (originalExternalKey.isDefaultKey) {
+//            viewModelStore.clear()
+//        } else {
+//            val keyFound = scopedObjectKeys.any { (_, storedExternalKey) -> storedExternalKey == originalExternalKey }
+//            if (!keyFound) viewModelStore.clear()
+//        }
     }
 }
