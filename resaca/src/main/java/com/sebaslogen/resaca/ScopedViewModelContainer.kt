@@ -100,14 +100,15 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
 
         cancelDisposal(positionalMemoizationKey)
 
-        val originalObject = scopedObjectsContainer[positionalMemoizationKey]
+        val originalObject: Any? = scopedObjectsContainer[positionalMemoizationKey]
         return if (scopedObjectKeys.containsKey(positionalMemoizationKey) && (scopedObjectKeys[positionalMemoizationKey] == externalKey)) {
             // When the object is already present and the external key matches, then try to restore it
             originalObject as? T ?: buildAndStoreObject()
         } else {
+            val originalKey = scopedObjectKeys[positionalMemoizationKey]
             scopedObjectKeys[positionalMemoizationKey] = externalKey // Set the external key used to track and store the new object version
-            scopedObjectsContainer.remove(positionalMemoizationKey)?.also {
-                if (shouldClearDisposedObject(it)) clearDisposedObject(it) // Old object may need to be cleared before it's forgotten
+            scopedObjectsContainer.remove(positionalMemoizationKey)?.also { objectDisposed ->
+                originalKey?.let { clearLastDisposedObject(objectDisposed, originalKey) }// Old object may need to be cleared before it's forgotten
             }
             buildAndStoreObject()
         }
@@ -241,10 +242,11 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
             withContext(NonCancellable) { // We treat the disposal/remove/clear block as an atomic transaction
                 if (removalCondition()) {
                     markedForDisposal.remove(key)
+                    val originalKey = scopedObjectKeys[key]
                     scopedObjectKeys.remove(key)
                     scopedObjectsContainer.remove(key)
                         ?.also {
-                            if (shouldClearDisposedObject(it)) clearDisposedObject(it)
+                            clearLastDisposedObject(it, originalKey)
                         }
                 }
                 disposingJobs.remove(key)
@@ -256,7 +258,17 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     /**
      * An object that is being disposed should also be cleared only if it was the last instance present in this container
      */
-    private fun shouldClearDisposedObject(disposedObject: Any): Boolean = !scopedObjectsContainer.containsValue(disposedObject)
+    private fun clearLastDisposedObject(disposedObject: Any, originalKey: ExternalKey) {
+        if (disposedObject is ViewModelStore) {
+            ScopedViewModelHelper.clearLastDisposedViewModel(
+                viewModelStore = disposedObject,
+                originalExternalKey = originalKey,
+                scopedObjectKeys = scopedObjectKeys
+            )
+        } else if (!scopedObjectsContainer.containsValue(disposedObject)) {
+            clearDisposedObject(disposedObject)
+        }
+    }
 
     private fun cancelDisposal(key: String) {
         disposingJobs.remove(key)?.cancel() // Cancel scheduled disposal
