@@ -235,4 +235,37 @@ class ClearScopedViewModelTests : ComposeTestUtils {
                         "is not the same as the initial the amount before the Composable was disposed ($initialAmountOfViewModelsCleared)"
             }
         }
+
+    /////////////////////////////////////////////////////
+    // Scenarios to test clear on ViewModel key change //
+    /////////////////////////////////////////////////////
+
+    @Test
+    fun `when the keys associated with the ViewModels change, then the scoped ViewModels are cleared`() {
+
+        // Given the starting screen with two scoped ViewModels
+        var viewModelKey by mutableStateOf("initial key")
+        val textTitle = "Test text"
+        composeTestRule.setContent {
+            Column {
+                Text(textTitle)
+                DemoScopedViewModelComposable(viewModelKey)
+                DemoScopedParametrizedViewModelComposable(key = viewModelKey)
+            }
+        }
+        printComposeUiTreeToLog()
+
+        // When the Composables with scoped ViewModels are not part of composition anymore and disposed
+        val initialAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+        viewModelKey = "new key" // Trigger disposal
+        composeTestRule.onNodeWithText(textTitle).assertExists() // Required to trigger recomposition
+        printComposeUiTreeToLog()
+        val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+
+        // Then both scoped ViewModels are cleared
+        assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 2) {
+            "The amount of FakeScopedViewModels that where cleared after disposal ($finalAmountOfViewModelsCleared) " +
+                    "was not two numbers higher that the amount before the Composables were disposed ($initialAmountOfViewModelsCleared)"
+        }
+    }
 }

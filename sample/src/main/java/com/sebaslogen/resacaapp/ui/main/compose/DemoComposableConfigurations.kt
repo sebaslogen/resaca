@@ -50,8 +50,8 @@ fun DemoScopedObjectComposable() {
  * Create a [ViewModel] with the [viewModelScoped] function and with no external parameters/dependencies required by the constructor
  */
 @Composable
-fun DemoScopedViewModelComposable() {
-    val fakeScopedVM: FakeScopedViewModel = viewModelScoped()
+fun DemoScopedViewModelComposable(key: String? = null) {
+    val fakeScopedVM: FakeScopedViewModel = viewModelScoped(key = key)
     DemoComposable(inputObject = fakeScopedVM, objectType = "FakeScopedViewModel", scoped = true)
 }
 
@@ -60,8 +60,11 @@ fun DemoScopedViewModelComposable() {
  * Note: This is useful for frameworks like Koin or other way of providing dependencies
  */
 @Composable
-fun DemoScopedParametrizedViewModelComposable(viewModelInstance: FakeScopedViewModel = FakeScopedViewModel(viewModelsClearedGloballySharedCounter)) {
-    val fakeScopedParametrizedVM: FakeScopedViewModel = viewModelScoped { viewModelInstance }
+fun DemoScopedParametrizedViewModelComposable(
+    viewModelInstance: FakeScopedViewModel = FakeScopedViewModel(viewModelsClearedGloballySharedCounter),
+    key: String? = null
+) {
+    val fakeScopedParametrizedVM: FakeScopedViewModel = viewModelScoped(key = key) { viewModelInstance }
     DemoComposable(inputObject = fakeScopedParametrizedVM, objectType = "FakeScopedParametrizedViewModel", scoped = true)
 }
 
