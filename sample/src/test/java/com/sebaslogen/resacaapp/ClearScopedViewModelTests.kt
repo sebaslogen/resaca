@@ -18,6 +18,7 @@ import com.sebaslogen.resacaapp.ui.main.ComposeActivity
 import com.sebaslogen.resacaapp.ui.main.ScreensWithNavigation
 import com.sebaslogen.resacaapp.ui.main.compose.DemoScopedParametrizedViewModelComposable
 import com.sebaslogen.resacaapp.ui.main.compose.DemoScopedViewModelComposable
+import com.sebaslogen.resacaapp.ui.main.data.FakeScopedViewModel
 import com.sebaslogen.resacaapp.ui.main.hiltViewModelScopedDestination
 import com.sebaslogen.resacaapp.ui.main.rememberScopedDestination
 import com.sebaslogen.resacaapp.utils.MainDispatcherRule
@@ -65,7 +66,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
 
         // Then the scoped ViewModel from the second screen is cleared
         assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 2) {
-            "The amount of FakeScopedViewModel(s) that where cleared after back navigation ($finalAmountOfViewModelsCleared) " +
+            "The amount of FakeScopedViewModels that where cleared after back navigation ($finalAmountOfViewModelsCleared) " +
                     "was not two numbers higher that the amount before navigating ($initialAmountOfViewModelsCleared)"
         }
     }
@@ -90,7 +91,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
 
                 // Then the Hilt scoped ViewModel from the second screen is cleared
                 assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 1) {
-                    "The amount of FakeInjectedViewModel(s) that where cleared after back navigation ($finalAmountOfViewModelsCleared) " +
+                    "The amount of FakeInjectedViewModels that where cleared after back navigation ($finalAmountOfViewModelsCleared) " +
                             "was not two numbers higher that the amount before navigating ($initialAmountOfViewModelsCleared)"
                 }
             }
@@ -128,16 +129,45 @@ class ClearScopedViewModelTests : ComposeTestUtils {
 
         // Then both scoped ViewModels are cleared
         assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 2) {
-            "The amount of FakeScopedViewModel(s) that where cleared after back navigation ($finalAmountOfViewModelsCleared) " +
-                    "was not two numbers higher that the amount before navigating ($initialAmountOfViewModelsCleared)"
+            "The amount of FakeScopedViewModels that where cleared after disposal ($finalAmountOfViewModelsCleared) " +
+                    "was not two numbers higher that the amount before the Composables were disposed ($initialAmountOfViewModelsCleared)"
         }
     }
 
 
     @Test
-    fun `given two sibling Composables with the same ViewModel instance scoped to them, when one Composable is disposed, then the ViewModel is NOT cleared`() {
+    fun `given two sibling Composables with the same ViewModel instance scoped to them, when one Composable is disposed, then the ViewModel is NOT cleared`() =
+        runTest {
 
-    }
+            // Given the starting screen with two scoped ViewModels sharing the same ViewModel instance
+            var composablesShown by mutableStateOf(true)
+            val textTitle = "Test text"
+            val viewModelInstance = FakeScopedViewModel(viewModelsClearedGloballySharedCounter)
+            composeTestRule.setContent {
+                Column {
+                    Text(textTitle)
+                    DemoScopedParametrizedViewModelComposable(viewModelInstance)
+                    if (composablesShown) {
+                        DemoScopedParametrizedViewModelComposable(viewModelInstance)
+                    }
+                }
+            }
+            printComposeUiTreeToLog()
+
+            // When one Composables with a scoped ViewModel is not part of composition anymore and disposed
+            val initialAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+            composablesShown = false // Trigger disposal
+            composeTestRule.onNodeWithText(textTitle).assertExists() // Required to trigger recomposition
+            advanceTimeBy(6000) // Advance more than 5 seconds to pass the disposal delay on ScopedViewModelContainer
+            printComposeUiTreeToLog()
+            val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+
+            // Then the scoped ViewModels is NOT cleared
+            assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared) {
+                "The amount of FakeScopedViewModels that where cleared after disposal ($finalAmountOfViewModelsCleared) " +
+                        "0, the initial the amount before the Composables were disposed ($initialAmountOfViewModelsCleared)"
+            }
+        }
 
 
     @Test

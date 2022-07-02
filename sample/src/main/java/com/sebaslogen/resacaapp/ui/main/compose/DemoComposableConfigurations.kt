@@ -60,8 +60,8 @@ fun DemoScopedViewModelComposable() {
  * Note: This is useful for frameworks like Koin or other way of providing dependencies
  */
 @Composable
-fun DemoScopedParametrizedViewModelComposable() {
-    val fakeScopedParametrizedVM: FakeScopedViewModel = viewModelScoped { FakeScopedViewModel(viewModelsClearedGloballySharedCounter) }
+fun DemoScopedParametrizedViewModelComposable(viewModelInstance: FakeScopedViewModel = FakeScopedViewModel(viewModelsClearedGloballySharedCounter)) {
+    val fakeScopedParametrizedVM: FakeScopedViewModel = viewModelScoped { viewModelInstance }
     DemoComposable(inputObject = fakeScopedParametrizedVM, objectType = "FakeScopedParametrizedViewModel", scoped = true)
 }
 
