@@ -88,6 +88,7 @@ dependencies {
 
 
     testImplementation "junit:junit:$versions.junit"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$versions.kotlinxCoroutinesTest"
     testImplementation "org.robolectric:robolectric:$versions.robolectric"
     // Test rules and transitive dependencies:
     testImplementation("androidx.compose.ui:ui-test-junit4:$versions.composeUi")

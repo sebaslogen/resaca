@@ -1,7 +1,13 @@
 package com.sebaslogen.resacaapp
 
 import android.content.Intent
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material.Text
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -10,24 +16,39 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sebaslogen.resacaapp.ui.main.ComposeActivity
 import com.sebaslogen.resacaapp.ui.main.ScreensWithNavigation
+import com.sebaslogen.resacaapp.ui.main.compose.DemoScopedParametrizedViewModelComposable
+import com.sebaslogen.resacaapp.ui.main.compose.DemoScopedViewModelComposable
 import com.sebaslogen.resacaapp.ui.main.hiltViewModelScopedDestination
 import com.sebaslogen.resacaapp.ui.main.rememberScopedDestination
+import com.sebaslogen.resacaapp.utils.MainDispatcherRule
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+@ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class ClearScopedViewModelTests : ComposeTestUtils {
 
     @get:Rule
     override val composeTestRule = createComposeRule()
 
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
+
     lateinit var navController: NavHostController
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Scenarios to test clear after screen closed (i.e. when the ScopedViewModelContainer clears all ViewModels) //
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Test
     fun `when I navigate to nested screen and back, then the 2 scoped ViewModels of the second screen are cleared`() {
 
-        // Given the starting screen with scoped objects
+        // Given the starting screen with scoped ViewModels
         composeTestRule.setContent {
             navController = rememberNavController()
             ScreensWithNavigation(navController = navController)
@@ -74,5 +95,53 @@ class ClearScopedViewModelTests : ComposeTestUtils {
                 }
             }
         }
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Scenarios to test clear on owner Composable scope disposed (Composable not part of the composition anymore) //
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    @Test
+    fun `when the Composable that creates the ViewModel is disposed, then the scoped ViewModel is cleared`() = runTest {
+
+        // Given the starting screen with two scoped ViewModels
+        var composablesShown by mutableStateOf(true)
+        val textTitle = "Test text"
+        composeTestRule.setContent {
+            Column {
+                Text(textTitle)
+                if (composablesShown) {
+                    DemoScopedViewModelComposable()
+                    DemoScopedParametrizedViewModelComposable()
+                }
+            }
+        }
+        printComposeUiTreeToLog()
+
+        // When the Composables with scoped ViewModels are not part of composition anymore and disposed
+        val initialAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+        composablesShown = false // Trigger disposal
+        composeTestRule.onNodeWithText(textTitle).assertExists() // Required to trigger recomposition
+        advanceTimeBy(6000) // Advance more than 5 seconds to pass the disposal delay on ScopedViewModelContainer
+        printComposeUiTreeToLog()
+        val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+
+        // Then both scoped ViewModels are cleared
+        assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 2) {
+            "The amount of FakeScopedViewModel(s) that where cleared after back navigation ($finalAmountOfViewModelsCleared) " +
+                    "was not two numbers higher that the amount before navigating ($initialAmountOfViewModelsCleared)"
+        }
+    }
+
+
+    @Test
+    fun `given two sibling Composables with the same ViewModel instance scoped to them, when one Composable is disposed, then the ViewModel is NOT cleared`() {
+
+    }
+
+
+    @Test
+    fun `when two Composables request the same Hilt ViewModel, then both Composables get the same ViewModel instance`() {
+
     }
 }

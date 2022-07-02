@@ -5,6 +5,7 @@ versions.gradle = '7.2.1'
 versions.buildTools = "30.0.2"
 versions.kotlin = "1.6.10"
 versions.kotlinxCoroutinesAndroid = "1.6.1"
+versions.kotlinxCoroutinesTest = "1.6.3"
 versions.coreKtx = '1.8.0'
 versions.navigation = "2.4.2"
 versions.junit = "4.13.2"
