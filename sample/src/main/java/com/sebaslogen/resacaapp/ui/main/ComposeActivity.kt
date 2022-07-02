@@ -15,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -97,9 +96,7 @@ fun NavigationButtons(navController: NavHostController) {
         onClick = { navController.navigate(rememberScopedDestination) }) {
         Text(text = "Push rememberScoped destination")
     }
-    Button(modifier = Modifier
-        .padding(vertical = 4.dp)
-        .testTag("hiltViewModelScopedDestinationTestTag"),
+    Button(modifier = Modifier.padding(vertical = 4.dp),
         onClick = { navController.navigate(hiltViewModelScopedDestination) }) {
         Text(text = "Push Hilt hiltViewModelScoped destination")
     }

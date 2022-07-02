@@ -94,6 +94,9 @@ dependencies {
     testImplementation("androidx.compose.ui:ui-test-junit4:$versions.composeUi")
     // Needed for createComposeRule, but not createAndroidComposeRule:
     debugImplementation("androidx.compose.ui:ui-test-manifest:$versions.composeUi")
+    testImplementation("com.google.dagger:hilt-android-testing:$versions.hiltAndroid")
+    kaptTest("com.google.dagger:hilt-android-compiler:$versions.hiltAndroid")
+
 }
 
 tasks.matching { it instanceof Test }.all { // Show more test execution information
