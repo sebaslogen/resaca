@@ -16,7 +16,7 @@ object ScopedViewModelProvider {
      * Returns an existing [ViewModel] of type [T] or creates a new one if none was present in the [scopedObjectsContainer].
      *
      * This function will also compare [positionalMemoizationKey] and [externalKey] to determine
-     * if a new instance of [T] needs to be created or an existing one can be returned.
+     * whether a new instance of [T] needs to be created or an existing one can be returned.
      *
      * The creation, storage, retrieval and clean up of the [ViewModel] will be taken care of
      * by a [ScopedViewModelOwner] which will be the actual object stored in the [scopedObjectsContainer].
@@ -63,9 +63,9 @@ object ScopedViewModelProvider {
      * by a [ScopedViewModelOwner] which will be the actual object stored in the [scopedObjectsContainer].
      *
      * Note: There is no support for keys in Hilt therefore the same [ViewModelStore] per type is used for all Hilt
-     * ViewModels of the same [T] type inside the container scope (Activity/Fragment/Nav. destination),
-     * and the same [ViewModel] will always be returned once created and until disposal of the Composables using it.
-     * Support for keys in the Hilt library is still WIP. See https://github.com/google/dagger/issues/2328
+     * ViewModels of the same type [T] inside the container scope (Activity/Fragment/Nav. destination).
+     * The same [ViewModel] will always be returned once created until disposal of all the Composables using it.
+     * Support for keys in the Hilt library is still a WIP. See https://github.com/google/dagger/issues/2328
      */
     @Composable
     inline fun <T : ViewModel> getOrBuildHiltViewModel(
@@ -79,15 +79,15 @@ object ScopedViewModelProvider {
     ): T {
         cancelDisposal(positionalMemoizationKey)
 
-        val newScopedViewModelOwner = scopedObjectsContainer.values.filterIsInstance<ScopedViewModelOwner<T>>().firstOrNull()
+        val scopedViewModelOwner = scopedObjectsContainer.values.filterIsInstance<ScopedViewModelOwner<T>>().firstOrNull()
             ?: ScopedViewModelOwner(modelClass = modelClass, factory = factory)
 
         // Set the new external key used to track and store the new object version
         scopedObjectKeys[positionalMemoizationKey] = externalKey
 
-        scopedObjectsContainer[positionalMemoizationKey] = newScopedViewModelOwner
+        scopedObjectsContainer[positionalMemoizationKey] = scopedViewModelOwner
 
-        return newScopedViewModelOwner.viewModel
+        return scopedViewModelOwner.viewModel
     }
 
     /**
