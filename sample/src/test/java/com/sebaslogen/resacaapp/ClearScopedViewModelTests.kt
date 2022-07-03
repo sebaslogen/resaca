@@ -14,6 +14,7 @@ import com.sebaslogen.resacaapp.ui.main.ComposeActivity
 import com.sebaslogen.resacaapp.ui.main.ScreensWithNavigation
 import com.sebaslogen.resacaapp.ui.main.compose.DemoScopedInjectedViewModelComposable
 import com.sebaslogen.resacaapp.ui.main.compose.DemoScopedParametrizedViewModelComposable
+import com.sebaslogen.resacaapp.ui.main.compose.DemoScopedSecondInjectedViewModelComposable
 import com.sebaslogen.resacaapp.ui.main.compose.DemoScopedViewModelComposable
 import com.sebaslogen.resacaapp.ui.main.data.FakeScopedViewModel
 import com.sebaslogen.resacaapp.ui.main.hiltViewModelScopedDestination
@@ -203,7 +204,6 @@ class ClearScopedViewModelTests : ComposeTestUtils {
             }
         }
 
-
     @Test
     fun `given two sibling Composables with the same Hilt ViewModel instance, when one Composable is disposed, then the ViewModel is NOT cleared`() =
         runTest {
@@ -234,6 +234,39 @@ class ClearScopedViewModelTests : ComposeTestUtils {
             assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared) {
                 "The amount of FakeInjectedViewModel that where cleared after disposal ($finalAmountOfViewModelsCleared) " +
                         "is not the same as the initial the amount before the Composable was disposed ($initialAmountOfViewModelsCleared)"
+            }
+        }
+
+    @Test
+    fun `given two sibling Composables with different Hilt ViewModels, when one Composable is disposed, then only one ViewModel is cleared`() =
+        runTest {
+
+            // Given the starting screen with two scoped ViewModels sharing the same ViewModel instance
+            var composablesShown by mutableStateOf(true)
+            val textTitle = "Test text"
+            composeTestRule.setContent {
+                Column {
+                    Text(textTitle)
+                    DemoScopedInjectedViewModelComposable()
+                    if (composablesShown) {
+                        DemoScopedSecondInjectedViewModelComposable()
+                    }
+                }
+            }
+            printComposeUiTreeToLog()
+
+            // When one Composable with a scoped ViewModel is not part of composition anymore and disposed
+            val initialAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+            composablesShown = false // Trigger disposal
+            composeTestRule.onNodeWithText(textTitle).assertExists() // Required to trigger recomposition
+            advanceTimeBy(6000) // Advance more than 5 seconds to pass the disposal delay on ScopedViewModelContainer
+            printComposeUiTreeToLog()
+            val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+
+            // Then one scoped ViewModel is cleared
+            assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 1) {
+                "The amount of FakeSecondInjectedViewModel that where cleared after disposal ($finalAmountOfViewModelsCleared) " +
+                        "is not higher than the initial the amount before the Composable was disposed ($initialAmountOfViewModelsCleared)"
             }
         }
 

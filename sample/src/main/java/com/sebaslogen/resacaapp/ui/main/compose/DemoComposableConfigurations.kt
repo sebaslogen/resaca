@@ -14,6 +14,7 @@ import com.sebaslogen.resaca.viewModelScoped
 import com.sebaslogen.resacaapp.ui.main.data.FakeInjectedViewModel
 import com.sebaslogen.resacaapp.ui.main.data.FakeRepo
 import com.sebaslogen.resacaapp.ui.main.data.FakeScopedViewModel
+import com.sebaslogen.resacaapp.ui.main.data.FakeSecondInjectedViewModel
 import com.sebaslogen.resacaapp.viewModelsClearedGloballySharedCounter
 
 
@@ -72,4 +73,10 @@ fun DemoScopedParametrizedViewModelComposable(
 fun DemoScopedInjectedViewModelComposable() {
     val fakeInjectedVM: FakeInjectedViewModel = hiltViewModelScoped()
     DemoComposable(inputObject = fakeInjectedVM, objectType = "Hilt FakeInjectedViewModel", scoped = true)
+}
+
+@Composable
+fun DemoScopedSecondInjectedViewModelComposable() {
+    val fakeSecondInjectedVM: FakeSecondInjectedViewModel = hiltViewModelScoped()
+    DemoComposable(inputObject = fakeSecondInjectedVM, objectType = "Hilt FakeSecondInjectedViewModel", scoped = true)
 }

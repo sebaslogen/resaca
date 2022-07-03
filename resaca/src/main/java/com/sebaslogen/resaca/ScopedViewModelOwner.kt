@@ -16,7 +16,7 @@ import androidx.lifecycle.ViewModelStore
  *
  * The creation of the [ViewModel] will be done with a [ViewModelProvider] and stored inside a [ViewModelStore].
  */
-class ScopedViewModelOwner<T : ViewModel>(private val modelClass: Class<T>, val factory: ViewModelProvider.Factory) {
+class ScopedViewModelOwner<T : ViewModel>(val modelClass: Class<T>, val factory: ViewModelProvider.Factory) {
 
     private val viewModelStore = ViewModelStore()
 

@@ -79,7 +79,7 @@ object ScopedViewModelProvider {
     ): T {
         cancelDisposal(positionalMemoizationKey)
 
-        val scopedViewModelOwner = scopedObjectsContainer.values.filterIsInstance<ScopedViewModelOwner<T>>().firstOrNull()
+        val scopedViewModelOwner = scopedObjectsContainer.values.filterIsInstance<ScopedViewModelOwner<T>>().firstOrNull { it.modelClass == modelClass }
             ?: ScopedViewModelOwner(modelClass = modelClass, factory = factory)
 
         // Set the new external key used to track and store the new object version
