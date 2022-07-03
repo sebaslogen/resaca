@@ -6,12 +6,12 @@ plugins {
 }
 
 android {
-    compileSdk 31
+    compileSdk versions.compileSdk
 
     defaultConfig {
         applicationId "com.sebaslogen.resacaapp"
-        minSdk 21
-        targetSdk 31
+        minSdk versions.minSdk
+        targetSdk versions.targetSdk
         buildToolsVersion versions.buildTools
         versionCode 1
         versionName "1.0"
@@ -34,7 +34,6 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
-        useIR = true
     }
     buildFeatures { // Enables Jetpack Compose for this module
         compose = true
@@ -63,8 +62,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1'
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.1'
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.lifecycleViewmodel"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.kotlinxCoroutinesAndroid"
     implementation "androidx.activity:activity-compose:$versions.activityCompose"
 
@@ -76,7 +74,7 @@ dependencies {
     implementation "androidx.compose.ui:ui-tooling:$versions.composeUiTooling"
     implementation "androidx.compose.ui:ui-tooling-preview:$versions.composeUiTooling"
     // Integration with ViewModels
-    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$versions.lifecycleViewmodelCompose"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$versions.lifecycleViewmodel"
     // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
     implementation "androidx.compose.foundation:foundation:$versions.composeFoundation"
     // Material Design

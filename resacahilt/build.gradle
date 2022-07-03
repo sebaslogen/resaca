@@ -9,11 +9,11 @@ plugins {
 group = 'com.github.sebaslogen'
 
 android {
-    compileSdk 31
+    compileSdk versions.compileSdk
 
     defaultConfig {
-        minSdk 21
-        targetSdk 31
+        minSdk versions.minSdk
+        targetSdk versions.targetSdk
         buildToolsVersion versions.buildTools
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -55,8 +55,8 @@ dependencies {
     // Compose dependencies
     implementation "androidx.compose.compiler:compiler:$versions.composeCompiler"
     // Integration with ViewModels
-    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$versions.lifecycleViewmodelCompose"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.lifecycleViewmodelKtx"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$versions.lifecycleViewmodel"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.lifecycleViewmodel"
 
     // Hilt dependencies
     implementation "androidx.hilt:hilt-navigation-compose:$versions.hiltNavigationCompose"

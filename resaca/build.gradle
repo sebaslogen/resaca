@@ -7,11 +7,11 @@ plugins {
 group = 'com.github.sebaslogen'
 
 android {
-    compileSdk 31
+    compileSdk versions.compileSdk
 
     defaultConfig {
-        minSdk 21
-        targetSdk 31
+        minSdk versions.minSdk
+        targetSdk versions.targetSdk
         buildToolsVersion versions.buildTools
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
