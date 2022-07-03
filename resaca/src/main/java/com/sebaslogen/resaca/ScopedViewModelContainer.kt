@@ -133,7 +133,6 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     /**
      * Restore or build a [ViewModel] using the provided [builder] as the factory
      */
-    @Suppress("UNCHECKED_CAST")
     @Composable
     fun <T : ViewModel> getOrBuildViewModel(
         modelClass: Class<T>,
@@ -147,7 +146,6 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         factory = ScopedViewModelOwner.viewModelFactoryFor(builder)
     )
 
-    @Suppress("UNCHECKED_CAST")
     @Composable
     private fun <T : ViewModel> getOrBuildViewModel(
         modelClass: Class<T>,
@@ -164,7 +162,9 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         cancelDisposal = ::cancelDisposal
     )
 
-    @Suppress("UNCHECKED_CAST")
+    /**
+     * Restore or build a [ViewModel] using a Hilt factory
+     */
     @Composable
     fun <T : ViewModel> getOrBuildHiltViewModel(
         modelClass: Class<T>,

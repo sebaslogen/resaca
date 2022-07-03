@@ -20,9 +20,11 @@ class ScopedViewModelOwner<T : ViewModel>(private val modelClass: Class<T>, val 
 
     private val viewModelStore = ViewModelStore()
 
+    private val viewModelProvider = ViewModelProvider(store = viewModelStore, factory = factory)
+
     val viewModel: T
         @Suppress("ReplaceGetOrSet")
-        get() = ViewModelProvider(store = viewModelStore, factory = factory).get(modelClass)
+        get() = viewModelProvider.get(modelClass)
 
     fun clear() {
         viewModelStore.clear()
