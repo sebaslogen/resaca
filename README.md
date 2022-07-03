@@ -117,7 +117,7 @@ Add the Jitpack repo and include the library (less than 5Kb):
 
 ## Alternative manual installation
 
-Only 4 files are needed and they can be found in the `resaca` module under the package `com.sebaslogen.resaca`. They
+Only a few files are needed and they can be found in the `resaca` module under the package `com.sebaslogen.resaca`. They
 are: [RememberScopedObserver](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/RememberScopedObserver.kt)
 , [ScopedMemoizers](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/ScopedMemoizers.kt)
 , [ScopedViewModelContainer](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/ScopedViewModelContainer.kt)
