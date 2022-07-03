@@ -26,8 +26,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
  * instead of creating a new [ViewModelStore] that produces a new [ViewModel] instance when the keys don't match.
  *
  * Note: There is no support for keys in this method because Hilt instances are singletons in the container scope (Activity/Fragment/Nav. destination),
- *      so the same object will always be returned once created and until disposal of the Composables using it.
- *      Support for keys in the Hilt library is still WIP. See https://github.com/google/dagger/issues/2328
+ *      so the same object will always be returned once created until disposal of all the Composables using it.
+ *      Support for keys in the Hilt library is still a WIP. See https://github.com/google/dagger/issues/2328
  */
 @Composable
 inline fun <reified T : ViewModel> hiltViewModelScoped(): T {
