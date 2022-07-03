@@ -11,9 +11,16 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.sebaslogen.resacaapp.ui.main.ComposeActivity
 import com.sebaslogen.resacaapp.ui.main.MainFragment
 import com.sebaslogen.resacaapp.ui.main.compose.DemoScreenInActivity
+import com.sebaslogen.resacaapp.ui.main.data.FakeRepo
 import com.sebaslogen.resacaapp.ui.main.data.FakeScopedViewModel
 import com.sebaslogen.resacaapp.ui.main.navigateToFragmentTwo
+import java.io.Closeable
 import java.util.concurrent.atomic.AtomicInteger
+
+/**
+ * Global counter to track the number of scoped [Closeable] ([FakeRepo]) that have been correctly closed
+ */
+val closeableClosedGloballySharedCounter = AtomicInteger(0)
 
 /**
  * Global counter to track the number of scoped ViewModels ([FakeScopedViewModel]) that have been correctly cleared
