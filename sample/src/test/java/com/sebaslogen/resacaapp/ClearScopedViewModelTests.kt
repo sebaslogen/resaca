@@ -18,6 +18,7 @@ import com.sebaslogen.resacaapp.ui.main.compose.DemoScopedViewModelComposable
 import com.sebaslogen.resacaapp.ui.main.data.FakeScopedViewModel
 import com.sebaslogen.resacaapp.ui.main.hiltViewModelScopedDestination
 import com.sebaslogen.resacaapp.ui.main.rememberScopedDestination
+import com.sebaslogen.resacaapp.utils.ComposeTestUtils
 import com.sebaslogen.resacaapp.utils.MainDispatcherRule
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest

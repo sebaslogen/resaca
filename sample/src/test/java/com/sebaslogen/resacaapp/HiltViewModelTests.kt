@@ -10,6 +10,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sebaslogen.resacaapp.ui.main.ComposeActivity
 import com.sebaslogen.resacaapp.ui.main.ComposeActivity.Companion.START_DESTINATION
 import com.sebaslogen.resacaapp.ui.main.hiltViewModelScopedDestination
+import com.sebaslogen.resacaapp.utils.ComposeTestUtils
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

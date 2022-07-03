@@ -17,6 +17,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sebaslogen.resaca.rememberScoped
 import com.sebaslogen.resacaapp.ui.main.compose.DemoComposable
 import com.sebaslogen.resacaapp.ui.main.data.FakeRepo
+import com.sebaslogen.resacaapp.utils.ComposeTestUtils
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

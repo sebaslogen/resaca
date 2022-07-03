@@ -6,6 +6,7 @@ import androidx.compose.ui.test.hasTextExactly
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.sebaslogen.resacaapp.utils.ComposeTestUtils
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

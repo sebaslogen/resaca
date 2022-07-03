@@ -10,6 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sebaslogen.resacaapp.ui.main.ScreensWithNavigation
 import com.sebaslogen.resacaapp.ui.main.rememberScopedDestination
+import com.sebaslogen.resacaapp.utils.ComposeTestUtils
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
