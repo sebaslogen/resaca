@@ -320,10 +320,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      * the new external key is stored in [scopedObjectKeys]
      */
     @JvmInline
-    value class ExternalKey(private val value: Int = 0) {
-
-        val isDefaultKey: Boolean
-            get() = value == 0
+    value class ExternalKey(private val value: Int = -166379894) {
 
         companion object {
             fun from(objectInstance: Any?): ExternalKey = ExternalKey(objectInstance.hashCode())
