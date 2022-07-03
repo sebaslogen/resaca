@@ -20,9 +20,8 @@ import kotlinx.coroutines.launch
 import java.util.*
 
 /**
- * Return an object created with the provided [builder] function
- * and store this object in the [ScopedViewModelContainer] that will keep this
- * object in memory as long as needed
+ * Return an object created with the provided [builder] function and store this object
+ * in the [ScopedViewModelContainer] that will keep this object in memory as long as needed.
  * Internally, a key will be generated for this object in the Compose tree and if an object is present
  * for this key in the [ScopedViewModelContainer], then it will be returned instead of calling [builder]
  *
@@ -48,12 +47,12 @@ fun <T : Any> rememberScoped(key: Any? = null, builder: @DisallowComposableCalls
  * Return a [ViewModel] provided by the [builder] and a [ViewModelProvider].
  *
  * The [ViewModel] will be created and stored by the [ViewModelProvider] using the [builder] and a [ViewModelStore].
- * The [ViewModelStore] will be the object stored in the [ScopedViewModelContainer] and
- * the [ScopedViewModelContainer] will be in charge of keeping the [ViewModelStore] and its [ViewModel] in memory for as long as needed.
+ * The [ScopedViewModelOwner] will be the object stored in the [ScopedViewModelContainer] and
+ * the [ScopedViewModelContainer] will be in charge of keeping the [ScopedViewModelOwner] and its [ViewModel] in memory for as long as needed.
  *
- * Internally, a key will be generated for this [ViewModelStore] in the Compose tree and if a [ViewModelStore] is present
+ * Internally, a key will be generated for this [ScopedViewModelOwner] in the Compose tree and if a [ScopedViewModelOwner] is present
  * for this key in the [ScopedViewModelContainer], then it will be used to invoke [ViewModelProvider] to return an existing [ViewModel],
- * instead of creating a new [ViewModelStore] that produces a new [ViewModel] instance when the keys don't match.
+ * instead of creating a new [ScopedViewModelOwner] that produces a new [ViewModel] instance when the keys don't match.
  *
  * @param key Key to track the version of the [ViewModel]. Changing [key] between compositions will produce and remember a new [ViewModel].
  */
@@ -77,12 +76,12 @@ inline fun <reified T : ViewModel> viewModelScoped(key: Any? = null, noinline bu
  * Return a [ViewModel] provided by the default [ViewModelProvider.Factory] and a [ViewModelProvider].
  *
  * The [ViewModel] will be created and stored by the [ViewModelProvider] using a default [ViewModelProvider.Factory] and a [ViewModelStore].
- * The [ViewModelStore] will be the object stored in the [ScopedViewModelContainer] and
- * the [ScopedViewModelContainer] will be in charge of keeping the [ViewModelStore] and its [ViewModel] in memory for as long as needed.
+ * The [ScopedViewModelOwner] will be the object stored in the [ScopedViewModelContainer] and
+ * the [ScopedViewModelContainer] will be in charge of keeping the [ScopedViewModelOwner] and its [ViewModel] in memory for as long as needed.
  *
- * Internally, a key will be generated for this [ViewModelStore] in the Compose tree and if a [ViewModelStore] is present
+ * Internally, a key will be generated for this [ScopedViewModelOwner] in the Compose tree and if a [ScopedViewModelOwner] is present
  * for this key in the [ScopedViewModelContainer], then it will be used to invoke [ViewModelProvider] to return an existing [ViewModel],
- * instead of creating a new [ViewModelStore] that produces a new [ViewModel] instance when the keys don't match.
+ * instead of creating a new [ScopedViewModelOwner] that produces a new [ViewModel] instance when the keys don't match.
  *
  * @param key Key to track the version of the [ViewModel]. Changing [key] between compositions will produce and remember a new [ViewModel].
  */
