@@ -41,8 +41,8 @@ fun DemoNotScopedObjectComposable() {
 }
 
 @Composable
-fun DemoScopedObjectComposable(fakeRepoInstance: FakeRepo = FakeRepo()) {
-    val fakeRepo: FakeRepo = rememberScoped { fakeRepoInstance }
+fun DemoScopedObjectComposable(key: String? = null, fakeRepoInstance: FakeRepo = FakeRepo()) {
+    val fakeRepo: FakeRepo = rememberScoped(key = key) { fakeRepoInstance }
     DemoComposable(inputObject = fakeRepo, objectType = "FakeRepo", scoped = true)
 }
 

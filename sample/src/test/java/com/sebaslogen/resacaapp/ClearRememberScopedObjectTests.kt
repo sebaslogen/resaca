@@ -72,9 +72,9 @@ class ClearRememberScopedObjectTests : ComposeTestUtils {
             composeTestRule.setContent {
                 Column {
                     Text(textTitle)
-                    DemoScopedObjectComposable(closeableInstance)
+                    DemoScopedObjectComposable(fakeRepoInstance = closeableInstance)
                     if (composablesShown) {
-                        DemoScopedObjectComposable(closeableInstance)
+                        DemoScopedObjectComposable(fakeRepoInstance = closeableInstance)
                     }
                 }
             }
@@ -90,8 +90,36 @@ class ClearRememberScopedObjectTests : ComposeTestUtils {
 
             // Then the scoped Closeable is NOT cleared
             assert(finalAmountOfCloseablesCleared == initialAmountOfCloseablesCleared) {
-                "The amount of FakeScopedCloseables that where cleared after disposal ($finalAmountOfCloseablesCleared) " +
+                "The amount of FakeRepo that where cleared after disposal ($finalAmountOfCloseablesCleared) " +
                         "is not the same as the initial the amount before the Composable was disposed ($initialAmountOfCloseablesCleared)"
             }
         }
+
+    @Test
+    fun `when the keys associated with the Closeable change, then the scoped Closeable is closed`() {
+
+        // Given the starting screen with a scoped Closeable
+        var closeableKey by mutableStateOf("initial key")
+        val textTitle = "Test text"
+        composeTestRule.setContent {
+            Column {
+                Text(textTitle)
+                DemoScopedObjectComposable(key = closeableKey)
+            }
+        }
+        printComposeUiTreeToLog()
+
+        // When the Composables with scoped Closeable are not part of composition anymore and disposed
+        val initialAmountOfCloseableCleared = closeableClosedGloballySharedCounter.get()
+        closeableKey = "new key" // Trigger disposal
+        composeTestRule.onNodeWithText(textTitle).assertExists() // Required to trigger recomposition
+        printComposeUiTreeToLog()
+        val finalAmountOfCloseableCleared = closeableClosedGloballySharedCounter.get()
+
+        // Then both scoped Closeable are cleared
+        assert(finalAmountOfCloseableCleared == initialAmountOfCloseableCleared + 1) {
+            "The amount of FakeRepo that where cleared after key change ($finalAmountOfCloseableCleared) " +
+                    "was not higher that the amount before the key change ($initialAmountOfCloseableCleared)"
+        }
+    }
 }

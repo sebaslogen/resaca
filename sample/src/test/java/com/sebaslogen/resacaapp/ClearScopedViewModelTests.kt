@@ -265,8 +265,8 @@ class ClearScopedViewModelTests : ComposeTestUtils {
 
         // Then both scoped ViewModels are cleared
         assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 2) {
-            "The amount of FakeScopedViewModels that where cleared after disposal ($finalAmountOfViewModelsCleared) " +
-                    "was not two numbers higher that the amount before the Composables were disposed ($initialAmountOfViewModelsCleared)"
+            "The amount of FakeScopedViewModels that where cleared after key change ($finalAmountOfViewModelsCleared) " +
+                    "was not two numbers higher that the amount before the key change ($initialAmountOfViewModelsCleared)"
         }
     }
 }
