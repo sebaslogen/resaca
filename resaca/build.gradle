@@ -46,12 +46,13 @@ android {
 dependencies {
 
     implementation "androidx.core:core-ktx:$versions.coreKtx"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.lifecycleViewModel"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.kotlinxCoroutinesAndroid"
 
     // Compose dependencies
     implementation "androidx.compose.compiler:compiler:$versions.composeCompiler"
     // Integration with ViewModels
-    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$versions.lifecycleViewmodelCompose"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$versions.lifecycleViewModel"
 }
 
 // Config for publishing artifacts to JitPack

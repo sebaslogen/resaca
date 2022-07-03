@@ -21,10 +21,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.sebaslogen.resacaapp.ui.main.compose.DemoNotScopedObjectComposable
-import com.sebaslogen.resacaapp.ui.main.compose.DemoScopedInjectedViewModelComposable
-import com.sebaslogen.resacaapp.ui.main.compose.DemoScopedObjectComposable
-import com.sebaslogen.resacaapp.ui.main.compose.DemoScopedViewModelComposable
+import com.sebaslogen.resacaapp.ui.main.compose.*
 import com.sebaslogen.resacaapp.ui.main.ui.theme.ResacaAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -71,6 +68,7 @@ private fun ComposeScreenWithRememberScoped(navController: NavHostController) {
         DemoNotScopedObjectComposable()
         DemoScopedObjectComposable()
         DemoScopedViewModelComposable()
+        DemoScopedParametrizedViewModelComposable()
         NavigationButtons(navController)
     }
 }

@@ -1,4 +1,4 @@
-package com.sebaslogen.resacaapp
+package com.sebaslogen.resacaapp.utils
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.ComposeContentTestRule

@@ -7,12 +7,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
 import com.sebaslogen.resaca.hilt.hiltViewModelScoped
 import com.sebaslogen.resaca.rememberScoped
+import com.sebaslogen.resaca.viewModelScoped
 import com.sebaslogen.resacaapp.ui.main.data.FakeInjectedViewModel
 import com.sebaslogen.resacaapp.ui.main.data.FakeRepo
 import com.sebaslogen.resacaapp.ui.main.data.FakeScopedViewModel
-import com.sebaslogen.resacaapp.viewModelsClearedCounter
+import com.sebaslogen.resacaapp.viewModelsClearedGloballySharedCounter
 
 
 /**
@@ -39,15 +41,31 @@ fun DemoNotScopedObjectComposable() {
 }
 
 @Composable
-fun DemoScopedObjectComposable() {
-    val fakeRepo: FakeRepo = rememberScoped { FakeRepo() }
+fun DemoScopedObjectComposable(key: String? = null, fakeRepoInstance: FakeRepo = FakeRepo()) {
+    val fakeRepo: FakeRepo = rememberScoped(key = key) { fakeRepoInstance }
     DemoComposable(inputObject = fakeRepo, objectType = "FakeRepo", scoped = true)
 }
 
+/**
+ * Create a [ViewModel] with the [viewModelScoped] function and with no external parameters/dependencies required by the constructor
+ */
 @Composable
-fun DemoScopedViewModelComposable() {
-    val fakeScopedVM: FakeScopedViewModel = rememberScoped { FakeScopedViewModel(viewModelsClearedCounter) }
+fun DemoScopedViewModelComposable(key: String? = null) {
+    val fakeScopedVM: FakeScopedViewModel = viewModelScoped(key = key)
     DemoComposable(inputObject = fakeScopedVM, objectType = "FakeScopedViewModel", scoped = true)
+}
+
+/**
+ * Create a [ViewModel] with the [viewModelScoped] function and use a provided builder with parameters/dependencies required by the constructor
+ * Note: This is useful for frameworks like Koin or other way of providing dependencies
+ */
+@Composable
+fun DemoScopedParametrizedViewModelComposable(
+    viewModelInstance: FakeScopedViewModel = FakeScopedViewModel(viewModelsClearedGloballySharedCounter),
+    key: String? = null
+) {
+    val fakeScopedParametrizedVM: FakeScopedViewModel = viewModelScoped(key = key) { viewModelInstance }
+    DemoComposable(inputObject = fakeScopedParametrizedVM, objectType = "FakeScopedParametrizedViewModel", scoped = true)
 }
 
 @Composable
