@@ -9,6 +9,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sebaslogen.resacaapp.ui.main.compose.DemoScopedObjectComposable
+import com.sebaslogen.resacaapp.ui.main.data.FakeRepo
 import com.sebaslogen.resacaapp.utils.ComposeTestUtils
 import com.sebaslogen.resacaapp.utils.MainDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -59,4 +60,38 @@ class ClearRememberScopedObjectTests : ComposeTestUtils {
                     "was not higher that the amount before the Composable was disposed ($initialAmountOfCloseableClosed)"
         }
     }
+
+    @Test
+    fun `given two sibling Composables with the same Closeable instance scoped to them, when one Composable is disposed, then the Closeable is NOT closed`() =
+        runTest {
+
+            // Given the starting screen with two scoped Closeables sharing the same Closeable instance
+            var composablesShown by mutableStateOf(true)
+            val textTitle = "Test text"
+            val closeableInstance = FakeRepo()
+            composeTestRule.setContent {
+                Column {
+                    Text(textTitle)
+                    DemoScopedObjectComposable(closeableInstance)
+                    if (composablesShown) {
+                        DemoScopedObjectComposable(closeableInstance)
+                    }
+                }
+            }
+            printComposeUiTreeToLog()
+
+            // When one Composable with a scoped Closeable is not part of composition anymore and disposed
+            val initialAmountOfCloseablesCleared = closeableClosedGloballySharedCounter.get()
+            composablesShown = false // Trigger disposal
+            composeTestRule.onNodeWithText(textTitle).assertExists() // Required to trigger recomposition
+            advanceTimeBy(6000) // Advance more than 5 seconds to pass the disposal delay on ScopedViewModelContainer
+            printComposeUiTreeToLog()
+            val finalAmountOfCloseablesCleared = closeableClosedGloballySharedCounter.get()
+
+            // Then the scoped Closeable is NOT cleared
+            assert(finalAmountOfCloseablesCleared == initialAmountOfCloseablesCleared) {
+                "The amount of FakeScopedCloseables that where cleared after disposal ($finalAmountOfCloseablesCleared) " +
+                        "is not the same as the initial the amount before the Composable was disposed ($initialAmountOfCloseablesCleared)"
+            }
+        }
 }
