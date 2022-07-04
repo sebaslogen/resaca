@@ -32,7 +32,7 @@ Until now...
 Inside your `@Composable` function create and retrieve an object using `rememberScoped` to remember any type of object (except ViewModels). For ViewModels use
 `viewModelScoped`. That's all 🪄✨
 
-Example
+Examples
 
 ```kotlin
 @Composable
