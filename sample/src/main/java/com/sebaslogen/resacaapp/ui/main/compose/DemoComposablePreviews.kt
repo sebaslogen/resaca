@@ -6,24 +6,36 @@ import androidx.compose.ui.tooling.preview.Preview
 
 @Preview
 @Composable
-fun testDemoNotScopedObjectComposable() {
+fun TestDemoNotScopedObjectComposable() {
     DemoNotScopedObjectComposable()
 }
 
 @Preview
 @Composable
-fun testDemoScopedObjectComposable() {
+fun TestDemoScopedObjectComposable() {
     DemoScopedObjectComposable()
 }
 
 @Preview
 @Composable
-fun testDemoScopedViewModelComposable() {
+fun TestDemoScopedViewModelComposable() {
     DemoScopedViewModelComposable()
 }
 
 @Preview
 @Composable
-fun testDemoScopedParametrizedViewModelComposable() {
+fun TestDemoScopedParametrizedViewModelComposable() {
     DemoScopedParametrizedViewModelComposable()
+}
+
+@Preview
+@Composable
+fun TestDemoScopedInjectedViewModelComposable() {
+    DemoScopedInjectedViewModelComposable()
+}
+
+@Preview
+@Composable
+fun TestDemoScopedSecondInjectedViewModelComposable() {
+    DemoScopedSecondInjectedViewModelComposable()
 }

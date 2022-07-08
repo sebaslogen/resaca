@@ -6,15 +6,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.sebaslogen.resaca.hilt.hiltViewModelScoped
 import com.sebaslogen.resaca.rememberScoped
 import com.sebaslogen.resaca.viewModelScoped
-import com.sebaslogen.resacaapp.ui.main.data.FakeInjectedViewModel
-import com.sebaslogen.resacaapp.ui.main.data.FakeRepo
-import com.sebaslogen.resacaapp.ui.main.data.FakeScopedViewModel
-import com.sebaslogen.resacaapp.ui.main.data.FakeSecondInjectedViewModel
+import com.sebaslogen.resacaapp.ui.main.data.*
 import com.sebaslogen.resacaapp.viewModelsClearedGloballySharedCounter
 
 
@@ -71,12 +70,29 @@ fun DemoScopedParametrizedViewModelComposable(
 
 @Composable
 fun DemoScopedInjectedViewModelComposable() {
-    val fakeInjectedVM: FakeInjectedViewModel = hiltViewModelScoped()
+    val fakeInjectedVM: FakeInjectedViewModel =
+        if (LocalInspectionMode.current) { // In Preview we can't use hiltViewModelScoped
+            FakeInjectedViewModel(
+                stateSaver = SavedStateHandle(),
+                repository = FakeInjectedRepo(),
+                viewModelsClearedCounter = viewModelsClearedGloballySharedCounter
+            )
+        } else {
+            hiltViewModelScoped()
+        }
     DemoComposable(inputObject = fakeInjectedVM, objectType = "Hilt FakeInjectedViewModel", scoped = true)
 }
 
 @Composable
 fun DemoScopedSecondInjectedViewModelComposable() {
-    val fakeSecondInjectedVM: FakeSecondInjectedViewModel = hiltViewModelScoped()
+    val fakeSecondInjectedVM: FakeSecondInjectedViewModel =
+        if (LocalInspectionMode.current) { // In Preview we can't use hiltViewModelScoped
+            FakeSecondInjectedViewModel(
+                stateSaver = SavedStateHandle(),
+                viewModelsClearedCounter = viewModelsClearedGloballySharedCounter
+            )
+        } else {
+            hiltViewModelScoped()
+        }
     DemoComposable(inputObject = fakeSecondInjectedVM, objectType = "Hilt FakeSecondInjectedViewModel", scoped = true)
 }
