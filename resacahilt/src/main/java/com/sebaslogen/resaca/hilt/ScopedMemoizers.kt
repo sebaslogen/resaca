@@ -49,7 +49,7 @@ inline fun <reified T : ViewModel> hiltViewModelScoped(): T {
  * and use its factory, if all else fails then use the default factory.
  */
 @Composable
-inline fun createHiltViewModelFactory(
+fun createHiltViewModelFactory(
     viewModelStoreOwner: ViewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
         "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
     }
