@@ -40,6 +40,15 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
+
+    // Config for publishing artifacts to JitPack
+    publishing {
+        // Creates a Maven publication called "release".
+        singleVariant('release') {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
 }
 
 dependencies {
@@ -52,17 +61,4 @@ dependencies {
     implementation "androidx.compose.compiler:compiler:$versions.composeCompiler"
     // Integration with ViewModels
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$versions.lifecycleViewModel"
-}
-
-// Config for publishing artifacts to JitPack
-afterEvaluate {
-    publishing {
-        publications {
-            // Creates a Maven publication called "release".
-            release(MavenPublication) {
-                from components.release
-                artifactId = 'resaca'
-            }
-        }
-    }
 }

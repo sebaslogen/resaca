@@ -42,6 +42,15 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
+
+    // Config for publishing artifacts to JitPack
+    publishing {
+        // Creates a Maven publication called "release".
+        singleVariant('release') {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
 }
 
 dependencies {
@@ -61,17 +70,4 @@ dependencies {
     implementation "androidx.hilt:hilt-navigation-compose:$versions.hiltNavigationCompose"
     implementation "com.google.dagger:hilt-android:$versions.hiltAndroid"
     kapt "com.google.dagger:hilt-compiler:$versions.hiltCompiler"
-}
-
-// Config for publishing artifacts to JitPack
-afterEvaluate {
-    publishing {
-        publications {
-            // Creates a Maven publication called "release".
-            release(MavenPublication) {
-                from components.release
-                artifactId = 'resacahilt'
-            }
-        }
-    }
 }
