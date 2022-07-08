@@ -41,9 +41,8 @@ android {
         }
     }
 
-    // Config for publishing artifacts to JitPack
+    // Config publication component to publish artifacts to JitPack
     publishing {
-        // Creates a Maven publication called "release".
         singleVariant('release') {
             withSourcesJar()
             withJavadocJar()
@@ -61,4 +60,17 @@ dependencies {
     implementation "androidx.compose.compiler:compiler:$versions.composeCompiler"
     // Integration with ViewModels
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$versions.lifecycleViewModel"
+}
+
+// Config for publishing artifacts to JitPack
+afterEvaluate {
+    publishing {
+        publications {
+            // Creates a Maven publication called "release".
+            release(MavenPublication) {
+                from components.release
+                artifactId = 'resaca'
+            }
+        }
+    }
 }

@@ -43,9 +43,8 @@ android {
         }
     }
 
-    // Config for publishing artifacts to JitPack
+    // Config publication component to publish artifacts to JitPack
     publishing {
-        // Creates a Maven publication called "release".
         singleVariant('release') {
             withSourcesJar()
             withJavadocJar()
@@ -70,4 +69,17 @@ dependencies {
     implementation "androidx.hilt:hilt-navigation-compose:$versions.hiltNavigationCompose"
     implementation "com.google.dagger:hilt-android:$versions.hiltAndroid"
     kapt "com.google.dagger:hilt-compiler:$versions.hiltCompiler"
+}
+
+// Config for publishing artifacts to JitPack
+afterEvaluate {
+    publishing {
+        publications {
+            // Creates a Maven publication called "release".
+            release(MavenPublication) {
+                from components.release
+                artifactId = 'resacahilt'
+            }
+        }
+    }
 }
