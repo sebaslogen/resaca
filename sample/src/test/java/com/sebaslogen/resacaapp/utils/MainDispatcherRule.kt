@@ -1,6 +1,7 @@
 package com.sebaslogen.resacaapp.utils
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -11,6 +12,7 @@ import org.junit.runner.Description
 /**
  * Reusable JUnit4 TestRule to override the Main dispatcher
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 class MainDispatcherRule(
     val testDispatcher: TestDispatcher = StandardTestDispatcher(),
 ) : TestWatcher() {

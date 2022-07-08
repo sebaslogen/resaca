@@ -39,6 +39,7 @@ interface ComposeTestUtils {
             }
         }
 
+    @Suppress("UNCHECKED_CAST")
     fun retrieveTextFromNodeWithTestTag(tag: String, parentTestTag: String? = null): String =
         (onNodeWithTestTag(tag, parentTestTag)
             .fetchSemanticsNode().config
