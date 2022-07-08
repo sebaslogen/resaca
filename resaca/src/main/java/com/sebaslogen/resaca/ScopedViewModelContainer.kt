@@ -3,6 +3,7 @@ package com.sebaslogen.resaca
 import android.app.Activity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisallowComposableCalls
+import androidx.compose.runtime.Immutable
 import androidx.lifecycle.*
 import kotlinx.coroutines.*
 import java.io.Closeable
@@ -184,8 +185,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     /**
      * Clear, if possible, scoped object when disposing it
      */
-    @Suppress("NOTHING_TO_INLINE")
-    private inline fun clearDisposedObject(scopedObject: Any) {
+    private fun clearDisposedObject(scopedObject: Any) {
         when (scopedObject) {
             is ViewModelStore -> scopedObject.clear()
             is CoroutineScope -> scopedObject.cancel()
@@ -239,7 +239,8 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      *                          - scope is in the foreground, because if it's in the background it might be needed again when returning to foreground,
      *                          in that case the decision will be deferred to [scheduleToDisposeAfterReturningFromBackground]
      *                          - or when recreating due configuration changes, because after a configuration change, the [cancelDisposal] should have been
-     *                          called once the scoped object was requested again, the fact that this is still scheduled means it's not needed in the new config.
+     *                          called once the scoped object was requested again, the fact that this is still scheduled means it's not needed
+     *                          after the configuration change.
      */
     private fun scheduleToDispose(key: String, removalCondition: () -> Boolean = { isInForeground || isChangingConfiguration }) {
         if (disposingJobs.containsKey(key)) return // Already disposing, quit
@@ -319,7 +320,9 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      * then the old object is cleared, the new instance is stored (replacing old instance in storage) and
      * the new external key is stored in [scopedObjectKeys]
      */
+    @Immutable
     @JvmInline
+    @Suppress("unused") // Used for equals comparisons
     value class ExternalKey(private val value: Int = -166379894) {
 
         companion object {

@@ -22,7 +22,7 @@ import java.util.*
 /**
  * Return an object created with the provided [builder] function and store this object
  * in the [ScopedViewModelContainer] which will keep this object in memory for as long as needed,
- * and until the requester Composable is permanently disposed of.
+ * and until the requester Composable is permanently gone.
  * This means, it retains the object across recompositions, during configuration changes, and
  * also when the container Fragment or Compose Navigation destination goes into the backstack.
  *
@@ -49,7 +49,7 @@ fun <T : Any> rememberScoped(key: Any? = null, builder: @DisallowComposableCalls
 
 /**
  * Return a [ViewModel] provided by the default [ViewModelProvider.Factory] and a [ViewModelProvider].
- * The [ViewModel] will keep in memory for as long as needed, and until the requester Composable is permanently disposed of.
+ * The [ViewModel] will keep in memory for as long as needed, and until the requester Composable is permanently gone.
  * This means, it retains the [ViewModel] across recompositions, during configuration changes, and
  * also when the container Fragment or Compose Navigation destination goes into the backstack.
  *
@@ -80,6 +80,9 @@ inline fun <reified T : ViewModel> viewModelScoped(key: Any? = null): T {
 
 /**
  * Return a [ViewModel] provided by the [builder] and a [ViewModelProvider].
+ * The [ViewModel] will keep in memory for as long as needed, and until the requester Composable is permanently gone.
+ * This means, it retains the [ViewModel] across recompositions, during configuration changes, and
+ * also when the container Fragment or Compose Navigation destination goes into the backstack.
  *
  * The [ViewModel] will be created and stored by the [ViewModelProvider] using the [builder] and a [ViewModelStore].
  * The [ScopedViewModelOwner] will be the object stored in the [ScopedViewModelContainer] and
@@ -109,7 +112,7 @@ inline fun <reified T : ViewModel> viewModelScoped(key: Any? = null, noinline bu
 }
 
 @Composable
-inline fun generateKeysAndObserveLifecycle(key: Any?): Triple<ScopedViewModelContainer, String, ScopedViewModelContainer.ExternalKey> {
+fun generateKeysAndObserveLifecycle(key: Any?): Triple<ScopedViewModelContainer, String, ScopedViewModelContainer.ExternalKey> {
     val scopedViewModelContainer: ScopedViewModelContainer = viewModel()
 
     // This key will be used to identify, retrieve and remove the stored object in the ScopedViewModelContainer
@@ -160,7 +163,7 @@ internal inline fun ObserveComposableDisposal(positionalMemoizationKey: String, 
  */
 @Composable
 @PublishedApi
-internal inline fun ObserveLifecycleWithScopedViewModelContainer(scopedViewModelContainer: ScopedViewModelContainer) {
+internal fun ObserveLifecycleWithScopedViewModelContainer(scopedViewModelContainer: ScopedViewModelContainer) {
     // Observe state of configuration changes when disposing
     val context = LocalContext.current
     DisposableEffect(context) {
@@ -180,7 +183,6 @@ internal inline fun ObserveLifecycleWithScopedViewModelContainer(scopedViewModel
     }
 }
 
-@PublishedApi
 internal fun Context.findActivity(): Activity {
     var ctx = this
     while (ctx is ContextWrapper) {

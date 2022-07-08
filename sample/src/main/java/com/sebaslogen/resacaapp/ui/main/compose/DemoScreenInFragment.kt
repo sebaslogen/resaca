@@ -27,7 +27,7 @@ fun FragmentTwoButton(clickListener: () -> Unit) {
             .padding(vertical = 12.dp, horizontal = 4.dp)
     ) {
         Button(onClick = clickListener) {
-            Text("CLick to navigate to nested fragment")
+            Text("Click to navigate to nested fragment")
         }
     }
 

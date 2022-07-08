@@ -9,7 +9,6 @@ import androidx.lifecycle.ViewModelStore
 /**
  * Set of functions to help create, store, retrieve and clear a [ViewModel].
  */
-@Suppress("NOTHING_TO_INLINE")
 object ScopedViewModelProvider {
 
     /**
@@ -22,7 +21,7 @@ object ScopedViewModelProvider {
      * by a [ScopedViewModelOwner] which will be the actual object stored in the [scopedObjectsContainer].
      */
     @Composable
-    inline fun <T : ViewModel> getOrBuildViewModel(
+    fun <T : ViewModel> getOrBuildViewModel(
         modelClass: Class<T>,
         positionalMemoizationKey: String,
         externalKey: ScopedViewModelContainer.ExternalKey = ScopedViewModelContainer.ExternalKey(),
@@ -94,8 +93,7 @@ object ScopedViewModelProvider {
      * Check if the [ViewModel] contained in the given [scopedViewModelOwner] is the last one inside [objectsContainer] and if so,
      * clear the [ScopedViewModelOwner] and therefore the [ViewModel] inside.
      */
-    @PublishedApi
-    internal inline fun <T : ViewModel> clearLastDisposedViewModel(
+    internal fun <T : ViewModel> clearLastDisposedViewModel(
         scopedViewModelOwner: ScopedViewModelOwner<T>,
         objectsContainer: List<Any>,
     ) {

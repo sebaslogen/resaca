@@ -26,7 +26,7 @@ fun ComposeActivityButton(clickListener: () -> Unit) {
             .padding(vertical = 12.dp, horizontal = 4.dp)
     ) {
         Button(onClick = clickListener) {
-            Text("CLick to navigate to a full Compose Activity with Compose navigation")
+            Text("Click to navigate to a full Compose Activity with Compose navigation")
         }
     }
 }
