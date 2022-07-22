@@ -9,22 +9,25 @@ import androidx.lifecycle.*
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.NavBackStackEntry
 import com.sebaslogen.resaca.ScopedViewModelContainer
+import com.sebaslogen.resaca.ScopedViewModelOwner
 import com.sebaslogen.resaca.generateKeysAndObserveLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
-// TODO: Add docs about key
-// TODO: Add test for key
+
+// TODO: Add test(s) for key
 /**
  * Return a [ViewModel] (annotated with [HiltViewModel]) provided by a Hilt [ViewModelProvider.Factory] and a [ViewModelProvider].
  *
  * The returned [ViewModel] is provided by the [ViewModelProvider] using a Hilt [ViewModelProvider.Factory] and a [ViewModelStore].
  * The [ViewModel] will be created and stored by the [ViewModelProvider] in the [ViewModelStore].
- * The [ViewModelStore] will be the object stored in the [ScopedViewModelContainer] and
- * the [ScopedViewModelContainer] will be in charge of keeping the [ViewModelStore] and its [ViewModel] in memory for as long as needed.
+ * The [ScopedViewModelOwner] will be the object stored in the [ScopedViewModelContainer] and
+ * the [ScopedViewModelContainer] will be in charge of keeping the [ScopedViewModelOwner] and its [ViewModel] in memory for as long as needed.
  *
- * Internally, a key will be generated for this [ViewModelStore] in the Compose tree and if a [ViewModelStore] is present
+ * Internally, a key will be generated for this [ScopedViewModelOwner] in the Compose tree and if a [ScopedViewModelOwner] is present
  * for this key in the [ScopedViewModelContainer], then it will be used to invoke [ViewModelProvider] to return an existing [ViewModel],
- * instead of creating a new [ViewModelStore] that produces a new [ViewModel] instance when the keys don't match.
+ * instead of creating a new [ScopedViewModelOwner] that produces a new [ViewModel] instance when the keys don't match.
+ *
+ * @param key Key to track the version of the [ViewModel]. Changing [key] between compositions will produce and store a new [ViewModel].
  */
 @Composable
 inline fun <reified T : ViewModel> hiltViewModelScoped(key: Any? = null): T {
