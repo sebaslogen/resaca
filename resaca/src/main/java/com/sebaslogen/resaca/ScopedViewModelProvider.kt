@@ -4,6 +4,12 @@ import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.viewmodel.CreationExtras
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
+import java.io.Closeable
+import kotlin.coroutines.CoroutineContext
 
 
 /**
@@ -26,6 +32,7 @@ object ScopedViewModelProvider {
         positionalMemoizationKey: String,
         externalKey: ScopedViewModelContainer.ExternalKey = ScopedViewModelContainer.ExternalKey(),
         factory: ViewModelProvider.Factory,
+        viewModelStoreOwner: ViewModelStoreOwner,
         scopedObjectsContainer: MutableMap<String, Any>,
         scopedObjectKeys: MutableMap<String, ScopedViewModelContainer.ExternalKey>,
         cancelDisposal: ((String) -> Unit)
@@ -44,11 +51,16 @@ object ScopedViewModelProvider {
                 originalScopedViewModelOwner.viewModel
             } else { // First time ViewModel creation or externalKey changed
                 scopedObjectKeys[positionalMemoizationKey] = externalKey // Set the new external key used to track and store the new object version
-                val newScopedViewModelOwner = ScopedViewModelOwner(modelClass = modelClass, factory = factory)
+                val newScopedViewModelOwner = ScopedViewModelOwner(
+                    key = positionalMemoizationKey,
+                    modelClass = modelClass,
+                    factory = factory,
+                    viewModelStoreOwner = viewModelStoreOwner
+                )
                 scopedObjectsContainer[positionalMemoizationKey] = newScopedViewModelOwner
 
                 // Clean-up if needed: the old object is cleared before it's forgotten
-                originalScopedViewModelOwner?.let { clearLastDisposedViewModel(originalScopedViewModelOwner, scopedObjectsContainer.values.toList()) }
+                originalScopedViewModelOwner?.let { clearLastDisposedViewModel(it, scopedObjectsContainer.values.toList()) }
 
                 newScopedViewModelOwner.viewModel
             }
@@ -71,16 +83,29 @@ object ScopedViewModelProvider {
         modelClass: Class<T>,
         positionalMemoizationKey: String,
         externalKey: ScopedViewModelContainer.ExternalKey = ScopedViewModelContainer.ExternalKey(),
-        factory: ViewModelProvider.Factory,
+        factory: ViewModelProvider.Factory?,
+        viewModelStoreOwner: ViewModelStoreOwner,
         scopedObjectsContainer: MutableMap<String, Any>,
         scopedObjectKeys: MutableMap<String, ScopedViewModelContainer.ExternalKey>,
         cancelDisposal: ((String) -> Unit)
     ): T {
         cancelDisposal(positionalMemoizationKey)
 
-        val scopedViewModelOwner = scopedObjectsContainer.values.filterIsInstance<ScopedViewModelOwner<T>>().firstOrNull { it.modelClass == modelClass }
-            ?: ScopedViewModelOwner(modelClass = modelClass, factory = factory)
+        val originalScopedViewModelOwner: ScopedViewModelOwner<T>? =
+            restoreAndUpdateScopedViewModelOwner(positionalMemoizationKey, scopedObjectsContainer, viewModelStoreOwner)
 
+        val scopedViewModelOwner = if (scopedObjectKeys.containsKey(positionalMemoizationKey) && (scopedObjectKeys[positionalMemoizationKey] == externalKey)) {
+            // When the object is already present and the external key matches, then try to restore it
+            originalScopedViewModelOwner
+                ?: ScopedViewModelOwner(key = positionalMemoizationKey, modelClass = modelClass, factory = factory, viewModelStoreOwner = viewModelStoreOwner)
+        } else { // First time object creation or externalKey changed
+            scopedObjectKeys[positionalMemoizationKey] = externalKey // Set the external key used to track and store the new object version
+            scopedObjectsContainer.remove(positionalMemoizationKey)
+                ?.also { // Old object may need to be cleared before it's forgotten
+                    clearLastDisposedObject(disposedObject = it, objectsContainer = scopedObjectsContainer.values.toList())
+                }
+            ScopedViewModelOwner(key = positionalMemoizationKey, modelClass = modelClass, factory = factory, viewModelStoreOwner = viewModelStoreOwner)
+        }
         // Set the new external key used to track and store the new object version
         scopedObjectKeys[positionalMemoizationKey] = externalKey
 
@@ -90,9 +115,42 @@ object ScopedViewModelProvider {
     }
 
     /**
+     * Restore the stored [ScopedViewModelOwner], if any present, for the given [positionalMemoizationKey]
+     * and update its dependencies to create a new [ViewModelProvider] (i.e. [CreationExtras] and default [ViewModelProvider.Factory])
+     */
+    @Suppress("UNCHECKED_CAST")
+    @PublishedApi
+    internal fun <T : ViewModel> restoreAndUpdateScopedViewModelOwner(
+        positionalMemoizationKey: String,
+        scopedObjectsContainer: MutableMap<String, Any>,
+        viewModelStoreOwner: ViewModelStoreOwner
+    ): ScopedViewModelOwner<T>? =
+        (scopedObjectsContainer[positionalMemoizationKey] as? ScopedViewModelOwner<T>)
+            ?.also { it.updateViewModelProviderDependencies(viewModelStoreOwner) }
+
+    /**
+     * An object that is being disposed should also be cleared only if there are no more references to it in this [objectsContainer]
+     */
+    @PublishedApi
+    internal fun clearLastDisposedObject(disposedObject: Any, objectsContainer: List<Any>) {
+        if (disposedObject is ScopedViewModelOwner<*>) {
+            clearLastDisposedViewModel(scopedViewModelOwner = disposedObject, objectsContainer = objectsContainer)
+        } else if (!objectsContainer.contains(disposedObject)) {
+            // Clear, if possible, scoped object when disposing it
+            when (disposedObject) {
+                is ViewModelStore -> disposedObject.clear()
+                is CoroutineScope -> disposedObject.cancel()
+                is CoroutineContext -> disposedObject.cancel()
+                is Closeable -> disposedObject.close()
+            }
+        }
+    }
+
+    /**
      * Check if the [ViewModel] contained in the given [scopedViewModelOwner] is the last one inside [objectsContainer] and if so,
      * clear the [ScopedViewModelOwner] and therefore the [ViewModel] inside.
      */
+    @PublishedApi
     internal fun <T : ViewModel> clearLastDisposedViewModel(
         scopedViewModelOwner: ScopedViewModelOwner<T>,
         objectsContainer: List<Any>,

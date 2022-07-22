@@ -5,10 +5,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisallowComposableCalls
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.*
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import kotlinx.coroutines.*
-import java.io.Closeable
 import java.util.concurrent.ConcurrentSkipListSet
-import kotlin.coroutines.CoroutineContext
 
 /**
  * [ViewModel] class used to store objects and [ViewModel]s as long as the
@@ -152,12 +151,16 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         modelClass: Class<T>,
         positionalMemoizationKey: String,
         externalKey: ExternalKey = ExternalKey(),
-        factory: ViewModelProvider.Factory
+        factory: ViewModelProvider.Factory,
+        viewModelStoreOwner: ViewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
+            "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
+        }
     ): T = ScopedViewModelProvider.getOrBuildViewModel(
         modelClass = modelClass,
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
         factory = factory,
+        viewModelStoreOwner = viewModelStoreOwner,
         scopedObjectsContainer = scopedObjectsContainer,
         scopedObjectKeys = scopedObjectKeys,
         cancelDisposal = ::cancelDisposal
@@ -171,28 +174,18 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         modelClass: Class<T>,
         positionalMemoizationKey: String,
         externalKey: ExternalKey = ExternalKey(),
-        factory: ViewModelProvider.Factory
+        factory: ViewModelProvider.Factory?,
+        viewModelStoreOwner: ViewModelStoreOwner
     ): T = ScopedViewModelProvider.getOrBuildHiltViewModel(
         modelClass = modelClass,
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
         factory = factory,
+        viewModelStoreOwner = viewModelStoreOwner,
         scopedObjectsContainer = scopedObjectsContainer,
         scopedObjectKeys = scopedObjectKeys,
         cancelDisposal = ::cancelDisposal
     )
-
-    /**
-     * Clear, if possible, scoped object when disposing it
-     */
-    private fun clearDisposedObject(scopedObject: Any) {
-        when (scopedObject) {
-            is ViewModelStore -> scopedObject.clear()
-            is CoroutineScope -> scopedObject.cancel()
-            is CoroutineContext -> scopedObject.cancel()
-            is Closeable -> scopedObject.close()
-        }
-    }
 
     /**
      * Triggered when a Composable that stored an object in this class is disposed and signals this container
@@ -263,11 +256,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      * An object that is being disposed should also be cleared only if it was the last instance present in this container
      */
     private fun clearLastDisposedObject(disposedObject: Any, objectsContainer: List<Any> = scopedObjectsContainer.values.toList()) {
-        if (disposedObject is ScopedViewModelOwner<*>) {
-            ScopedViewModelProvider.clearLastDisposedViewModel(scopedViewModelOwner = disposedObject, objectsContainer = objectsContainer)
-        } else if (!objectsContainer.contains(disposedObject)) {
-            clearDisposedObject(disposedObject)
-        }
+        ScopedViewModelProvider.clearLastDisposedObject(disposedObject, objectsContainer)
     }
 
     private fun cancelDisposal(key: String) {

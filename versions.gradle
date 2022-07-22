@@ -29,9 +29,9 @@ versions.activityCompose = "1.5.0"
 versions.lifecycleViewModel = '2.5.0'
 
 // Hilt
-versions.hiltGradlePlugin = '2.42'
-versions.hiltAndroid = '2.42'
-versions.hiltCompiler = '2.42'
+versions.hiltGradlePlugin = '2.43'
+versions.hiltAndroid = '2.43'
+versions.hiltCompiler = '2.43'
 versions.hiltNavigationCompose = '1.0.0'
 
 ext.versions = versions

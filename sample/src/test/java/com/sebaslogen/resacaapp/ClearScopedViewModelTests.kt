@@ -80,7 +80,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
     }
 
     @Test
-    fun `when I navigate to nested screen and back, then the Hilt scoped ViewModel of the second screen is cleared`() {
+    fun `when I navigate to nested screen and back, then the Hilt scoped ViewModels of the second screen are cleared`() {
         // Given the starting screen with Hilt injected ViewModel scoped
         composeTestRule.setContent {
             navController = rememberNavController()
@@ -97,7 +97,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
         val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
 
         // Then the Hilt scoped ViewModel from the second screen is cleared
-        assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 1) {
+        assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 2) {
             "The amount of FakeInjectedViewModels that where cleared after back navigation ($finalAmountOfViewModelsCleared) " +
                     "was not higher that the amount before navigating ($initialAmountOfViewModelsCleared)"
         }
@@ -205,7 +205,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
         }
 
     @Test
-    fun `given two sibling Composables with the same Hilt ViewModel instance, when one Composable is disposed, then the ViewModel is NOT cleared`() =
+    fun `given two sibling Composables with two instances of the same Hilt ViewModel, when one Composable is disposed, the other ViewModel is NOT cleared`() =
         runTest {
 
             // Given the starting screen with two scoped ViewModels sharing the same ViewModel instance
@@ -230,10 +230,10 @@ class ClearScopedViewModelTests : ComposeTestUtils {
             printComposeUiTreeToLog()
             val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
 
-            // Then the scoped ViewModel is NOT cleared
-            assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared) {
-                "The amount of FakeInjectedViewModel that where cleared after disposal ($finalAmountOfViewModelsCleared) " +
-                        "is not the same as the initial the amount before the Composable was disposed ($initialAmountOfViewModelsCleared)"
+            // Then one scoped ViewModel is cleared
+            assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 1) {
+                "The amount of FakeSecondInjectedViewModel that where cleared after disposal ($finalAmountOfViewModelsCleared) " +
+                    "is not higher than the initial the amount before the Composable was disposed ($initialAmountOfViewModelsCleared)"
             }
         }
 

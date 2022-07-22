@@ -86,6 +86,7 @@ private fun ComposeScreenWithViewModelScoped(navController: NavHostController) {
         if (!isSystemInDarkTheme()) {
             DemoScopedInjectedViewModelComposable()
         }
+        DemoScopedSecondInjectedViewModelComposable()
         NavigationButtons(navController)
     }
 }

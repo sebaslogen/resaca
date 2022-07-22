@@ -12,7 +12,8 @@ import com.sebaslogen.resaca.ScopedViewModelContainer
 import com.sebaslogen.resaca.generateKeysAndObserveLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
-
+// TODO: Add docs about key
+// TODO: Add test for key
 /**
  * Return a [ViewModel] (annotated with [HiltViewModel]) provided by a Hilt [ViewModelProvider.Factory] and a [ViewModelProvider].
  *
@@ -24,22 +25,23 @@ import dagger.hilt.android.lifecycle.HiltViewModel
  * Internally, a key will be generated for this [ViewModelStore] in the Compose tree and if a [ViewModelStore] is present
  * for this key in the [ScopedViewModelContainer], then it will be used to invoke [ViewModelProvider] to return an existing [ViewModel],
  * instead of creating a new [ViewModelStore] that produces a new [ViewModel] instance when the keys don't match.
- *
- * Note: There is no support for keys in this method because Hilt instances are singletons in the container scope (Activity/Fragment/Nav. destination),
- *      so the same object will always be returned once created until disposal of all the Composables using it.
- *      Support for keys in the Hilt library is still a WIP. See https://github.com/google/dagger/issues/2328
  */
 @Composable
-inline fun <reified T : ViewModel> hiltViewModelScoped(): T {
+inline fun <reified T : ViewModel> hiltViewModelScoped(key: Any? = null): T {
     val (scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: String, externalKey: ScopedViewModelContainer.ExternalKey) =
-        generateKeysAndObserveLifecycle(key = null)
+        generateKeysAndObserveLifecycle(key = key)
+
+    val viewModelStoreOwner: ViewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
+        "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
+    }
 
     // The object will be built the first time and retrieved in next calls or recompositions
     return scopedViewModelContainer.getOrBuildHiltViewModel(
         modelClass = T::class.java,
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
-        factory = createHiltViewModelFactory()
+        factory = createHiltViewModelFactory(viewModelStoreOwner),
+        viewModelStoreOwner = viewModelStoreOwner
     )
 }
 
@@ -49,11 +51,7 @@ inline fun <reified T : ViewModel> hiltViewModelScoped(): T {
  * and use its factory, if all else fails then use the default factory.
  */
 @Composable
-fun createHiltViewModelFactory(
-    viewModelStoreOwner: ViewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
-        "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
-    }
-): ViewModelProvider.Factory =
+fun createHiltViewModelFactory(viewModelStoreOwner: ViewModelStoreOwner): ViewModelProvider.Factory? =
     if (viewModelStoreOwner is NavBackStackEntry) {
         HiltViewModelFactory(
             context = LocalContext.current,
@@ -62,9 +60,5 @@ fun createHiltViewModelFactory(
     } else {
         // Use the default factory provided by the ViewModelStoreOwner
         // and assume it is an @AndroidEntryPoint annotated fragment or activity
-        if (viewModelStoreOwner is HasDefaultViewModelProviderFactory) {
-            viewModelStoreOwner.defaultViewModelProviderFactory
-        } else {
-            ViewModelProvider.NewInstanceFactory.instance
-        }
+        null
     }
