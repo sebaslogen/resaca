@@ -13,11 +13,12 @@ import androidx.lifecycle.viewmodel.CreationExtras
  * This class uses an internal [ViewModelProvider] with the [factory] and a [ViewModelStore],
  * to create, store, retrieve and [clear] the ViewModel when externally requested to do so.
  *
- * The reason to be for this class is to support clearing of [ViewModel]s.
- * The clear function of [ViewModel]s is not public, only a [ViewModelStore] can trigger it and the [ViewModelStore]
- * can only be read/written with a [ViewModelProvider].
+ * The reason to be for this class is to support clearing of [ViewModel]s. The clear function of [ViewModel]s is not public,
+ * only a [ViewModelStore] can trigger it and the [ViewModelStore] can only be read/written by a [ViewModelProvider].
  *
- * The creation of the [ViewModel] will be done with a [ViewModelProvider] and stored inside a [ViewModelStore].
+ * The creation of the [ViewModel] will be done by a [ViewModelProvider] and stored inside a [ViewModelStore].
+ *
+ * Note: A unique [key] is required to support multiple instances of the same [ViewModel]. See [ViewModelProvider.AndroidViewModelFactory.DEFAULT_KEY].
  */
 class ScopedViewModelOwner<T : ViewModel>(
     val key: String,
@@ -45,13 +46,20 @@ class ScopedViewModelOwner<T : ViewModel>(
             (viewModelStoreOwner as? HasDefaultViewModelProviderFactory)?.defaultViewModelProviderFactory
     }
 
-    private val viewModelProvider: ViewModelProvider =
-        if (factory != null) {
-            ViewModelProvider(viewModelStore, factory, extras)
-        } else {
-            viewModelStoreOwnerDefaultViewModelProviderFactory?.let { ViewModelProvider(viewModelStore, it, extras) }
-                ?: ViewModelProvider { this@ScopedViewModelOwner.viewModelStore }
-        }
+    /**
+     * Create a [ViewModelProvider] by either:
+     * - using the existing [factory], or
+     * - using the default factory provided by the [ViewModelStoreOwner] in [updateViewModelProviderDependencies], or
+     * - creating a default factory (e.g. for [ViewModel]s with no parameters in the constructor) using the [viewModelStore].
+     */
+    private val viewModelProvider: ViewModelProvider
+        get() =
+            if (factory != null) {
+                ViewModelProvider(viewModelStore, factory, extras)
+            } else {
+                viewModelStoreOwnerDefaultViewModelProviderFactory?.let { ViewModelProvider(viewModelStore, it, extras) }
+                    ?: ViewModelProvider { this@ScopedViewModelOwner.viewModelStore }
+            }
 
     val viewModel: T
         @Suppress("ReplaceGetOrSet")
