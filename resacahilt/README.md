@@ -34,16 +34,22 @@ fun DemoInjectedViewModelScoped() {
     val myInjectedViewModel: MyViewModel = hiltViewModelScoped()
     DemoComposable(viewModel = myInjectedViewModel)
 }
+
+@Composable
+fun DemoInjectedViewModelWithKey() {
+    val scopedVMWithFirstKey: MyViewModel = hiltViewModelScoped("myFirstKey") { MyViewModel("myFirstKey") }
+    val scopedVMWithSecondKey: MyViewModel = hiltViewModelScoped("mySecondKey") { MyViewModel("mySecondKey") }
+    // We now have 2 ViewModels of the same type with different data inside the same Composable scope
+    DemoComposable(inputObject = scopedVMWithFirstKey)
+    DemoComposable(inputObject = scopedVMWithSecondKey)
+}
 ```
 
 Once you use the `hiltViewModelScoped` function, the same object will be restored as long as the Composable is part of the composition, even if it _temporarily_
 leaves composition on configuration change (e.g. screen rotation, change to dark mode, etc.) or while being in the backstack.
 
-⚠️ ViewModels provided with `hiltViewModelScoped` **should not be created** using any of the Hilt `hiltViewModel()` or Compose `viewModel()`
+⚠️ Note that ViewModels provided with `hiltViewModelScoped` **should not be created** using any of the Hilt `hiltViewModel()` or Compose `viewModel()`
 nor `ViewModelProviders` factories, otherwise they will be retained in the scope of the screen regardless of `hiltViewModelScoped`.
-
-❕ Due to the keyed factory limitations mentioned below, any call to `hiltViewModelScoped` from a new location in the Compose code (_inside the same Activity_)
-will return the same instance of the ViewModel instead of a new instance per call location.
 
 # Basic Hilt setup
 
@@ -54,7 +60,7 @@ To use the `hiltViewModelScoped` function you need to follow these 3 Hilt config
 - Annotate your ViewModel class with `@HiltViewModel` and the constructor with `@Inject`
   . [See example here](https://github.com/sebaslogen/resaca/blob/main/sample/src/main/java/com/sebaslogen/resacaapp/ui/main/data/FakeInjectedViewModel.kt).
 
-**Optionally: Annotate with `@Inject` any other class that is part of your ViewModel's constructor.*
+**Optionally: Annotate with `@Inject` any other classes that are part of your ViewModel's constructor.*
 
 Gradle setup for Hilt [can be found here](https://dagger.dev/hilt/gradle-setup.html)
 
@@ -65,6 +71,8 @@ the [Hilt ViewModel](https://dagger.dev/hilt/view-model) docs.
 
 Here are some sample use cases reported by the users of this library:
 
+- 📃📄 Multiple instances of the same type of ViewModel in a screen with a **view-pager**. This screen will have multiple sub-pages that use the same ViewModel
+  class with different ids. For example, a screen of holiday destinations with multiple pages and each page with its own `HolidayDestinationViewModel`.
 - ❤️ Isolated and stateful UI components like a **favorite button** that are widely used across the screens. This `FavoriteViewModel` can be very small, focused
   and only require an id to work without affecting the rest of the screen's UI and state.
 
@@ -84,13 +92,3 @@ Add the Jitpack repo and include the library:
        implementation 'com.github.sebaslogen.resaca:resacahilt:X.X.X'
    }
 ```  
-
-# Hilt keyed factory limitations
-
-Unfortunately, Hilt does not yet support multiple instances of the same ViewModel using **keys**. This feature is currently a work in progress in the
-Dagger/Hilt project and its status can be tracked
-here: [\[Hilt\] Multiple viewmodel instances with different keys crash · Issue #2328 · google/dagger](https://github.com/google/dagger/issues/2328).
-
-The consequence of this limitation is that we can't create multiple instances of the same ViewModel in the same scope (i.e. Activity, Fragment or Compose
-Navigation Destination). This is required for example to implement view-pager use cases
-like [this one](https://github.com/sebaslogen/resaca/blob/main/README.md#sample-use-cases) from the vanilla Resaca library.
