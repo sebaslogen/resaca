@@ -62,7 +62,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.lifecycleViewModel"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.kotlinxCoroutinesAndroid"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.kotlinxCoroutines"
     implementation "androidx.activity:activity-compose:$versions.activityCompose"
 
     // Compose dependencies
@@ -85,7 +85,7 @@ dependencies {
 
 
     testImplementation "junit:junit:$versions.junit"
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$versions.kotlinxCoroutinesTest"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$versions.kotlinxCoroutines"
     testImplementation "org.robolectric:robolectric:$versions.robolectric"
     // Test rules and transitive dependencies:
     testImplementation("androidx.compose.ui:ui-test-junit4:$versions.composeUi")

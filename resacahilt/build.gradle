@@ -57,7 +57,7 @@ dependencies {
     api project(":resaca")
 
     implementation "androidx.core:core-ktx:$versions.coreKtx"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.kotlinxCoroutinesAndroid"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.kotlinxCoroutines"
 
     // Compose dependencies
     implementation "androidx.compose.compiler:compiler:$versions.composeCompiler"
