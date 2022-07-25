@@ -3,6 +3,7 @@ package com.sebaslogen.resaca
 import androidx.compose.runtime.DisallowComposableCalls
 import androidx.lifecycle.*
 import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion as ViewModelFactory
 
 /**
  * Stores a [ViewModel] created with the provided [factory] constructor parameter.
@@ -13,8 +14,11 @@ import androidx.lifecycle.viewmodel.CreationExtras
  * only a [ViewModelStore] can trigger it and the [ViewModelStore] can only be read/written by a [ViewModelProvider].
  *
  * The creation of the [ViewModel] will be done by a [ViewModelProvider] and stored inside a [ViewModelStore].
+ *
+ * Note: A unique [key] is required to support [SavedStateHandle] across multiple instances of the same [ViewModel] type. See [ViewModelFactory.DEFAULT_KEY].
  */
 class ScopedViewModelOwner<T : ViewModel>(
+    val key: String,
     val modelClass: Class<T>,
     val factory: ViewModelProvider.Factory?,
     viewModelStoreOwner: ViewModelStoreOwner
@@ -56,7 +60,10 @@ class ScopedViewModelOwner<T : ViewModel>(
 
     val viewModel: T
         @Suppress("ReplaceGetOrSet")
-        get() = viewModelProvider.get(modelClass)
+        get() {
+            val canonicalName = modelClass.canonicalName ?: throw IllegalArgumentException("Local and anonymous classes can not be ViewModels")
+            return viewModelProvider.get("$canonicalName:$key", modelClass)
+        }
 
     fun clear() {
         viewModelStore.clear()

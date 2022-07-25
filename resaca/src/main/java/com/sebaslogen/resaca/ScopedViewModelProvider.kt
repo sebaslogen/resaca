@@ -52,6 +52,7 @@ object ScopedViewModelProvider {
             } else { // First time ViewModel creation or externalKey changed
                 scopedObjectKeys[positionalMemoizationKey] = externalKey // Set the new external key used to track and store the new object version
                 val newScopedViewModelOwner = ScopedViewModelOwner(
+                    key = positionalMemoizationKey,
                     modelClass = modelClass,
                     factory = factory,
                     viewModelStoreOwner = viewModelStoreOwner
@@ -96,14 +97,14 @@ object ScopedViewModelProvider {
         val scopedViewModelOwner = if (scopedObjectKeys.containsKey(positionalMemoizationKey) && (scopedObjectKeys[positionalMemoizationKey] == externalKey)) {
             // When the object is already present and the external key matches, then try to restore it
             originalScopedViewModelOwner
-                ?: ScopedViewModelOwner(modelClass = modelClass, factory = factory, viewModelStoreOwner = viewModelStoreOwner)
+                ?: ScopedViewModelOwner(key = positionalMemoizationKey, modelClass = modelClass, factory = factory, viewModelStoreOwner = viewModelStoreOwner)
         } else { // First time object creation or externalKey changed
             scopedObjectKeys[positionalMemoizationKey] = externalKey // Set the external key used to track and store the new object version
             scopedObjectsContainer.remove(positionalMemoizationKey)
                 ?.also { // Old object may need to be cleared before it's forgotten
                     clearLastDisposedObject(disposedObject = it, objectsContainer = scopedObjectsContainer.values.toList())
                 }
-            ScopedViewModelOwner(modelClass = modelClass, factory = factory, viewModelStoreOwner = viewModelStoreOwner)
+            ScopedViewModelOwner(key = positionalMemoizationKey, modelClass = modelClass, factory = factory, viewModelStoreOwner = viewModelStoreOwner)
         }
         // Set the new external key used to track and store the new object version
         scopedObjectKeys[positionalMemoizationKey] = externalKey
