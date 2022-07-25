@@ -69,7 +69,7 @@ fun DemoScopedParametrizedViewModelComposable(
 }
 
 @Composable
-fun DemoScopedInjectedViewModelComposable() {
+fun DemoScopedInjectedViewModelComposable(key: String? = null) {
     val fakeInjectedVM: FakeInjectedViewModel =
         if (LocalInspectionMode.current) { // In Preview we can't use hiltViewModelScoped
             FakeInjectedViewModel(
@@ -78,7 +78,7 @@ fun DemoScopedInjectedViewModelComposable() {
                 viewModelsClearedCounter = viewModelsClearedGloballySharedCounter
             )
         } else {
-            hiltViewModelScoped()
+            hiltViewModelScoped(key = key)
         }
     DemoComposable(inputObject = fakeInjectedVM, objectType = "Hilt FakeInjectedViewModel", scoped = true)
 }

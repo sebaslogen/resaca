@@ -1,4 +1,4 @@
-package com.sebaslogen.resacaapp
+package com.sebaslogen.resacaapp.hilt
 
 import android.content.Intent
 import androidx.compose.ui.test.assertIsDisplayed
@@ -17,7 +17,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RuntimeEnvironment
 
 @RunWith(AndroidJUnit4::class)
-class HiltViewModelTests : ComposeTestUtils {
+class ComposeActivityRecreationTests : ComposeTestUtils {
 
     @get:Rule
     override val composeTestRule = createComposeRule()

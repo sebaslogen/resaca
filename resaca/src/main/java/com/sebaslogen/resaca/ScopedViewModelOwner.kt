@@ -4,9 +4,6 @@ import androidx.compose.runtime.DisallowComposableCalls
 import androidx.lifecycle.*
 import androidx.lifecycle.viewmodel.CreationExtras
 
-// TODO: docs in Readme: Hilt
-// TODO: docs in Readme: key not needed for new instance due to positional key?
-
 /**
  * Stores a [ViewModel] created with the provided [factory] constructor parameter.
  * This class uses an internal [ViewModelProvider] with the [factory] and a [ViewModelStore],
