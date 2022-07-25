@@ -7,7 +7,6 @@ import androidx.lifecycle.viewmodel.CreationExtras
 // TODO: docs in Readme: Hilt
 // TODO: docs in Readme: key not needed for new instance due to positional key?
 
-// TODO: docs in this class
 /**
  * Stores a [ViewModel] created with the provided [factory] constructor parameter.
  * This class uses an internal [ViewModelProvider] with the [factory] and a [ViewModelStore],
@@ -17,11 +16,8 @@ import androidx.lifecycle.viewmodel.CreationExtras
  * only a [ViewModelStore] can trigger it and the [ViewModelStore] can only be read/written by a [ViewModelProvider].
  *
  * The creation of the [ViewModel] will be done by a [ViewModelProvider] and stored inside a [ViewModelStore].
- *
- * Note: A unique [key] is required to support multiple instances of the same [ViewModel]. See [ViewModelProvider.AndroidViewModelFactory.DEFAULT_KEY].
  */
 class ScopedViewModelOwner<T : ViewModel>(
-    val key: String,
     val modelClass: Class<T>,
     val factory: ViewModelProvider.Factory?,
     viewModelStoreOwner: ViewModelStoreOwner
@@ -63,7 +59,7 @@ class ScopedViewModelOwner<T : ViewModel>(
 
     val viewModel: T
         @Suppress("ReplaceGetOrSet")
-        get() = viewModelProvider.get(key, modelClass)
+        get() = viewModelProvider.get(modelClass)
 
     fun clear() {
         viewModelStore.clear()
