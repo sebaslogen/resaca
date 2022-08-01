@@ -19,6 +19,7 @@ import com.sebaslogen.resacaapp.ui.main.ComposeActivity
 import com.sebaslogen.resacaapp.ui.main.compose.DemoComposable
 import com.sebaslogen.resacaapp.ui.main.data.FakeInjectedViewModel
 import com.sebaslogen.resacaapp.utils.ComposeTestUtils
+import com.sebaslogen.resacaapp.utils.clearAndSetContent
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
@@ -45,7 +46,7 @@ class ScopeKeysTest : ComposeTestUtils {
     fun `when the key used for hiltViewModelScoped changes, then the scoped ViewModel is different`() {
 
         // Given the starting screen with scoped object that uses a key
-        composeTestRule.setContent {
+        composeTestRule.clearAndSetContent {
             var myKey by remember { mutableStateOf(false) }
             val fakeInjectedViewModel: FakeInjectedViewModel = hiltViewModelScoped(key = myKey)
             DemoComposable(inputObject = fakeInjectedViewModel, objectType = "FakeInjectedViewModel", scoped = true)

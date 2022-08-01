@@ -17,6 +17,7 @@ import com.sebaslogen.resacaapp.ui.main.compose.DemoScopedSecondInjectedViewMode
 import com.sebaslogen.resacaapp.ui.main.hiltViewModelScopedDestination
 import com.sebaslogen.resacaapp.utils.ComposeTestUtils
 import com.sebaslogen.resacaapp.utils.MainDispatcherRule
+import com.sebaslogen.resacaapp.utils.clearAndSetContent
 import com.sebaslogen.resacaapp.viewModelsClearedGloballySharedCounter
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -54,7 +55,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
     @Test
     fun `when I navigate to nested screen and back, then the Hilt scoped ViewModels of the second screen are cleared`() {
         // Given the starting screen with Hilt injected ViewModel scoped
-        composeTestRule.setContent {
+        composeTestRule.clearAndSetContent {
             navController = rememberNavController()
             ScreensWithNavigation(navController = navController, startDestination = hiltViewModelScopedDestination)
         }
@@ -85,7 +86,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
         // Given the starting screen with a scoped Hilt ViewModel
         var composablesShown by mutableStateOf(true)
         val textTitle = "Test text"
-        composeTestRule.setContent {
+        composeTestRule.clearAndSetContent {
             Column {
                 Text(textTitle)
                 if (composablesShown) {
@@ -117,7 +118,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
             // Given the starting screen with two scoped ViewModels sharing the same ViewModel instance
             var composablesShown by mutableStateOf(true)
             val textTitle = "Test text"
-            composeTestRule.setContent {
+            composeTestRule.clearAndSetContent {
                 Column {
                     Text(textTitle)
                     DemoScopedInjectedViewModelComposable()
@@ -150,7 +151,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
             // Given the starting screen with two scoped ViewModels sharing the same ViewModel instance
             var composablesShown by mutableStateOf(true)
             val textTitle = "Test text"
-            composeTestRule.setContent {
+            composeTestRule.clearAndSetContent {
                 Column {
                     Text(textTitle)
                     DemoScopedInjectedViewModelComposable()
@@ -186,7 +187,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
         // Given the starting screen with a Hilt scoped ViewModel
         var viewModelKey by mutableStateOf("initial key")
         val textTitle = "Test text"
-        composeTestRule.setContent {
+        composeTestRule.clearAndSetContent {
             Column {
                 Text(textTitle)
                 DemoScopedInjectedViewModelComposable(viewModelKey)
