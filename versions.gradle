@@ -15,13 +15,13 @@ versions.robolectric = "4.7.3"
 
 // Compose
 versions.composeCompiler = "1.2.0"
-versions.composeUi = "1.1.1"
+versions.composeUi = "1.2.0"
 // Tooling support (Previews, etc.)
-versions.composeUiTooling = "1.1.1"
+versions.composeUiTooling = "1.2.0"
 // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
-versions.composeFoundation = "1.1.1"
+versions.composeFoundation = "1.2.0"
 // Material Design
-versions.composeMaterial = "1.1.1"
+versions.composeMaterial = "1.2.0"
 // Integration with activities
 versions.activityCompose = "1.5.1"
 // Integration with ViewModels
