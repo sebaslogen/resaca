@@ -80,8 +80,8 @@ dependencies {
     implementation "androidx.compose.material:material:$versions.composeMaterial"
 
     // Hilt dependencies
-    implementation "com.google.dagger:hilt-android:$versions.hiltAndroid"
-    kapt "com.google.dagger:hilt-compiler:$versions.hiltCompiler"
+    implementation "com.google.dagger:hilt-android:$versions.hilt"
+    kapt "com.google.dagger:hilt-compiler:$versions.hilt"
 
 
     testImplementation "junit:junit:$versions.junit"
@@ -91,8 +91,8 @@ dependencies {
     testImplementation("androidx.compose.ui:ui-test-junit4:$versions.composeUi")
     // Needed for createComposeRule, but not createAndroidComposeRule:
     debugImplementation("androidx.compose.ui:ui-test-manifest:$versions.composeUi")
-    testImplementation("com.google.dagger:hilt-android-testing:$versions.hiltAndroid")
-    kaptTest("com.google.dagger:hilt-android-compiler:$versions.hiltAndroid")
+    testImplementation("com.google.dagger:hilt-android-testing:$versions.hilt")
+    kaptTest("com.google.dagger:hilt-android-compiler:$versions.hilt")
 
 }
 

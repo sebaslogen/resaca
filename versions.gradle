@@ -9,7 +9,7 @@ versions.buildTools = "30.0.3"
 versions.kotlin = "1.7.0"
 versions.kotlinxCoroutines = "1.6.4"
 versions.coreKtx = '1.8.0'
-versions.navigation = "2.5.0"
+versions.navigation = "2.5.1"
 versions.junit = "4.13.2"
 versions.robolectric = "4.7.3"
 
@@ -23,14 +23,13 @@ versions.composeFoundation = "1.1.1"
 // Material Design
 versions.composeMaterial = "1.1.1"
 // Integration with activities
-versions.activityCompose = "1.5.0"
+versions.activityCompose = "1.5.1"
 // Integration with ViewModels
-versions.lifecycleViewModel = '2.5.0'
+versions.lifecycleViewModel = '2.5.1'
 
 // Hilt
-versions.hiltGradlePlugin = '2.43'
-versions.hiltAndroid = '2.43'
-versions.hiltCompiler = '2.43'
+versions.hiltGradlePlugin = '2.43.1'
+versions.hilt = '2.43.1'
 versions.hiltNavigationCompose = '1.0.0'
 
 ext.versions = versions
