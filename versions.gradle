@@ -2,9 +2,9 @@
 def versions = [:]
 
 versions.gradle = '7.2.1'
-versions.compileSdk = 31
+versions.compileSdk = 32
 versions.minSdk = 21
-versions.targetSdk = 31
+versions.targetSdk = 32
 versions.buildTools = "30.0.3"
 versions.kotlin = "1.7.0"
 versions.kotlinxCoroutines = "1.6.4"
