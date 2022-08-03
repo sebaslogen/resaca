@@ -71,8 +71,7 @@ For ViewModels, in addition to being forgotten when they're really not needed an
 ViewModel's `onCleared` method will be automatically called by this library.
 
 💡 _Optional key_: a key can be provided to the call, `rememberScoped(key) { ... }` or `viewModelScoped(key) { ... }`. This makes possible to forget an old
-object when there is new input data during a recomposition (e.g. a new input id for your ViewModel) or to remember multiple instances of the same class in the
-same scope.
+object when there is new input data during a recomposition (e.g. a new input id for your ViewModel).
 
 ⚠️ Note that ViewModels remembered with `viewModelScoped` **should not be created** using any of the Compose `viewModel()` or `ViewModelProviders` factories,
 otherwise they will be retained in the scope of the screen regardless of `viewModelScoped`. Also, if a ViewModel is remembered with `rememberScoped` its
