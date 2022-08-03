@@ -116,31 +116,29 @@ Add the Jitpack repo and include the library (less than 5Kb):
    }
 ```  
 
-## Alternative manual installation
-
-Only a few files are needed and they can be found in the `resaca` module under the package `com.sebaslogen.resaca`. They
-are: [RememberScopedObserver](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/RememberScopedObserver.kt)
-, [ScopedMemoizers](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/ScopedMemoizers.kt)
-, [ScopedViewModelContainer](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/ScopedViewModelContainer.kt)
-, [ScopedViewModelOwner](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/ScopedViewModelOwner.kt)
-and [ScopedViewModelProvider](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/ScopedViewModelProvider.kt).
-
-# What about dependency injection?
+# Dependency injection support
 
 This library does not influence how your app provides or creates objects so it's dependency injection strategy and framework agnostic.
 
-Nevertheless, this library supports the main **dependency injection frameworks**:
+Nevertheless, this library supports two of the main **dependency injection frameworks**:
 
-- [**HILT**](https://dagger.dev/hilt/quick-start) 🗡️ (Dagger) support is povided through a small extension of this library: **resaca-hilt**
-  . [Documentation and installation instructions here](https://github.com/sebaslogen/resaca/tree/main/resacahilt/README.md).
-- [**Koin**](https://insert-koin.io/) 🪙 is out of the box supported by simply changing the way you request a dependency. Instead of using the `getViewModel`
-  function from Koin, you have to use the standard way of getting a dependency from Koin. Like in this
-  example: `val viewModel: MyViewModel = viewModelScoped(myId) { get { parametersOf(myId) } }`
+### Hilt 🗡️
+[HILT](https://dagger.dev/hilt/quick-start) (Dagger) support is available in a small extension of this library: **resaca-hilt**.
 
-With that out of the way here are a few suggestions of how to provide objects in combination with this library:
+[Documentation and installation instructions are available here](https://github.com/sebaslogen/resaca/tree/main/resacahilt/README.md).
+
+### Koin 🪙
+[Koin](https://insert-koin.io/) is out of the box supported by simply changing the way you request a dependency.
+
+Instead of using the `getViewModel` function from Koin, you have to use the standard way of getting a dependency from Koin.
+
+Usage example: `val viewModel: MyViewModel = viewModelScoped(myId) { get { parametersOf(myId) } }`
+
+#### General considerations for State Hoisting
+Here are a few suggestions of how to provide objects in combination with this library in a Compose screen:
 
 - When using the Lazy* family of Composables it is recommended that you use `rememberScoped`/`viewModelScoped` outside the scope of Composables created by Lazy
-  constructors (e.g. LazyColumn) because there is a risk that a lazy initialized Composable will be disposed of when it is not visible anymore (e.g. scrolled
+  constructors (e.g. LazyColumn) because there is a chance that a lazy initialized Composable will be disposed of when it is not visible anymore (e.g. scrolled
   away) and that will also dispose of the `rememberScoped`/`viewModelScoped` object (after a few seconds), this might not be the intended behavior. For more
   info see Compose's [State Hoisting](https://developer.android.com/jetpack/compose/state#state-hoisting).
 - When a Composable is used more than once in the same screen with the same input, then the ViewModel (or business logic object) should be provided only once
