@@ -37,9 +37,9 @@ fun DemoInjectedViewModelScoped() {
 
 @Composable
 fun DemoInjectedViewModelWithKey() {
-    val scopedVMWithFirstKey: MyViewModel = hiltViewModelScoped("myFirstKey") { MyViewModel("myFirstKey") }
-    val scopedVMWithSecondKey: MyViewModel = hiltViewModelScoped("mySecondKey") { MyViewModel("mySecondKey") }
-    // We now have 2 ViewModels of the same type with different data inside the same Composable scope
+    val scopedVMWithFirstKey: MyViewModel = hiltViewModelScoped("myFirstKey")
+    val scopedVMWithSecondKey: MyViewModel = hiltViewModelScoped("mySecondKey")
+    // We now have 2 instances on memory of the same ViewModel type, both inside the same Composable scope
     DemoComposable(inputObject = scopedVMWithFirstKey)
     DemoComposable(inputObject = scopedVMWithSecondKey)
 }
