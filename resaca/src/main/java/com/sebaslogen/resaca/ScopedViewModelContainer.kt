@@ -155,7 +155,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         viewModelStoreOwner: ViewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
             "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
         }
-    ): T = ScopedViewModelProvider.getOrBuildViewModel(
+    ): T = ScopedViewModelUtils.getOrBuildViewModel(
         modelClass = modelClass,
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
@@ -176,7 +176,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         externalKey: ExternalKey = ExternalKey(),
         factory: ViewModelProvider.Factory?,
         viewModelStoreOwner: ViewModelStoreOwner
-    ): T = ScopedViewModelProvider.getOrBuildHiltViewModel(
+    ): T = ScopedViewModelUtils.getOrBuildHiltViewModel(
         modelClass = modelClass,
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
@@ -256,7 +256,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      * An object that is being disposed should also be cleared only if it was the last instance present in this container
      */
     private fun clearLastDisposedObject(disposedObject: Any, objectsContainer: List<Any> = scopedObjectsContainer.values.toList()) {
-        ScopedViewModelProvider.clearLastDisposedObject(disposedObject, objectsContainer)
+        ScopedViewModelUtils.clearLastDisposedObject(disposedObject, objectsContainer)
     }
 
     private fun cancelDisposal(key: String) {

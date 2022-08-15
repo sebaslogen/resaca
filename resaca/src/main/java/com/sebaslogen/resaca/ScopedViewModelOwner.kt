@@ -2,7 +2,6 @@ package com.sebaslogen.resaca
 
 import androidx.compose.runtime.DisallowComposableCalls
 import androidx.lifecycle.*
-import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion as ViewModelFactory
 
 /**
@@ -25,52 +24,25 @@ class ScopedViewModelOwner<T : ViewModel>(
 ) {
 
     private val viewModelStore = ViewModelStore()
-    private lateinit var extras: CreationExtras
-    private var viewModelStoreOwnerDefaultViewModelProviderFactory: ViewModelProvider.Factory? = null
-
-    init {
-        updateViewModelProviderDependencies(viewModelStoreOwner)
-    }
-
-    @PublishedApi
-    internal fun updateViewModelProviderDependencies(viewModelStoreOwner: ViewModelStoreOwner) {
-        extras = if (viewModelStoreOwner is HasDefaultViewModelProviderFactory) {
-            viewModelStoreOwner.defaultViewModelCreationExtras
-        } else {
-            CreationExtras.Empty
-        }
-        viewModelStoreOwnerDefaultViewModelProviderFactory =
-            (viewModelStoreOwner as? HasDefaultViewModelProviderFactory)?.defaultViewModelProviderFactory
-    }
-
-    /**
-     * Create a [ViewModelProvider] by either:
-     * - using the existing [factory], or
-     * - using the default factory provided by the [ViewModelStoreOwner] in [updateViewModelProviderDependencies], or
-     * - creating a default factory (e.g. for [ViewModel]s with no parameters in the constructor) using the [viewModelStore].
-     */
-    private val viewModelProvider: ViewModelProvider
-        get() =
-            if (factory != null) {
-                ViewModelProvider(viewModelStore, factory, extras)
-            } else {
-                viewModelStoreOwnerDefaultViewModelProviderFactory?.let { ViewModelProvider(viewModelStore, it, extras) }
-                    ?: ViewModelProvider { this@ScopedViewModelOwner.viewModelStore }
-            }
+    private val scopedViewModelProvider = ScopedViewModelProvider(factory, viewModelStore, viewModelStoreOwner)
 
     val viewModel: T
         @Suppress("ReplaceGetOrSet")
         get() {
             val canonicalName = modelClass.canonicalName ?: throw IllegalArgumentException("Local and anonymous classes can not be ViewModels")
-            return viewModelProvider.get("$canonicalName:$key", modelClass)
+            return scopedViewModelProvider.viewModelProvider.get("$canonicalName:$key", modelClass)
         }
+
+    @PublishedApi
+    internal fun updateViewModelProvider(viewModelStoreOwner: ViewModelStoreOwner) {
+        scopedViewModelProvider.updateViewModelProvider(viewModelStoreOwner)
+    }
 
     fun clear() {
         viewModelStore.clear()
     }
 
     companion object {
-
         /**
          * Returns a [ViewModelProvider.Factory] based on the given ViewModel [builder].
          */
