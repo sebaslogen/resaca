@@ -32,7 +32,7 @@ class ScopedViewModelProvider(
         if (updated) updateViewModelProvider()
     }
 
-    private fun updateViewModelProviderDependencies(viewModelStoreOwner: ViewModelStoreOwner):Boolean {
+    private fun updateViewModelProviderDependencies(viewModelStoreOwner: ViewModelStoreOwner): Boolean {
         val newExtras =
             if (viewModelStoreOwner is HasDefaultViewModelProviderFactory) {
                 viewModelStoreOwner.defaultViewModelCreationExtras
