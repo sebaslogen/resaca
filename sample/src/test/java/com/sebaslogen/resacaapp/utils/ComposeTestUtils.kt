@@ -1,14 +1,8 @@
 package com.sebaslogen.resacaapp.utils
 
-import android.view.ViewGroup
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.test.*
-import androidx.compose.ui.test.junit4.AndroidComposeTestRule
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.text.AnnotatedString
-import androidx.test.ext.junit.rules.ActivityScenarioRule
-import com.sebaslogen.resacaapp.ui.main.ComposeActivity
 import org.junit.Before
 import org.robolectric.shadows.ShadowLog
 
@@ -51,13 +45,4 @@ interface ComposeTestUtils {
             .fetchSemanticsNode().config
             .first { it.key.name == "Text" }
             .value as List<AnnotatedString>).first().toString()
-}
-
-/**
- * Get the existing [ComposeView] from the Activity and set the Compose content there, but only if the ComposeView already exists.
- * Otherwise, just call [AndroidComposeTestRule.setContent] to create a new [ComposeView], add the view to the Activity and set its Compose content.
- */
-fun AndroidComposeTestRule<ActivityScenarioRule<ComposeActivity>, ComposeActivity>.clearAndSetContent(content: @Composable () -> Unit) {
-    (this.activity.findViewById<ViewGroup>(android.R.id.content)?.getChildAt(0) as? ComposeView)?.setContent(content)
-        ?: this.setContent(content)
 }
