@@ -36,10 +36,11 @@ fun DemoInjectedViewModelScoped() {
 }
 
 @Composable
-fun DemoInjectedViewModelWithKey() {
-    val scopedVMWithFirstKey: MyViewModel = hiltViewModelScoped("myFirstKey")
-    val scopedVMWithSecondKey: MyViewModel = hiltViewModelScoped("mySecondKey")
+fun DemoInjectedViewModelWithKey(keyOne: String = "myFirstKey", keyTwo: String = "mySecondKey") {
+    val scopedVMWithFirstKey: MyViewModel = hiltViewModelScoped(keyOne)
+    val scopedVMWithSecondKey: MyViewModel = hiltViewModelScoped(keyTwo)
     // We now have 2 instances on memory of the same ViewModel type, both inside the same Composable scope
+    // When one key updates only the ViewModel with that key will be recreated
     DemoComposable(inputObject = scopedVMWithFirstKey)
     DemoComposable(inputObject = scopedVMWithSecondKey)
 }
@@ -92,3 +93,16 @@ Add the Jitpack repo and include the library:
        implementation 'com.github.sebaslogen.resaca:resacahilt:X.X.X'
    }
 ```  
+
+# Assisted Injection
+
+Assisted injection is a dependency injection (DI) pattern that is used to construct an object where some parameters may be provided by the DI framework and
+others must be passed in at creation time (a.k.a “assisted”) by the user, in our case when the `hiltViewModelScoped` is requested.
+
+If you use Dagger instead of Hilt, it is possible to use Assisted Injection because it is supported in the
+library. [See the official documentation](https://dagger.dev/dev-guide/assisted-injection.html). To use Dagger in combination with scoped ViewModels you need to
+use the vanilla `viewModelScoped` from [the Resaca library](https://github.com/sebaslogen/resaca) and use one of Dagger providers as parameter
+of `viewModelScoped`.
+
+Unfortunately, Assisted Injection is not supported by Hilt at the moment and the feature request is open with no clear
+plans: https://github.com/google/dagger/issues/2287
