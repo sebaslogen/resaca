@@ -104,5 +104,5 @@ library. [See the official documentation](https://dagger.dev/dev-guide/assisted-
 use the vanilla `viewModelScoped` from [the Resaca library](https://github.com/sebaslogen/resaca) and use one of Dagger providers as parameter
 of `viewModelScoped`.
 
-Unfortunately, Assisted Injection is not supported by Hilt at the moment and the feature request is open with no clear
+**Unfortunately, Assisted Injection is not supported by Hilt** at the moment and the feature request is open with no clear
 plans: https://github.com/google/dagger/issues/2287
