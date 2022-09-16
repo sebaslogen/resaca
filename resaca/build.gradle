@@ -48,6 +48,7 @@ android {
             withJavadocJar()
         }
     }
+    namespace 'com.sebaslogen.resaca'
 }
 
 dependencies {

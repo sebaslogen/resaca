@@ -50,6 +50,7 @@ android {
             withJavadocJar()
         }
     }
+    namespace 'com.sebaslogen.resaca.hilt'
 }
 
 dependencies {
