@@ -8,12 +8,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.unit.dp
+import androidx.core.os.bundleOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.sebaslogen.resaca.hilt.hiltViewModelScoped
 import com.sebaslogen.resaca.rememberScoped
 import com.sebaslogen.resaca.viewModelScoped
 import com.sebaslogen.resacaapp.ui.main.data.*
+import com.sebaslogen.resacaapp.ui.main.data.FakeInjectedViewModel.Companion.MY_ARGS_KEY
 import com.sebaslogen.resacaapp.viewModelsClearedGloballySharedCounter
 
 
@@ -69,7 +71,7 @@ fun DemoScopedParametrizedViewModelComposable(
 }
 
 @Composable
-fun DemoScopedInjectedViewModelComposable(key: String? = null) {
+fun DemoScopedInjectedViewModelComposable(key: String? = null, fakeInjectedViewModelId: Int = 666) {
     val fakeInjectedVM: FakeInjectedViewModel =
         if (LocalInspectionMode.current) { // In Preview we can't use hiltViewModelScoped
             FakeInjectedViewModel(
@@ -78,7 +80,7 @@ fun DemoScopedInjectedViewModelComposable(key: String? = null) {
                 viewModelsClearedCounter = viewModelsClearedGloballySharedCounter
             )
         } else {
-            hiltViewModelScoped(key = key)
+            hiltViewModelScoped(key = key, defaultArguments = bundleOf(MY_ARGS_KEY to fakeInjectedViewModelId))
         }
     DemoComposable(inputObject = fakeInjectedVM, objectType = "Hilt FakeInjectedViewModel", scoped = true)
 }

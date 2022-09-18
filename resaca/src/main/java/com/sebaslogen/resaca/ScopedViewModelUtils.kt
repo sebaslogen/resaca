@@ -1,5 +1,6 @@
 package com.sebaslogen.resaca
 
+import android.os.Bundle
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -33,6 +34,7 @@ object ScopedViewModelUtils {
         externalKey: ScopedViewModelContainer.ExternalKey = ScopedViewModelContainer.ExternalKey(),
         factory: ViewModelProvider.Factory,
         viewModelStoreOwner: ViewModelStoreOwner,
+        defaultArguments: Bundle,
         scopedObjectsContainer: MutableMap<String, Any>,
         scopedObjectKeys: MutableMap<String, ScopedViewModelContainer.ExternalKey>,
         cancelDisposal: ((String) -> Unit)
@@ -55,6 +57,7 @@ object ScopedViewModelUtils {
                     key = positionalMemoizationKey,
                     modelClass = modelClass,
                     factory = factory,
+                    defaultArguments = defaultArguments,
                     viewModelStoreOwner = viewModelStoreOwner
                 )
                 scopedObjectsContainer[positionalMemoizationKey] = newScopedViewModelOwner
@@ -80,6 +83,7 @@ object ScopedViewModelUtils {
         externalKey: ScopedViewModelContainer.ExternalKey = ScopedViewModelContainer.ExternalKey(),
         factory: ViewModelProvider.Factory?,
         viewModelStoreOwner: ViewModelStoreOwner,
+        defaultArguments: Bundle,
         scopedObjectsContainer: MutableMap<String, Any>,
         scopedObjectKeys: MutableMap<String, ScopedViewModelContainer.ExternalKey>,
         cancelDisposal: ((String) -> Unit)
@@ -92,14 +96,26 @@ object ScopedViewModelUtils {
         val scopedViewModelOwner = if (scopedObjectKeys.containsKey(positionalMemoizationKey) && (scopedObjectKeys[positionalMemoizationKey] == externalKey)) {
             // When the object is already present and the external key matches, then try to restore it
             originalScopedViewModelOwner
-                ?: ScopedViewModelOwner(key = positionalMemoizationKey, modelClass = modelClass, factory = factory, viewModelStoreOwner = viewModelStoreOwner)
+                ?: ScopedViewModelOwner(
+                    key = positionalMemoizationKey,
+                    modelClass = modelClass,
+                    factory = factory,
+                    defaultArguments = defaultArguments,
+                    viewModelStoreOwner = viewModelStoreOwner
+                )
         } else { // First time object creation or externalKey changed
             scopedObjectKeys[positionalMemoizationKey] = externalKey // Set the external key used to track and store the new object version
             scopedObjectsContainer.remove(positionalMemoizationKey)
                 ?.also { // Old object may need to be cleared before it's forgotten
                     clearLastDisposedObject(disposedObject = it, objectsContainer = scopedObjectsContainer.values.toList())
                 }
-            ScopedViewModelOwner(key = positionalMemoizationKey, modelClass = modelClass, factory = factory, viewModelStoreOwner = viewModelStoreOwner)
+            ScopedViewModelOwner(
+                key = positionalMemoizationKey,
+                modelClass = modelClass,
+                factory = factory,
+                defaultArguments = defaultArguments,
+                viewModelStoreOwner = viewModelStoreOwner
+            )
         }
         // Set the new external key used to track and store the new object version
         scopedObjectKeys[positionalMemoizationKey] = externalKey

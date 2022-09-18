@@ -1,7 +1,9 @@
 package com.sebaslogen.resaca
 
+import android.os.Bundle
 import androidx.lifecycle.*
 import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.lifecycle.viewmodel.MutableCreationExtras
 
 /**
  * This class provides a [ViewModelProvider] though its public [viewModelProvider] field.
@@ -11,13 +13,19 @@ import androidx.lifecycle.viewmodel.CreationExtras
  *
  * The created [ViewModelProvider] is cached until the [ViewModelStoreOwner] is updated and
  * contains new [CreationExtras] or [ViewModelProvider.Factory].
+ *
+ * @param factory [ViewModelProvider] factory to create the requested [ViewModel] when required
+ * @param viewModelStore Used to store and clear the [ViewModel]
+ * @param defaultArguments [Bundle] of default arguments that will be provided to the [ViewModel] through the [SavedStateHandle]
+ * @param viewModelStoreOwner Used to extract possible defaultViewModelCreationExtras and defaultViewModelProviderFactory
  */
 class ScopedViewModelProvider(
     private val factory: ViewModelProvider.Factory?,
     private val viewModelStore: ViewModelStore,
+    private val defaultArguments: Bundle,
     viewModelStoreOwner: ViewModelStoreOwner
 ) {
-    private var extras: CreationExtras = CreationExtras.Empty
+    private var extras: CreationExtras = CreationExtras.Empty.addDefaultArguments()
     private var viewModelStoreOwnerDefaultViewModelProviderFactory: ViewModelProvider.Factory? = null
     lateinit var viewModelProvider: ViewModelProvider
         private set
@@ -35,9 +43,9 @@ class ScopedViewModelProvider(
     private fun updateViewModelProviderDependencies(viewModelStoreOwner: ViewModelStoreOwner): Boolean {
         val newExtras =
             if (viewModelStoreOwner is HasDefaultViewModelProviderFactory) {
-                viewModelStoreOwner.defaultViewModelCreationExtras
+                viewModelStoreOwner.defaultViewModelCreationExtras.addDefaultArguments()
             } else {
-                CreationExtras.Empty
+                CreationExtras.Empty.addDefaultArguments()
             }
         val newViewModelStoreOwnerDefaultViewModelProviderFactory =
             (viewModelStoreOwner as? HasDefaultViewModelProviderFactory)?.defaultViewModelProviderFactory
@@ -57,11 +65,21 @@ class ScopedViewModelProvider(
      * - creating a default factory (e.g. for [ViewModel]s with no parameters in the constructor) using the [viewModelStore].
      */
     private fun updateViewModelProvider() {
-        viewModelProvider = if (factory != null) {
-            ViewModelProvider(viewModelStore, factory, extras)
-        } else {
-            viewModelStoreOwnerDefaultViewModelProviderFactory?.let { ViewModelProvider(viewModelStore, it, extras) }
-                ?: ViewModelProvider { viewModelStore }
+        val defaultFactory = viewModelStoreOwnerDefaultViewModelProviderFactory
+        viewModelProvider = when {
+            factory != null -> ViewModelProvider(viewModelStore, factory, extras)
+            defaultFactory != null -> ViewModelProvider(viewModelStore, defaultFactory, extras)
+            else -> ViewModelProvider { viewModelStore }
         }
     }
+
+    private fun CreationExtras.addDefaultArguments(): CreationExtras =
+        if (defaultArguments.isEmpty) {
+            this
+        } else {
+            MutableCreationExtras(this).apply {
+                val combinedBundle = (get(DEFAULT_ARGS_KEY) ?: Bundle()).apply { putAll(defaultArguments) }
+                set(DEFAULT_ARGS_KEY, combinedBundle)
+            }
+        }
 }

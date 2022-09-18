@@ -5,6 +5,7 @@ package com.sebaslogen.resaca
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.os.Bundle
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalContext
@@ -59,9 +60,10 @@ fun <T : Any> rememberScoped(key: Any? = null, builder: @DisallowComposableCalls
  * instead of creating a new [ScopedViewModelOwner] that produces a new [ViewModel] instance when the keys don't match.
  *
  * @param key Key to track the version of the [ViewModel]. Changing [key] between compositions will produce and remember a new [ViewModel].
+ * @param defaultArguments A [Bundle] containing all the default arguments that will be provided to the [ViewModel].
  */
 @Composable
-inline fun <reified T : ViewModel> viewModelScoped(key: Any? = null): T {
+inline fun <reified T : ViewModel> viewModelScoped(key: Any? = null, defaultArguments: Bundle = Bundle.EMPTY): T {
     require(key !is Function0<*>) { "The Key for viewModelScoped should not be a lambda" }
 
     val (scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: String, externalKey: ScopedViewModelContainer.ExternalKey) =
@@ -75,7 +77,8 @@ inline fun <reified T : ViewModel> viewModelScoped(key: Any? = null): T {
     return scopedViewModelContainer.getOrBuildViewModel(
         modelClass = T::class.java,
         positionalMemoizationKey = positionalMemoizationKey,
-        externalKey = externalKey
+        externalKey = externalKey,
+        defaultArguments = defaultArguments
     )
 }
 
@@ -94,10 +97,15 @@ inline fun <reified T : ViewModel> viewModelScoped(key: Any? = null): T {
  * instead of creating a new [ScopedViewModelOwner] that produces a new [ViewModel] instance when the keys don't match.
  *
  * @param key Key to track the version of the [ViewModel]. Changing [key] between compositions will produce and remember a new [ViewModel].
+ * @param defaultArguments A [Bundle] containing all the default arguments that will be provided to the [ViewModel].
  * @param builder Factory function to produce a new [ViewModel] that will be remembered.
  */
 @Composable
-inline fun <reified T : ViewModel> viewModelScoped(key: Any? = null, noinline builder: @DisallowComposableCalls () -> T): T {
+inline fun <reified T : ViewModel> viewModelScoped(
+    key: Any? = null,
+    defaultArguments: Bundle = Bundle.EMPTY,
+    noinline builder: @DisallowComposableCalls () -> T
+): T {
     require(key !is Function0<*>) { "The Key for viewModelScoped should not be a lambda" }
 
     val (scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: String, externalKey: ScopedViewModelContainer.ExternalKey) =
@@ -108,6 +116,7 @@ inline fun <reified T : ViewModel> viewModelScoped(key: Any? = null, noinline bu
         modelClass = T::class.java,
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
+        defaultArguments = defaultArguments,
         builder = builder
     )
 }

@@ -2,6 +2,7 @@
 
 package com.sebaslogen.resaca.hilt
 
+import android.os.Bundle
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.HiltViewModelFactory
@@ -30,9 +31,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
  * instead of creating a new [ScopedViewModelOwner] that produces a new [ViewModel] instance when the keys don't match.
  *
  * @param key Key to track the version of the [ViewModel]. Changing [key] between compositions will produce and store a new [ViewModel].
+ * @param defaultArguments A [Bundle] containing all the default arguments that will be provided to the [ViewModel].
  */
 @Composable
-inline fun <reified T : ViewModel> hiltViewModelScoped(key: Any? = null): T {
+inline fun <reified T : ViewModel> hiltViewModelScoped(key: Any? = null, defaultArguments: Bundle = Bundle.EMPTY): T {
     val (scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: String, externalKey: ScopedViewModelContainer.ExternalKey) =
         generateKeysAndObserveLifecycle(key = key)
 
@@ -46,7 +48,8 @@ inline fun <reified T : ViewModel> hiltViewModelScoped(key: Any? = null): T {
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
         factory = createHiltViewModelFactory(viewModelStoreOwner),
-        viewModelStoreOwner = viewModelStoreOwner
+        viewModelStoreOwner = viewModelStoreOwner,
+        defaultArguments = defaultArguments
     )
 }
 

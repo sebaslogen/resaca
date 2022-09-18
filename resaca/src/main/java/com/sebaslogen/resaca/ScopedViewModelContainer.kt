@@ -1,6 +1,7 @@
 package com.sebaslogen.resaca
 
 import android.app.Activity
+import android.os.Bundle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisallowComposableCalls
 import androidx.compose.runtime.Immutable
@@ -122,12 +123,14 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     fun <T : ViewModel> getOrBuildViewModel(
         modelClass: Class<T>,
         positionalMemoizationKey: String,
-        externalKey: ExternalKey = ExternalKey()
+        externalKey: ExternalKey = ExternalKey(),
+        defaultArguments: Bundle
     ): T = getOrBuildViewModel(
         modelClass = modelClass,
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
-        factory = ViewModelProvider.NewInstanceFactory.instance
+        factory = ViewModelProvider.NewInstanceFactory.instance,
+        defaultArguments = defaultArguments
     )
 
     /**
@@ -138,12 +141,14 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         modelClass: Class<T>,
         positionalMemoizationKey: String,
         externalKey: ExternalKey = ExternalKey(),
+        defaultArguments: Bundle,
         builder: @DisallowComposableCalls () -> T
     ): T = getOrBuildViewModel(
         modelClass = modelClass,
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
-        factory = ScopedViewModelOwner.viewModelFactoryFor(builder)
+        factory = ScopedViewModelOwner.viewModelFactoryFor(builder),
+        defaultArguments = defaultArguments
     )
 
     @Composable
@@ -152,6 +157,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         positionalMemoizationKey: String,
         externalKey: ExternalKey = ExternalKey(),
         factory: ViewModelProvider.Factory,
+        defaultArguments: Bundle,
         viewModelStoreOwner: ViewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
             "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
         }
@@ -161,6 +167,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         externalKey = externalKey,
         factory = factory,
         viewModelStoreOwner = viewModelStoreOwner,
+        defaultArguments = defaultArguments,
         scopedObjectsContainer = scopedObjectsContainer,
         scopedObjectKeys = scopedObjectKeys,
         cancelDisposal = ::cancelDisposal
@@ -175,13 +182,15 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         positionalMemoizationKey: String,
         externalKey: ExternalKey = ExternalKey(),
         factory: ViewModelProvider.Factory?,
-        viewModelStoreOwner: ViewModelStoreOwner
+        viewModelStoreOwner: ViewModelStoreOwner,
+        defaultArguments: Bundle
     ): T = ScopedViewModelUtils.getOrBuildHiltViewModel(
         modelClass = modelClass,
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
         factory = factory,
         viewModelStoreOwner = viewModelStoreOwner,
+        defaultArguments = defaultArguments,
         scopedObjectsContainer = scopedObjectsContainer,
         scopedObjectKeys = scopedObjectKeys,
         cancelDisposal = ::cancelDisposal

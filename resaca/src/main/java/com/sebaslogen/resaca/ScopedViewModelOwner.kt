@@ -1,5 +1,6 @@
 package com.sebaslogen.resaca
 
+import android.os.Bundle
 import androidx.compose.runtime.DisallowComposableCalls
 import androidx.lifecycle.*
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion as ViewModelFactory
@@ -14,17 +15,22 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion as
  *
  * The creation of the [ViewModel] will be done by a [ViewModelProvider] and stored inside a [ViewModelStore].
  *
- * Note: A unique [key] is required to support [SavedStateHandle] across multiple instances of the same [ViewModel] type. See [ViewModelFactory.DEFAULT_KEY].
+ * @param key Unique [key] required to support [SavedStateHandle] across multiple instances of the same [ViewModel] type. See [ViewModelFactory.DEFAULT_KEY].
+ * @param modelClass Class type of the [ViewModel] to instantiate
+ * @param factory [ViewModelProvider] factory to create the requested [ViewModel] when required
+ * @param defaultArguments [Bundle] of default arguments that will be provided to the [ViewModel] through the [SavedStateHandle]
+ * @param viewModelStoreOwner Used to extract possible defaultViewModelCreationExtras and defaultViewModelProviderFactory
  */
 class ScopedViewModelOwner<T : ViewModel>(
-    val key: String,
-    val modelClass: Class<T>,
-    val factory: ViewModelProvider.Factory?,
+    private val key: String,
+    private val modelClass: Class<T>,
+    private val factory: ViewModelProvider.Factory?,
+    defaultArguments: Bundle,
     viewModelStoreOwner: ViewModelStoreOwner
 ) {
 
     private val viewModelStore = ViewModelStore()
-    private val scopedViewModelProvider = ScopedViewModelProvider(factory, viewModelStore, viewModelStoreOwner)
+    private val scopedViewModelProvider = ScopedViewModelProvider(factory, viewModelStore, defaultArguments, viewModelStoreOwner)
 
     val viewModel: T
         @Suppress("ReplaceGetOrSet")
