@@ -72,11 +72,6 @@ object ScopedViewModelUtils {
      *
      * The creation, storage, retrieval and clean up of the [ViewModel] will be taken care of
      * by a [ScopedViewModelOwner] which will be the actual object stored in the [scopedObjectsContainer].
-     *
-     * Note: There is no support for keys in Hilt therefore the same [ViewModelStore] per type is used for all Hilt
-     * ViewModels of the same type [T] inside the container scope (Activity/Fragment/Nav. destination).
-     * The same [ViewModel] will always be returned once created until disposal of all the Composables using it.
-     * Support for keys in the Hilt library is still a WIP. See https://github.com/google/dagger/issues/2328
      */
     @Composable
     inline fun <T : ViewModel> getOrBuildHiltViewModel(
