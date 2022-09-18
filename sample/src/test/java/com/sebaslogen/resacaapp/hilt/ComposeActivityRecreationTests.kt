@@ -50,7 +50,7 @@ class ComposeActivityRecreationTests : ComposeTestUtils {
     }
 
     @Test
-    fun `when the activity is recreated, then the scoped object and Hilt injected scoped ViewModel are the same`() {
+    fun `when the activity is recreated, then the scoped object and Hilt injected scoped ViewModel remain the same`() {
 
         // Given the starting screen with Hilt injected ViewModel scoped
         val launchIntent = Intent(ApplicationProvider.getApplicationContext(), ComposeActivity::class.java).apply {
