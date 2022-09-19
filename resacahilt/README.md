@@ -44,6 +44,17 @@ fun DemoInjectedViewModelWithKey(keyOne: String = "myFirstKey", keyTwo: String =
     DemoComposable(inputObject = scopedVMWithFirstKey)
     DemoComposable(inputObject = scopedVMWithSecondKey)
 }
+
+@Composable
+fun DemoInjectedViewModelWithId(idOne: String = "myFirstId", idTwo: String = "mySecondId") {
+    val scopedVMWithFirstId: MyIdViewModel = hiltViewModelScoped(idOne, defaultArguments = bundleOf(MY_ARGS_KEY to idOne))
+    val scopedVMWithSecondId: MyIdViewModel = hiltViewModelScoped(idTwo, defaultArguments = bundleOf(MY_ARGS_KEY to idTwo))
+    // We now have 2 instances on memory of the same ViewModel type, both inside the same Composable scope
+    // When one Id updates only the ViewModel with that Id will be recreated
+    // Each ViewModel instance has its own Id
+    DemoComposable(inputObject = scopedVMWithFirstId)
+    DemoComposable(inputObject = scopedVMWithSecondId)
+}
 ```
 
 Once you use the `hiltViewModelScoped` function, the same object will be restored as long as the Composable is part of the composition, even if it _temporarily_
@@ -99,10 +110,33 @@ Add the Jitpack repo and include the library:
 Assisted injection is a dependency injection (DI) pattern that is used to construct an object where some parameters may be provided by the DI framework and
 others must be passed in at creation time (a.k.a “assisted”) by the user, in our case when the `hiltViewModelScoped` is requested.
 
-If you use Dagger instead of Hilt, it is possible to use Assisted Injection because it is supported in the
+If you use Dagger (instead of Hilt), it is possible to use Assisted Injection because it is supported in the
 library. [See the official documentation](https://dagger.dev/dev-guide/assisted-injection.html). To use Dagger in combination with scoped ViewModels you need to
 use the vanilla `viewModelScoped` from [the Resaca library](https://github.com/sebaslogen/resaca) and use one of Dagger providers as parameter
 of `viewModelScoped`.
 
 **Unfortunately, Assisted Injection is not supported by Hilt** at the moment and the feature request is open with no clear
 plans: https://github.com/google/dagger/issues/2287
+
+# Pseudo Assisted Injection support
+
+The `hiltViewModelScoped` accepts a `defaultArguments: Bundle` parameter, this Bundle will be provided to your ViewModel as long as the constructor of your ViewModel contains a `SavedStateHandle` parameter. With this Bundle you can provide default arguments to each ViewModel from the Composable call site. Therefore, you will be able to have multiple ViewModels in the same Composable with different ids.
+
+Usage example:
+
+```kotlin
+val myVM: MyViewModel = hiltViewModelScoped(key = myId, defaultArguments = bundleOf(MyViewModel.MY_ARGS_KEY to myId))
+```
+
+```kotlin
+class MyViewModel(private val stateSaver: SavedStateHandle, val repoDependency: MyRepository) : ViewModel() {
+
+    companion object {
+        const val MY_ARGS_KEY = "MY_ARGS_KEY"
+    }
+
+    val viewModelId = stateSaver.get<Int>(MY_ARGS_KEY)
+    
+    fun getData() = repoDependency.getDataForId(viewModelId)
+}
+```
