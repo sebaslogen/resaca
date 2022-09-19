@@ -8,7 +8,8 @@ import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 
 /**
- * This is a fake [ViewModel] with dependencies that will be injected by Hilt and one dependency that will be provided by assisted injection via [stateSaver]
+ * This is a fake [ViewModel] with dependencies that will be injected by Hilt and
+ * a dependency [Bundle] that will be provided by pseudo assisted injection via [stateSaver].
  * @param stateSaver A dependency provided by the Android and Hilt frameworks to save and restore state in a [Bundle]
  * @param repository Sample of a common dependency on a project's object created by Hilt
  * @param viewModelsClearedCounter Is a counter to inform the providers of this parameter that this ViewModel has been correctly cleared
@@ -24,7 +25,7 @@ class FakeInjectedViewModel @Inject constructor(
         const val MY_ARGS_KEY = "MY_ARGS_KEY"
     }
 
-    val viewModelKey = stateSaver.get<Int>(MY_ARGS_KEY)
+    val viewModelId = stateSaver.get<Int>(MY_ARGS_KEY)
 
     override fun onCleared() {
         super.onCleared()

@@ -9,6 +9,9 @@ import androidx.lifecycle.*
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import kotlinx.coroutines.*
 import java.util.concurrent.ConcurrentSkipListSet
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
 
 /**
  * [ViewModel] class used to store objects and [ViewModel]s as long as the
@@ -125,13 +128,18 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         positionalMemoizationKey: String,
         externalKey: ExternalKey = ExternalKey(),
         defaultArguments: Bundle
-    ): T = getOrBuildViewModel(
-        modelClass = modelClass,
-        positionalMemoizationKey = positionalMemoizationKey,
-        externalKey = externalKey,
-        factory = ViewModelProvider.NewInstanceFactory.instance,
-        defaultArguments = defaultArguments
-    )
+    ): T {
+        val owner = checkNotNull(LocalViewModelStoreOwner.current) { "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner" }
+        val factory = if (owner is HasDefaultViewModelProviderFactory) owner.defaultViewModelProviderFactory else ViewModelProvider.NewInstanceFactory.instance
+        return getOrBuildViewModel(
+            modelClass = modelClass,
+            positionalMemoizationKey = positionalMemoizationKey,
+            externalKey = externalKey,
+            factory = factory,
+            defaultArguments = defaultArguments,
+            viewModelStoreOwner = owner
+        )
+    }
 
     /**
      * Restore or build a [ViewModel] using the provided [builder] as the factory

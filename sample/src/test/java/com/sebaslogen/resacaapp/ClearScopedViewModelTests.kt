@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -109,7 +110,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
             // Given the starting screen with two scoped ViewModels sharing the same ViewModel instance
             var composablesShown by mutableStateOf(true)
             val textTitle = "Test text"
-            val viewModelInstance = FakeScopedViewModel(viewModelsClearedGloballySharedCounter)
+            val viewModelInstance = FakeScopedViewModel(stateSaver = SavedStateHandle(mapOf(FakeScopedViewModel.MY_ARGS_KEY to 0)))
             composeTestRule.setContent {
                 Column {
                     Text(textTitle)

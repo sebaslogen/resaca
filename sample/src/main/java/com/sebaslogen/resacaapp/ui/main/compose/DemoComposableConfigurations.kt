@@ -9,8 +9,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.sebaslogen.resaca.hilt.hiltViewModelScoped
 import com.sebaslogen.resaca.rememberScoped
 import com.sebaslogen.resaca.viewModelScoped
@@ -49,7 +48,8 @@ fun DemoScopedObjectComposable(key: String? = null, fakeRepoInstance: FakeRepo =
 }
 
 /**
- * Create a [ViewModel] with the [viewModelScoped] function and with no external parameters/dependencies required by the constructor
+ * Create a [ViewModel] with the [viewModelScoped] function and with no external parameters/dependencies required by the constructor.
+ * In this case the [SavedStateHandle] required by [FakeScopedViewModel] will be provided by the default [SavedStateViewModelFactory]
  */
 @Composable
 fun DemoScopedViewModelComposable(key: String? = null) {
@@ -63,7 +63,7 @@ fun DemoScopedViewModelComposable(key: String? = null) {
  */
 @Composable
 fun DemoScopedParametrizedViewModelComposable(
-    viewModelInstance: FakeScopedViewModel = FakeScopedViewModel(viewModelsClearedGloballySharedCounter),
+    viewModelInstance: FakeScopedViewModel = FakeScopedViewModel(stateSaver = SavedStateHandle(mapOf(MY_ARGS_KEY to 0))),
     key: String? = null
 ) {
     val fakeScopedParametrizedVM: FakeScopedViewModel = viewModelScoped(key = key) { viewModelInstance }

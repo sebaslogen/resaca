@@ -73,6 +73,10 @@ class ScopedViewModelProvider(
         }
     }
 
+    /**
+     * Combine the default arguments present in the receiver's [CreationExtras] under the key [DEFAULT_ARGS_KEY] with the [defaultArguments] of this class.
+     * When the default arguments are not present just add them.
+     */
     private fun CreationExtras.addDefaultArguments(): CreationExtras =
         if (defaultArguments.isEmpty) {
             this
