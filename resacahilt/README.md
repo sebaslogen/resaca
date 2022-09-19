@@ -120,7 +120,7 @@ plans: https://github.com/google/dagger/issues/2287
 
 # Pseudo Assisted Injection support
 
-The `hiltViewModelScoped` accepts a `defaultArguments: Bundle` parameter, this Bundle will be provided to your ViewModel as long as the constructor of your ViewModel contains a `SavedStateHandle` parameter. With this Bundle you can provide default arguments to each ViewModel from the Composable call site. Therefore, you will be able to have multiple ViewModels in the same Composable with different ids.
+The `hiltViewModelScoped` function accepts a `defaultArguments: Bundle` parameter, this Bundle will be provided to your ViewModel as long as the constructor of your ViewModel contains a `SavedStateHandle` parameter. With this Bundle you can provide default arguments to each ViewModel from the Composable call site. This way, you can have multiple ViewModels in the same Composable with different ids.
 
 Usage example:
 
