@@ -28,8 +28,7 @@ versions.activityCompose = "1.5.1"
 versions.lifecycleViewModel = '2.5.1'
 
 // Hilt
-versions.hiltGradlePlugin = '2.43.2'
-versions.hilt = '2.43.2'
+versions.hilt = '2.44'
 versions.hiltNavigationCompose = '1.0.0'
 
 ext.versions = versions
