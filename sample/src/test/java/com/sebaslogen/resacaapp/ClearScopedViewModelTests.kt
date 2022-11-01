@@ -62,7 +62,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
 
         // Then the scoped ViewModel from the second screen is cleared
         assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 2) {
-            "The amount of FakeScopedViewModels that where cleared after back navigation ($finalAmountOfViewModelsCleared) " +
+            "The amount of FakeScopedViewModels that were cleared after back navigation ($finalAmountOfViewModelsCleared) " +
                     "was not two numbers higher that the amount before navigating ($initialAmountOfViewModelsCleared)"
         }
     }
@@ -98,7 +98,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
 
         // Then both scoped ViewModels are cleared
         assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 2) {
-            "The amount of FakeScopedViewModels that where cleared after disposal ($finalAmountOfViewModelsCleared) " +
+            "The amount of FakeScopedViewModels that were cleared after disposal ($finalAmountOfViewModelsCleared) " +
                     "was not two numbers higher that the amount before the Composables were disposed ($initialAmountOfViewModelsCleared)"
         }
     }
@@ -132,7 +132,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
 
             // Then the scoped ViewModel is NOT cleared
             assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared) {
-                "The amount of FakeScopedViewModels that where cleared after disposal ($finalAmountOfViewModelsCleared) " +
+                "The amount of FakeScopedViewModels that were cleared after disposal ($finalAmountOfViewModelsCleared) " +
                         "is not the same as the initial the amount before the Composable was disposed ($initialAmountOfViewModelsCleared)"
             }
         }
@@ -165,7 +165,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
 
         // Then both old scoped ViewModels are cleared
         assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 2) {
-            "The amount of FakeScopedViewModels that where cleared after key change ($finalAmountOfViewModelsCleared) " +
+            "The amount of FakeScopedViewModels that were cleared after key change ($finalAmountOfViewModelsCleared) " +
                     "was not two numbers higher that the amount before the key change ($initialAmountOfViewModelsCleared)"
         }
     }

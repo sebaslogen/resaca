@@ -90,7 +90,7 @@ class ClearRememberScopedObjectTests : ComposeTestUtils {
 
             // Then the scoped Closeable is NOT cleared
             assert(finalAmountOfCloseablesCleared == initialAmountOfCloseablesCleared) {
-                "The amount of FakeRepo that where cleared after disposal ($finalAmountOfCloseablesCleared) " +
+                "The amount of FakeRepo that were cleared after disposal ($finalAmountOfCloseablesCleared) " +
                         "is not the same as the initial the amount before the Composable was disposed ($initialAmountOfCloseablesCleared)"
             }
         }
@@ -118,7 +118,7 @@ class ClearRememberScopedObjectTests : ComposeTestUtils {
 
         // Then both scoped Closeable are cleared
         assert(finalAmountOfCloseableCleared == initialAmountOfCloseableCleared + 1) {
-            "The amount of FakeRepo that where cleared after key change ($finalAmountOfCloseableCleared) " +
+            "The amount of FakeRepo that were cleared after key change ($finalAmountOfCloseableCleared) " +
                     "was not higher that the amount before the key change ($initialAmountOfCloseableCleared)"
         }
     }

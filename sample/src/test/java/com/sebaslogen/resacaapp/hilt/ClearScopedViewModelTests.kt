@@ -71,7 +71,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
 
         // Then the Hilt scoped ViewModel from the second screen is cleared
         assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 2) {
-            "The amount of FakeInjectedViewModels that where cleared after back navigation ($finalAmountOfViewModelsCleared) " +
+            "The amount of FakeInjectedViewModels that were cleared after back navigation ($finalAmountOfViewModelsCleared) " +
                     "was not higher that the amount before navigating ($initialAmountOfViewModelsCleared)"
         }
     }
@@ -106,7 +106,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
 
         // Then the scoped ViewModel is cleared
         assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 1) {
-            "The amount of FakeInjectedViewModel that where cleared after disposal ($finalAmountOfViewModelsCleared) " +
+            "The amount of FakeInjectedViewModel that were cleared after disposal ($finalAmountOfViewModelsCleared) " +
                     "was not higher that the amount before disposal ($initialAmountOfViewModelsCleared)"
         }
     }
@@ -139,7 +139,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
 
             // Then one scoped ViewModel is cleared
             assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 1) {
-                "The amount of FakeSecondInjectedViewModel that where cleared after disposal ($finalAmountOfViewModelsCleared) " +
+                "The amount of FakeSecondInjectedViewModel that were cleared after disposal ($finalAmountOfViewModelsCleared) " +
                         "is not higher than the initial the amount before the Composable was disposed ($initialAmountOfViewModelsCleared)"
             }
         }
@@ -172,7 +172,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
 
             // Then one scoped ViewModel is cleared
             assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 1) {
-                "The amount of FakeSecondInjectedViewModel that where cleared after disposal ($finalAmountOfViewModelsCleared) " +
+                "The amount of FakeSecondInjectedViewModel that were cleared after disposal ($finalAmountOfViewModelsCleared) " +
                         "is not higher than the initial the amount before the Composable was disposed ($initialAmountOfViewModelsCleared)"
             }
         }
@@ -204,7 +204,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
 
         // Then the Hilt scoped ViewModel is cleared
         assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 1) {
-            "The amount of FakeScopedViewModels that where cleared after key change ($finalAmountOfViewModelsCleared) " +
+            "The amount of FakeScopedViewModels that were cleared after key change ($finalAmountOfViewModelsCleared) " +
                     "was not two numbers higher that the amount before the key change ($initialAmountOfViewModelsCleared)"
         }
     }
