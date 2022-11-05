@@ -58,8 +58,8 @@ dependencies {
     implementation project(":resacahilt")
 
     implementation "androidx.core:core-ktx:$versions.coreKtx"
-    implementation 'androidx.appcompat:appcompat:1.4.2'
-    implementation 'com.google.android.material:material:1.6.1'
+    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'com.google.android.material:material:1.7.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.lifecycleViewModel"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.kotlinxCoroutines"
@@ -67,17 +67,19 @@ dependencies {
 
     // Compose dependencies
     implementation "androidx.compose.compiler:compiler:$versions.composeCompiler"
-    implementation "androidx.compose.ui:ui:$versions.composeUi"
-    implementation "androidx.navigation:navigation-compose:$versions.navigation"
+    implementation platform("androidx.compose:compose-bom:$versions.composeBOM")
+    implementation "androidx.compose.ui:ui"
     // Tooling support (Previews, etc.)
-    implementation "androidx.compose.ui:ui-tooling:$versions.composeUiTooling"
-    implementation "androidx.compose.ui:ui-tooling-preview:$versions.composeUiTooling"
-    // Integration with ViewModels
-    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$versions.lifecycleViewModel"
+    implementation "androidx.compose.ui:ui-tooling"
+    implementation "androidx.compose.ui:ui-tooling-preview"
     // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
-    implementation "androidx.compose.foundation:foundation:$versions.composeFoundation"
+    implementation "androidx.compose.foundation:foundation"
     // Material Design
-    implementation "androidx.compose.material:material:$versions.composeMaterial"
+    implementation "androidx.compose.material:material"
+
+    // Compose integration with ViewModels
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$versions.lifecycleViewModel"
+    implementation "androidx.navigation:navigation-compose:$versions.navigation"
 
     // Hilt dependencies
     implementation "com.google.dagger:hilt-android:$versions.hilt"
@@ -88,9 +90,9 @@ dependencies {
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$versions.kotlinxCoroutines"
     testImplementation "org.robolectric:robolectric:$versions.robolectric"
     // Test rules and transitive dependencies:
-    testImplementation("androidx.compose.ui:ui-test-junit4:$versions.composeUi")
+    testImplementation("androidx.compose.ui:ui-test-junit4")
     // Needed for createComposeRule, but not createAndroidComposeRule:
-    debugImplementation("androidx.compose.ui:ui-test-manifest:$versions.composeUi")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
     testImplementation("com.google.dagger:hilt-android-testing:$versions.hilt")
     kaptTest("com.google.dagger:hilt-android-compiler:$versions.hilt")
 
