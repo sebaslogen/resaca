@@ -22,7 +22,7 @@ versions.activityCompose = "1.6.1"
 versions.lifecycleViewModel = '2.5.1'
 
 // Hilt
-versions.hilt = '2.44'
+versions.hilt = '2.44.1'
 versions.hiltNavigationCompose = '1.0.0'
 
 ext.versions = versions
