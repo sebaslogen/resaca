@@ -1,7 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 def versions = [:]
 
-versions.gradle = '7.3.1'
+versions.gradle = '7.4.0'
 versions.compileSdk = 33
 versions.minSdk = 21
 versions.targetSdk = 32
