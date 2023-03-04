@@ -175,9 +175,9 @@ Implementing these interfaces might not trivial.
 - **Complex** integration work is required to correctly implement Parcelable
   or [Saver](https://developer.android.com/reference/kotlin/androidx/compose/runtime/saveable/Saver)
 
-# Lifecycle
+### The new RememberScoped 
 
-**[RememberScoped](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/compose/ScopedMemoizers.kt#L26)** function keeps
+**[RememberScoped](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/ScopedMemoizers.kt#L33)** function keeps
 objects in memory during the lifecycle of the Composable, even in a few cases where the Composable is disposed of, and then added again. Therefore, it will
 retain objects longer than the `remember` function but shorter than `rememberSaveable` because there is no serialization involved.
 
@@ -190,6 +190,11 @@ retain objects longer than the `remember` function but shorter than `rememberSav
 **_Cons_**
 
 - rememberScoped/viewModelScoped value will **NOT** survive a process death
+
+# Lifecycle
+
+**[RememberScoped](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/ScopedMemoizers.kt#L33)** function keeps
+objects in memory during the lifecycle of the Composable, even in a few cases where the Composable is disposed of, and then added again.
 
 ## RememberScoped lifecycle internal implementation details
 
@@ -230,4 +235,4 @@ The existing alternatives to replicate the lifecycle of the objects in the diagr
 
 - Object A lifecycle could only be achieved using the Compose `viewModel()` or `ViewModelProviders` factories.
 - Object B lifecycle could only be achieved using the Compose `remember()` function.
-- Object C lifecycle could not simply be achieved neither by using ViewModel provider functions nor Compose `remember` functions.
+- Object C lifecycle could not be achieved neither by using ViewModel provider functions nor Compose `remember` functions.
