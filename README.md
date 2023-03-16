@@ -28,6 +28,23 @@ In practice, this means that we are gluing UI Lego blocks with business logic Le
 
 Until now...
 
+# Installation
+
+Add the Jitpack repo and include the library (less than 5Kb):
+
+```gradle
+   allprojects {
+       repositories {
+           [..]
+           maven { url "https://jitpack.io" }
+       }
+   }
+   dependencies {
+       // The latest version of the lib is available in the badget at the top, replace X.X.X with that version
+       implementation 'com.github.sebaslogen.resaca:resaca:X.X.X'
+   }
+```  
+
 # Usage
 
 Inside your `@Composable` function create and retrieve an object using `rememberScoped` to remember any type of object (except ViewModels). For ViewModels use
@@ -97,23 +114,6 @@ Demo app [documentation can be found here](https://github.com/sebaslogen/resaca/
 Before                     |  After backstack navigation & configuration change
 :-------------------------:|:-------------------------:
 <img width="429" alt="Before" src="https://user-images.githubusercontent.com/1936647/146558764-42333455-2dd8-43a9-932b-3249d42b7a7d.png">  |  <img width="430" alt="After" src="https://user-images.githubusercontent.com/1936647/146558775-8c77231c-ed0f-4f52-b9b8-cdf9029e106c.png">
-
-# Installation
-
-Add the Jitpack repo and include the library (less than 5Kb):
-
-```gradle
-   allprojects {
-       repositories {
-           [..]
-           maven { url "https://jitpack.io" }
-       }
-   }
-   dependencies {
-       // The latest version of the lib is available in the badget at the top, replace X.X.X with that version
-       implementation 'com.github.sebaslogen.resaca:resaca:X.X.X'
-   }
-```  
 
 # Dependency injection support
 
