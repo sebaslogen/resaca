@@ -21,6 +21,23 @@ In practice, this means that we are gluing UI Lego blocks with business logic Le
 
 Until now...
 
+# Installation
+
+Add the Jitpack repo and include the library:
+
+```gradle
+   allprojects {
+       repositories {
+           [..]
+           maven { url "https://jitpack.io" }
+       }
+   }
+   dependencies {
+       // The latest version of the lib is available in the badget at the top, replace X.X.X with that version
+       implementation 'com.github.sebaslogen.resaca:resacahilt:X.X.X'
+   }
+```  
+
 # Usage
 
 Inside your `@Composable` function create and retrieve a ViewModel using `hiltViewModelScoped` to remember any `@HiltViewModel` annotated ViewModel. This
@@ -87,23 +104,6 @@ Here are some sample use cases reported by the users of this library:
   class with different ids. For example, a screen of holiday destinations with multiple pages and each page with its own `HolidayDestinationViewModel`.
 - ❤️ Isolated and stateful UI components like a **favorite button** that are widely used across the screens. This `FavoriteViewModel` can be very small, focused
   and only require an id to work without affecting the rest of the screen's UI and state.
-
-# Installation
-
-Add the Jitpack repo and include the library:
-
-```gradle
-   allprojects {
-       repositories {
-           [..]
-           maven { url "https://jitpack.io" }
-       }
-   }
-   dependencies {
-       // The latest version of the lib is available in the badget at the top, replace X.X.X with that version
-       implementation 'com.github.sebaslogen.resaca:resacahilt:X.X.X'
-   }
-```  
 
 # Assisted Injection
 
