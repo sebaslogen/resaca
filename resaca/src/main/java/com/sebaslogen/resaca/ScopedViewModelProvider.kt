@@ -69,7 +69,11 @@ class ScopedViewModelProvider(
         viewModelProvider = when {
             factory != null -> ViewModelProvider(viewModelStore, factory, extras)
             defaultFactory != null -> ViewModelProvider(viewModelStore, defaultFactory, extras)
-            else -> ViewModelProvider { viewModelStore }
+            else -> ViewModelProvider(owner = object : ViewModelStoreOwner {
+                override val viewModelStore: ViewModelStore
+                    get() = this@ScopedViewModelProvider.viewModelStore
+
+            })
         }
     }
 
