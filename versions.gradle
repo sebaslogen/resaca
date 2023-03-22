@@ -19,7 +19,7 @@ versions.composeBOM = "2023.03.00"
 // Compose integration with Activities
 versions.activityCompose = "1.6.1"
 // Compose integration with ViewModels
-versions.lifecycleViewModel = '2.6.0'
+versions.lifecycleViewModel = '2.6.1'
 
 // Hilt
 versions.hilt = '2.45'
