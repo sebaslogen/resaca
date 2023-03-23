@@ -60,7 +60,9 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
 
     /**
      * Mark whether the Activity containing this class is changing configuration and use this
-     * information to dispose objects that are completely gone after a configuration change
+     * information to dispose objects that are completely gone after a configuration change.
+     * Note: This is only required when no other object scoped to this container is still alive, otherwise,
+     * the [isInForeground] will be used to dispose objects that are completely gone after a configuration change.
      */
     private var isChangingConfiguration = false
 
@@ -251,6 +253,8 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      *                          - or when recreating due configuration changes, because after a configuration change, the [cancelDisposal] should have been
      *                          called once the scoped object was requested again, the fact that this is still scheduled means it's not needed
      *                          after the configuration change.
+     *                               Note: [isChangingConfiguration] is only required when no other object scoped to this container is still alive, otherwise,
+     *                               the [isInForeground] will be used to dispose objects that are completely gone after a configuration change.
      */
     private fun scheduleToDispose(key: String, removalCondition: () -> Boolean = { isInForeground || isChangingConfiguration }) {
         if (disposingJobs.containsKey(key)) return // Already disposing, quit
@@ -316,7 +320,15 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         }
     }
 
-    fun setChangingConfigurationState(newState: Boolean) {
+    /**
+     * We need to track if the last object was disposed with a configuration change,
+     * because, if no other scoped object in this container observes the [isInForeground] state,
+     * after a delay, the object can safely be disposed of.
+     * In this case, we can safely assume the object was never requested again
+     * after the configuration change finished and the container screen was again in the foreground.
+     */
+    fun setIsChangingConfigurationOnDestroy(newState: Boolean) {
+        isInForeground = false // we know for sure it is not in the foreground anymore while the on-destroy event is happening
         isChangingConfiguration = newState
     }
 

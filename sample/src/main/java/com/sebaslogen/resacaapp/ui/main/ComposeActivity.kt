@@ -27,6 +27,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 const val rememberScopedDestination = "rememberScopedDestination"
 const val hiltViewModelScopedDestination = "hiltViewModelScopedDestination"
+const val viewModelScopedDestination = "viewModelScopedDestination"
 
 
 @AndroidEntryPoint // This annotation is required for Hilt to work anywhere inside this Activity
@@ -58,6 +59,9 @@ fun ScreensWithNavigation(navController: NavHostController = rememberNavControll
         }
         composable(hiltViewModelScopedDestination) {
             ComposeScreenWithViewModelScoped(navController)
+        }
+        composable(viewModelScopedDestination) { // This Screen is only used in automated tests
+            ComposeScreenWithSingleViewModelScoped(navController)
         }
     }
 }
@@ -91,6 +95,24 @@ private fun ComposeScreenWithViewModelScoped(navController: NavHostController) {
     }
 }
 
+/**
+ * This Screen is only used in automated tests
+ */
+@Composable
+private fun ComposeScreenWithSingleViewModelScoped(navController: NavHostController) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            modifier = Modifier.padding(8.dp),
+            text = "The ViewModel below will be shown in light mode and garbage collected in dark mode"
+        )
+        // The ViewModel is only shown in light mode, to demo how the ViewModel is properly garbage collected in a different config (dark mode)
+        if (!isSystemInDarkTheme()) {
+            DemoScopedViewModelComposable()
+        }
+        NavigationButtons(navController)
+    }
+}
+
 @Composable
 fun NavigationButtons(navController: NavHostController) {
     Button(modifier = Modifier.padding(top = 16.dp, bottom = 4.dp),
@@ -100,6 +122,10 @@ fun NavigationButtons(navController: NavHostController) {
     Button(modifier = Modifier.padding(vertical = 4.dp),
         onClick = { navController.navigate(hiltViewModelScopedDestination) }) {
         Text(text = "Push Hilt hiltViewModelScoped destination")
+    }
+    Button(modifier = Modifier.padding(vertical = 4.dp),
+        onClick = { navController.navigate(viewModelScopedDestination) }) {
+        Text(text = "Push ViewModelScoped dest. with day/might")
     }
     val activity = (LocalContext.current as? Activity)
     Button(modifier = Modifier.padding(vertical = 4.dp),

@@ -156,7 +156,7 @@ internal inline fun ObserveComposableDisposal(positionalMemoizationKey: String, 
 /**
  * Observe the lifecycle of this navigation destination in [ScopedViewModelContainer] and detect screen resumed/paused/destroyed.
  * With this observer we can detect when an object (stored in [ScopedViewModelContainer]) is missing on the screen
- * after the screen is resumed and then we can finally dispose the object after a delay
+ * after the screen is resumed and then we can finally dispose the object after a delay.
  *
  * The current navigation destination that owns the lifecycle can be either a:
  * - [NavBackStackEntry] ScopedViewModelContainer will live in the scope of this Nav-graph destination
@@ -173,7 +173,7 @@ internal fun ObserveLifecycleWithScopedViewModelContainer(scopedViewModelContain
     val context = LocalContext.current
     DisposableEffect(context) {
         onDispose {
-            scopedViewModelContainer.setChangingConfigurationState(context.findActivity().isChangingConfigurations)
+            scopedViewModelContainer.setIsChangingConfigurationOnDestroy(context.findActivity().isChangingConfigurations)
         }
     }
 
