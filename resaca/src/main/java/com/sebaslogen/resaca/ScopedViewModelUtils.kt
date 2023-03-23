@@ -31,7 +31,7 @@ object ScopedViewModelUtils {
     fun <T : ViewModel> getOrBuildViewModel(
         modelClass: Class<T>,
         positionalMemoizationKey: String,
-        externalKey: ScopedViewModelContainer.ExternalKey = ScopedViewModelContainer.ExternalKey(),
+        externalKey: ScopedViewModelContainer.ExternalKey,
         factory: ViewModelProvider.Factory,
         viewModelStoreOwner: ViewModelStoreOwner,
         defaultArguments: Bundle,
@@ -80,7 +80,7 @@ object ScopedViewModelUtils {
     inline fun <T : ViewModel> getOrBuildHiltViewModel(
         modelClass: Class<T>,
         positionalMemoizationKey: String,
-        externalKey: ScopedViewModelContainer.ExternalKey = ScopedViewModelContainer.ExternalKey(),
+        externalKey: ScopedViewModelContainer.ExternalKey,
         factory: ViewModelProvider.Factory?,
         viewModelStoreOwner: ViewModelStoreOwner,
         defaultArguments: Bundle,

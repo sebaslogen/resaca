@@ -99,7 +99,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     @Composable
     fun <T : Any> getOrBuildObject(
         positionalMemoizationKey: String,
-        externalKey: ExternalKey = ExternalKey(),
+        externalKey: ExternalKey,
         builder: @DisallowComposableCalls () -> T
     ): T {
         @Composable
@@ -126,7 +126,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     fun <T : ViewModel> getOrBuildViewModel(
         modelClass: Class<T>,
         positionalMemoizationKey: String,
-        externalKey: ExternalKey = ExternalKey(),
+        externalKey: ExternalKey,
         defaultArguments: Bundle
     ): T {
         val owner = checkNotNull(LocalViewModelStoreOwner.current) { "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner" }
@@ -148,7 +148,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     fun <T : ViewModel> getOrBuildViewModel(
         modelClass: Class<T>,
         positionalMemoizationKey: String,
-        externalKey: ExternalKey = ExternalKey(),
+        externalKey: ExternalKey,
         defaultArguments: Bundle,
         builder: @DisallowComposableCalls () -> T
     ): T = getOrBuildViewModel(
@@ -163,7 +163,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     private fun <T : ViewModel> getOrBuildViewModel(
         modelClass: Class<T>,
         positionalMemoizationKey: String,
-        externalKey: ExternalKey = ExternalKey(),
+        externalKey: ExternalKey,
         factory: ViewModelProvider.Factory,
         defaultArguments: Bundle,
         viewModelStoreOwner: ViewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
@@ -188,7 +188,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     fun <T : ViewModel> getOrBuildHiltViewModel(
         modelClass: Class<T>,
         positionalMemoizationKey: String,
-        externalKey: ExternalKey = ExternalKey(),
+        externalKey: ExternalKey,
         factory: ViewModelProvider.Factory?,
         viewModelStoreOwner: ViewModelStoreOwner,
         defaultArguments: Bundle
@@ -329,7 +329,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     @Immutable
     @JvmInline
     @Suppress("unused") // Used for equals comparisons
-    value class ExternalKey(private val value: Int = -166379894) {
+    value class ExternalKey(private val value: Int) {
 
         companion object {
             fun from(objectInstance: Any?): ExternalKey = ExternalKey(objectInstance.hashCode())
