@@ -13,7 +13,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.*
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
 
 /**
@@ -173,7 +173,7 @@ internal fun ObserveLifecycleWithScopedViewModelContainer(scopedViewModelContain
     val context = LocalContext.current
     DisposableEffect(context) {
         onDispose {
-            scopedViewModelContainer.setIsChangingConfigurationOnDestroy(context.findActivity().isChangingConfigurations)
+            scopedViewModelContainer.setIsChangingConfiguration(context.findActivity().isChangingConfigurations)
         }
     }
 
@@ -182,7 +182,7 @@ internal fun ObserveLifecycleWithScopedViewModelContainer(scopedViewModelContain
     // Use LaunchedEffect to make sure we have a coroutine scope to run on main-thread
     // and to add the observer again every time the lifecycle or the ScopedViewModelContainer change
     LaunchedEffect(lifecycle, scopedViewModelContainer) {
-        launch(Dispatchers.Main) {
+        withContext(Dispatchers.Main) {
             lifecycle.addObserver(scopedViewModelContainer)
         }
     }

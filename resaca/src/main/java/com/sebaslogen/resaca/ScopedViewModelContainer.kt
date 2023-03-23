@@ -327,8 +327,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      * In this case, we can safely assume the object was never requested again
      * after the configuration change finished and the container screen was again in the foreground.
      */
-    fun setIsChangingConfigurationOnDestroy(newState: Boolean) {
-        isInForeground = false // we know for sure it is not in the foreground anymore while the on-destroy event is happening
+    fun setIsChangingConfiguration(newState: Boolean) {
         isChangingConfiguration = newState
     }
 

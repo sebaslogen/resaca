@@ -49,7 +49,6 @@ class ClearScopedViewModelTests : ComposeTestUtils {
 
     private lateinit var navController: NavHostController
 
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Scenarios to test clear after screen closed (i.e. when the ScopedViewModelContainer clears all ViewModels) //
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -101,7 +100,8 @@ class ClearScopedViewModelTests : ComposeTestUtils {
         // When one Composable with a scoped ViewModel is not part of composition anymore and disposed
         val initialAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
         composablesShown = false // Trigger disposal
-        composeTestRule.onNodeWithText(textTitle).assertExists() // Required to trigger recomposition
+        printComposeUiTreeToLog() // Required to trigger recomposition
+        onNodeWithTestTag("Hilt FakeInjectedViewModel Scoped", assertDisplayed = false).assertDoesNotExist()
         advanceTimeBy(6000) // Advance more than 5 seconds to pass the disposal delay on ScopedViewModelContainer
         printComposeUiTreeToLog()
         val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
@@ -224,6 +224,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
         printComposeUiTreeToLog()
         // Find the scoped text fields and grab their texts
         retrieveTextFromNodeWithTestTag("Hilt FakeInjectedViewModel Scoped")
+        advanceTimeBy(1000) // Give time to the ObserveLifecycleWithScopedViewModelContainer to execute lifecycle.addObserver on main thread
 
         // When I change to night mode and apply the configuration change by recreating the Activity
         RuntimeEnvironment.setQualifiers("+night") // This triggers activity re-creation
