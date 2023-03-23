@@ -34,7 +34,7 @@ class ComposeFragmentBackstackNavigationTests : ComposeTestUtils {
 
                 // When I navigate to a nested fragment and back to initial screen
                 activity.navigateToFragmentTwo()
-                activity.onBackPressed()
+                activity.onBackPressedDispatcher.onBackPressed()
                 printComposeUiTreeToLog(fragmentComposeContainerTag)
 
 
@@ -59,7 +59,7 @@ class ComposeFragmentBackstackNavigationTests : ComposeTestUtils {
 
                 // When I navigate to a nested fragment and back to initial screen
                 activity.navigateToFragmentTwo()
-                activity.onBackPressed()
+                activity.onBackPressedDispatcher.onBackPressed()
                 printComposeUiTreeToLog(fragmentComposeContainerTag)
 
                 // Then the text of the NOT scoped object is different from the original one because it's a new object
