@@ -5,19 +5,19 @@ versions.gradle = '7.4.2'
 versions.compileSdk = 33
 versions.minSdk = 21
 versions.targetSdk = 32
-versions.buildTools = "30.0.3"
-versions.kotlin = "1.8.10"
-versions.kotlinxCoroutines = "1.6.4"
+versions.buildTools = '30.0.3'
+versions.kotlin = '1.8.10'
+versions.kotlinxCoroutines = '1.6.4'
 versions.coreKtx = '1.10.0'
-versions.navigation = "2.5.3"
-versions.junit = "4.13.2"
-versions.robolectric = "4.9.2"
+versions.navigation = '2.5.3'
+versions.junit = '4.13.2'
+versions.robolectric = '4.9.2'
 
 // Compose
 versions.composeCompiler = '1.4.4'
-versions.composeBOM = "2023.03.00"
+versions.composeBOM = '2023.04.00'
 // Compose integration with Activities
-versions.activityCompose = "1.6.1"
+versions.activityCompose = '1.6.1'
 // Compose integration with ViewModels
 versions.lifecycleViewModel = '2.6.1'
 
