@@ -29,11 +29,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = JavaVersion.VERSION_17.toString()
     }
     buildFeatures { // Enables Jetpack Compose for this module
         compose = true
@@ -51,7 +51,7 @@ android {
             includeAndroidResources = true
         }
     }
-    namespace 'com.sebaslogen.resaca.sample'
+    namespace 'com.sebaslogen.resacaapp.sample'
 }
 
 dependencies {
