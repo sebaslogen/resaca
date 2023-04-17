@@ -51,6 +51,7 @@ android {
             includeAndroidResources = true
         }
     }
+    namespace 'com.sebaslogen.resaca.sample'
 }
 
 dependencies {
