@@ -77,7 +77,7 @@ object ScopedViewModelUtils {
      * by a [ScopedViewModelOwner] which will be the actual object stored in the [scopedObjectsContainer].
      */
     @Composable
-    inline fun <T : ViewModel> getOrBuildHiltViewModel(
+    inline fun <T : ViewModel> getOrBuildInjectedViewModel(
         modelClass: Class<T>,
         positionalMemoizationKey: String,
         externalKey: ScopedViewModelContainer.ExternalKey,

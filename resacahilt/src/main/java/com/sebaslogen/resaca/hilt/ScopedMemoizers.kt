@@ -43,7 +43,7 @@ inline fun <reified T : ViewModel> hiltViewModelScoped(key: Any? = null, default
     }
 
     // The object will be built the first time and retrieved in next calls or recompositions
-    return scopedViewModelContainer.getOrBuildHiltViewModel(
+    return scopedViewModelContainer.getOrBuildInjectedViewModel(
         modelClass = T::class.java,
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
@@ -59,7 +59,7 @@ inline fun <reified T : ViewModel> hiltViewModelScoped(key: Any? = null, default
  * and use its factory, if all else fails then use the default factory.
  */
 @Composable
-fun createHiltViewModelFactory(viewModelStoreOwner: ViewModelStoreOwner): ViewModelProvider.Factory? =
+inline fun createHiltViewModelFactory(viewModelStoreOwner: ViewModelStoreOwner): ViewModelProvider.Factory? =
     if (viewModelStoreOwner is NavBackStackEntry) {
         HiltViewModelFactory(
             context = LocalContext.current,

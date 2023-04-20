@@ -74,6 +74,9 @@ dependencies {
     implementation(libs.dagger.hilt)
     kapt(libs.dagger.hilt.compiler)
 
+    implementation(libs.koin.android)
+
+    // Test dependencies
 
     testImplementation(libs.junit)
     testImplementation(libs.robolectric)
@@ -84,6 +87,7 @@ dependencies {
     debugImplementation(libs.compose.ui.test.manifest)
     testImplementation(libs.dagger.hilt.android.testing)
     kaptTest(libs.dagger.hilt.android.compiler)
+    testImplementation(libs.koin.android.test)
 
 
     // Compose dependencies and integration libs

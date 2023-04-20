@@ -184,17 +184,17 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     )
 
     /**
-     * Restore or build a [ViewModel] using a Hilt factory
+     * Restore or build a [ViewModel] using a factory provided or the default factory if none is provided
      */
     @Composable
-    fun <T : ViewModel> getOrBuildHiltViewModel(
+    fun <T : ViewModel> getOrBuildInjectedViewModel(
         modelClass: Class<T>,
         positionalMemoizationKey: String,
         externalKey: ExternalKey,
         factory: ViewModelProvider.Factory?,
         viewModelStoreOwner: ViewModelStoreOwner,
         defaultArguments: Bundle
-    ): T = ScopedViewModelUtils.getOrBuildHiltViewModel(
+    ): T = ScopedViewModelUtils.getOrBuildInjectedViewModel(
         modelClass = modelClass,
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
@@ -308,12 +308,15 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
                 isChangingConfiguration = false // Clear this flag when the scope is resumed
                 scheduleToDisposeAfterReturningFromBackground()
             }
+
             Lifecycle.Event.ON_PAUSE -> {
                 isInForeground = false
             }
+
             Lifecycle.Event.ON_DESTROY -> { // Remove ourselves so that this ViewModel can be garbage collected
                 source.lifecycle.removeObserver(this)
             }
+
             else -> {
                 // No-Op: the other lifecycle event are irrelevant for this class
             }

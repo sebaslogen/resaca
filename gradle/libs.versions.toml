@@ -22,6 +22,8 @@ androidx-lifecycle = '2.6.1'
 # Hilt
 hilt = '2.45'
 hilt-navigation-compose = '1.0.0'
+# Koin
+koin = '3.4.0'
 
 [libraries]
 # Android libraries
@@ -34,12 +36,6 @@ androidx-lifecycle-viewmodel-compose = { module = 'androidx.lifecycle:lifecycle-
 androidx-lifecycle-runtime-compose = { module = 'androidx.lifecycle:lifecycle-runtime-compose', version.ref = 'androidx-lifecycle' }
 androidx-activity-compose = { module = 'androidx.activity:activity-compose', version.ref = 'androidx-activity' }
 androidx-navigation-compose = { module = 'androidx.navigation:navigation-compose', version.ref = 'navigation' }
-
-dagger-hilt = { module = 'com.google.dagger:hilt-android', version.ref = 'hilt' }
-dagger-hilt-compiler = { module = 'com.google.dagger:hilt-compiler', version.ref = 'hilt' }
-dagger-hilt-android-compiler = { module = 'com.google.dagger:hilt-android-compiler', version.ref = 'hilt' }
-dagger-hilt-android-testing = { module = 'com.google.dagger:hilt-android-testing', version.ref = 'hilt' }
-dagger-hilt-navigation-compose = { module = 'androidx.hilt:hilt-navigation-compose', version.ref = 'hilt-navigation-compose' }
 
 compose-bom = { module = 'androidx.compose:compose-bom', version.ref = 'compose-bom' }
 compose-compiler = { module = 'androidx.compose.compiler:compiler', version.ref = 'compose-compiler' }
@@ -56,6 +52,16 @@ kotlin-stdlib-common = { module = 'org.jetbrains.kotlin:kotlin-stdlib-common', v
 coroutines-core = { module = 'org.jetbrains.kotlinx:kotlinx-coroutines-core', version.ref = 'coroutines' }
 coroutines-android = { module = 'org.jetbrains.kotlinx:kotlinx-coroutines-android', version.ref = 'coroutines' }
 kotlin-coroutines-test = { module = 'org.jetbrains.kotlinx:kotlinx-coroutines-test', version.ref = 'coroutines' }
+
+# DI libraries
+dagger-hilt = { module = 'com.google.dagger:hilt-android', version.ref = 'hilt' }
+dagger-hilt-compiler = { module = 'com.google.dagger:hilt-compiler', version.ref = 'hilt' }
+dagger-hilt-android-compiler = { module = 'com.google.dagger:hilt-android-compiler', version.ref = 'hilt' }
+dagger-hilt-android-testing = { module = 'com.google.dagger:hilt-android-testing', version.ref = 'hilt' }
+dagger-hilt-navigation-compose = { module = 'androidx.hilt:hilt-navigation-compose', version.ref = 'hilt-navigation-compose' }
+
+koin-android = { module = 'io.insert-koin:koin-android', version.ref = 'koin' }
+koin-android-test = { module = 'io.insert-koin:koin-android-test', version.ref = 'koin' }
 
 # Test libraries
 junit = { module = 'junit:junit', version.ref = 'junit-version' }

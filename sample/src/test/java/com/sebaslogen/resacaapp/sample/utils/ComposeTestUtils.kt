@@ -3,7 +3,9 @@ package com.sebaslogen.resacaapp.sample.utils
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.text.AnnotatedString
+import org.junit.After
 import org.junit.Before
+import org.koin.core.context.stopKoin
 import org.robolectric.shadows.ShadowLog
 
 interface ComposeTestUtils {
@@ -16,6 +18,10 @@ interface ComposeTestUtils {
         ShadowLog.stream = System.out // Redirect Logcat to console output to read printToLog Compose debug messages
     }
 
+    @After
+    fun tearDown() {
+        stopKoin()
+    }
 
     // Helper functions //
 
