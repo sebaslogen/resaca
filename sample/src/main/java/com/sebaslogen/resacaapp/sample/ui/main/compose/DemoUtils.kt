@@ -21,4 +21,4 @@ internal fun objectToColorInt(inputObject: Any): Int =
 internal fun objectToEmoji(inputObject: Any): String = emojis[inputObject.hashCode() % emojis.size]
 
 internal fun objectToShortStringWithoutPackageName(inputObject: Any): String =
-    inputObject.toString().removePrefix("com.sebaslogen.resacaapp.ui.main.data.")
+    inputObject.toString().replaceBeforeLast(".", "").removePrefix(".")

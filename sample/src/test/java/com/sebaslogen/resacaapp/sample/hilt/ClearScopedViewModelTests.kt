@@ -14,8 +14,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sebaslogen.resacaapp.sample.ui.main.ComposeActivity
 import com.sebaslogen.resacaapp.sample.ui.main.ScreensWithNavigation
-import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoScopedInjectedViewModelComposable
-import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoScopedSecondInjectedViewModelComposable
+import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedHiltInjectedViewModelComposable
+import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedSecondHiltInjectedViewModelComposable
 import com.sebaslogen.resacaapp.sample.ui.main.hiltViewModelScopedDestination
 import com.sebaslogen.resacaapp.sample.utils.ComposeTestUtils
 import com.sebaslogen.resacaapp.sample.utils.MainDispatcherRule
@@ -91,7 +91,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
             Column {
                 Text(textTitle)
                 if (composablesShown) {
-                    DemoScopedInjectedViewModelComposable()
+                    DemoScopedHiltInjectedViewModelComposable()
                 }
             }
         }
@@ -123,9 +123,9 @@ class ClearScopedViewModelTests : ComposeTestUtils {
             composeTestRule.activity.setContent {
                 Column {
                     Text(textTitle)
-                    DemoScopedInjectedViewModelComposable()
+                    DemoScopedHiltInjectedViewModelComposable()
                     if (composablesShown) {
-                        DemoScopedInjectedViewModelComposable()
+                        DemoScopedHiltInjectedViewModelComposable()
                     }
                 }
             }
@@ -156,9 +156,9 @@ class ClearScopedViewModelTests : ComposeTestUtils {
             composeTestRule.activity.setContent {
                 Column {
                     Text(textTitle)
-                    DemoScopedInjectedViewModelComposable()
+                    DemoScopedHiltInjectedViewModelComposable()
                     if (composablesShown) {
-                        DemoScopedSecondInjectedViewModelComposable()
+                        DemoScopedSecondHiltInjectedViewModelComposable()
                     }
                 }
             }
@@ -192,7 +192,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
         composeTestRule.activity.setContent {
             Column {
                 Text(textTitle)
-                DemoScopedInjectedViewModelComposable(viewModelKey)
+                DemoScopedHiltInjectedViewModelComposable(viewModelKey)
             }
         }
         printComposeUiTreeToLog()
@@ -218,7 +218,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
         composeTestRule.activity.setContent {
             Text("Demo text")
             if (!isSystemInDarkTheme()) {
-                DemoScopedInjectedViewModelComposable()
+                DemoScopedHiltInjectedViewModelComposable()
             }
         }
         printComposeUiTreeToLog()
@@ -231,7 +231,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
         composeTestRule.activity.setContent { // Almost empty screen in night mode
             Text("Demo text")
             if (!isSystemInDarkTheme()) {
-                DemoScopedInjectedViewModelComposable()
+                DemoScopedHiltInjectedViewModelComposable()
             }
         }
         printComposeUiTreeToLog()

@@ -2,6 +2,11 @@ package com.sebaslogen.resacaapp.sample.ui.main.compose
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedHiltInjectedViewModelComposable
+import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedObjectComposable
+import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedParametrizedViewModelComposable
+import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedSecondHiltInjectedViewModelComposable
+import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedViewModelComposable
 
 
 @Preview
@@ -31,11 +36,11 @@ fun TestDemoScopedParametrizedViewModelComposable() {
 @Preview
 @Composable
 fun TestDemoScopedInjectedViewModelComposable() {
-    DemoScopedInjectedViewModelComposable()
+    DemoScopedHiltInjectedViewModelComposable()
 }
 
 @Preview
 @Composable
 fun TestDemoScopedSecondInjectedViewModelComposable() {
-    DemoScopedSecondInjectedViewModelComposable()
+    DemoScopedSecondHiltInjectedViewModelComposable()
 }

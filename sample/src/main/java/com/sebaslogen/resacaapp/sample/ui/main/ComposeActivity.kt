@@ -7,6 +7,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -22,11 +24,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoNotScopedObjectComposable
-import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoScopedInjectedViewModelComposable
-import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoScopedObjectComposable
-import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoScopedParametrizedViewModelComposable
-import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoScopedSecondInjectedViewModelComposable
-import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoScopedViewModelComposable
+import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedHiltInjectedViewModelComposable
+import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedObjectComposable
+import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedParametrizedViewModelComposable
+import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedSecondHiltInjectedViewModelComposable
+import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedViewModelComposable
 import com.sebaslogen.resacaapp.sample.ui.main.ui.theme.ResacaAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -73,7 +75,10 @@ fun ScreensWithNavigation(navController: NavHostController = rememberNavControll
 
 @Composable
 private fun ComposeScreenWithRememberScoped(navController: NavHostController) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = Modifier.verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         DemoNotScopedObjectComposable()
         DemoScopedObjectComposable()
         DemoScopedViewModelComposable()
@@ -84,7 +89,10 @@ private fun ComposeScreenWithRememberScoped(navController: NavHostController) {
 
 @Composable
 private fun ComposeScreenWithViewModelScoped(navController: NavHostController) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = Modifier.verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         DemoNotScopedObjectComposable()
         DemoScopedObjectComposable()
         Text(
@@ -93,9 +101,9 @@ private fun ComposeScreenWithViewModelScoped(navController: NavHostController) {
         )
         // The Hilt Injected ViewModel is only shown in light mode, to demo how the ViewModel is properly garbage collected in a different config (dark mode)
         if (!isSystemInDarkTheme()) {
-            DemoScopedInjectedViewModelComposable()
+            DemoScopedHiltInjectedViewModelComposable()
         }
-        DemoScopedSecondInjectedViewModelComposable()
+        DemoScopedSecondHiltInjectedViewModelComposable()
         NavigationButtons(navController)
     }
 }
@@ -105,7 +113,10 @@ private fun ComposeScreenWithViewModelScoped(navController: NavHostController) {
  */
 @Composable
 private fun ComposeScreenWithSingleViewModelScoped(navController: NavHostController) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = Modifier.verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Text(
             modifier = Modifier.padding(8.dp),
             text = "The ViewModel below will be shown in light mode and garbage collected in dark mode"
@@ -130,7 +141,7 @@ fun NavigationButtons(navController: NavHostController) {
     }
     Button(modifier = Modifier.padding(vertical = 4.dp),
         onClick = { navController.navigate(viewModelScopedDestination) }) {
-        Text(text = "Push ViewModelScoped dest. with day/might")
+        Text(text = "Push ViewModelScoped dest. with day/night")
     }
     val activity = (LocalContext.current as? Activity)
     Button(modifier = Modifier.padding(vertical = 4.dp),

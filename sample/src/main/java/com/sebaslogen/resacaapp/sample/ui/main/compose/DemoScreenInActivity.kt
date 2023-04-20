@@ -9,6 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedObjectComposable
+import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedViewModelComposable
 
 @Composable
 fun DemoScreenInActivity(clickListener: () -> Unit) {
