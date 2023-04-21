@@ -79,6 +79,12 @@ fun DemoViewModelWithKey() {
     DemoComposable(inputObject = scopedVMWithFirstKey)
     DemoComposable(inputObject = scopedVMWithSecondKey)
 }
+
+@Composable
+fun DemoKoinInjectedViewModelWithKey() {
+    val myInjectedScopedVM: MyViewModelWithDependencies = viewModelScoped() { getKoin().get { parametersOf(myConstructorDependency) } }
+    DemoComposable(inputObject = myInjectedScopedVM)
+}
 ```
 
 Once you use the `rememberScoped` or `viewModelScoped` functions, the same object will be restored as long as the Composable is part of the composition, even if
@@ -102,6 +108,8 @@ Here are some sample use cases reported by the users of this library:
   class with different ids. For example, a screen of holiday destinations with multiple pages and each page with its own `HolidayDestinationViewModel`.
 - ❤️ Isolated and stateful UI components like a **favorite button** that are widely used across the screens. This `FavoriteViewModel` can be very small, focused
   and only require an id to work without affecting the rest of the screen's UI and state.
+- 🗪 Dialog pop-ups can have their own business-logic with state that is better to isolate in a separate ViewModel but the lifespan of these dialogs might be short, 
+so it's important to clean-up the ViewModel associated to a Dialog after it has been closed.
 
 # Demo app
 
@@ -121,19 +129,23 @@ This library does not influence how your app provides or creates objects so it's
 
 Nevertheless, this library supports two of the main **dependency injection frameworks**:
 
-### Hilt 🗡️
-[HILT](https://dagger.dev/hilt/quick-start) (Dagger) support is available in a small extension of this library: **resaca-hilt**.
+## Hilt 🗡️
+[HILT](https://dagger.dev/hilt/quick-start) (Dagger) support is available in a small extension of this library: [**resaca-hilt**](https://github.com/sebaslogen/resaca/tree/main/resacahilt/).
 
 [Documentation and installation instructions are available here](https://github.com/sebaslogen/resaca/tree/main/resacahilt/README.md).
 
-### Koin 🪙
+## Koin 🪙
 [Koin](https://insert-koin.io/) is out of the box supported by simply changing the way you request a dependency.
 
-Instead of using the `getViewModel` function from Koin, you have to use the standard way of getting a dependency from Koin.
+Instead of using the `getViewModel` or `koinViewModel` functions from Koin, you have to use the standard way of getting a dependency from Koin `getKoin().get()`.
 
-Usage example: `val viewModel: MyViewModel = viewModelScoped(myId) { get { parametersOf(myId) } }`
+Usage example: `val viewModel: MyViewModel = viewModelScoped(myId) { getKoin().get { parametersOf(myId) } }`
 
-#### General considerations for State Hoisting
+**Important for Koin**: if you plan to use a ViewModel with a [SavedStateHandle](https://developer.android.com/topic/libraries/architecture/viewmodel/viewmodel-savedstate), then you need to use the `koinViewModelScoped` function instead from the small extension library [**resaca-koin**](https://github.com/sebaslogen/resaca/blob/main/resacakoin/Readme.md).
+
+-----
+
+### General considerations for State Hoisting
 Here are a few suggestions of how to provide objects in combination with this library in a Compose screen:
 
 - When using the Lazy* family of Composables it is recommended that you use `rememberScoped`/`viewModelScoped` outside the scope of Composables created by Lazy
