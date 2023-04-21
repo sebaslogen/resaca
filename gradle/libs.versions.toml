@@ -13,10 +13,10 @@ constraintlayout = '2.1.4'
 junit-version = '4.13.2'
 robolectric-version = '4.9.2'
 # Compose
-compose-bom = '2023.04.00' # https://developer.android.com/jetpack/compose/bom/bom-mapping
-compose-compiler = '1.4.5'
+compose-bom = '2023.04.01' # https://developer.android.com/jetpack/compose/bom/bom-mapping
+compose-compiler = '1.4.6'
 # Compose integration with Activities
-androidx-activity = '1.7.0'
+androidx-activity = '1.7.1'
 # Compose integration with ViewModels
 androidx-lifecycle = '2.6.1'
 # Hilt
