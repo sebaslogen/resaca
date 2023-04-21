@@ -1,4 +1,4 @@
-package com.sebaslogen.resacaapp.sample.hilt
+package com.sebaslogen.resacaapp.sample.koin
 
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -14,15 +14,12 @@ import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sebaslogen.resacaapp.sample.ui.main.ComposeActivity
 import com.sebaslogen.resacaapp.sample.ui.main.ScreensWithNavigation
-import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedHiltInjectedViewModelComposable
-import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedSecondHiltInjectedViewModelComposable
-import com.sebaslogen.resacaapp.sample.ui.main.hiltViewModelScopedDestination
+import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedKoinInjectedViewModelComposable
+import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedSecondKoinInjectedViewModelComposable
+import com.sebaslogen.resacaapp.sample.ui.main.koinViewModelScopedDestination
 import com.sebaslogen.resacaapp.sample.utils.ComposeTestUtils
 import com.sebaslogen.resacaapp.sample.utils.MainDispatcherRule
 import com.sebaslogen.resacaapp.sample.viewModelsClearedGloballySharedCounter
-import dagger.hilt.android.testing.HiltAndroidRule
-import dagger.hilt.android.testing.HiltAndroidTest
-import dagger.hilt.android.testing.HiltTestApplication
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
@@ -30,16 +27,10 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RuntimeEnvironment
-import org.robolectric.annotation.Config
 
-@HiltAndroidTest
-@Config(application = HiltTestApplication::class)
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class ClearScopedViewModelTests : ComposeTestUtils {
-
-    @get:Rule
-    var hiltRule = HiltAndroidRule(this)
 
     @get:Rule
     override val composeTestRule = createAndroidComposeRule<ComposeActivity>()
@@ -54,24 +45,24 @@ class ClearScopedViewModelTests : ComposeTestUtils {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Test
-    fun `when I navigate to nested screen and back, then the Hilt scoped ViewModels of the second screen are cleared`() {
-        // Given the starting screen with Hilt injected ViewModel scoped
+    fun `when I navigate to nested screen and back, then the Koin scoped ViewModels of the second screen are cleared`() {
+        // Given the starting screen with Koin injected ViewModel scoped
         composeTestRule.activity.setContent {
             navController = rememberNavController()
-            ScreensWithNavigation(navController = navController, startDestination = hiltViewModelScopedDestination)
+            ScreensWithNavigation(navController = navController, startDestination = koinViewModelScopedDestination)
         }
         printComposeUiTreeToLog()
         val initialAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
 
-        // When I navigate to a nested screen with a Hilt scoped ViewModel and back to initial screen
-        navController.navigate(hiltViewModelScopedDestination)
+        // When I navigate to a nested screen with a Koin scoped ViewModel and back to initial screen
+        navController.navigate(koinViewModelScopedDestination)
         printComposeUiTreeToLog()
         navController.popBackStack()
         printComposeUiTreeToLog()
         val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
 
-        // Then the Hilt scoped ViewModel from the second screen is cleared
-        assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 2) {
+        // Then the Koin scoped ViewModel from the second screen is cleared
+        assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 3) {
             "The amount of FakeInjectedViewModels that were cleared after back navigation ($finalAmountOfViewModelsCleared) " +
                     "was not as high as expected compared to the amount before navigating ($initialAmountOfViewModelsCleared)"
         }
@@ -82,16 +73,16 @@ class ClearScopedViewModelTests : ComposeTestUtils {
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Test
-    fun `when the Composable that creates the Hilt ViewModel is disposed, then the scoped ViewModel is cleared`() = runTest {
+    fun `when the Composable that creates the Koin ViewModel is disposed, then the scoped ViewModel is cleared`() = runTest {
 
-        // Given the starting screen with a scoped Hilt ViewModel
+        // Given the starting screen with a scoped Koin ViewModel
         var composablesShown by mutableStateOf(true)
         val textTitle = "Test text"
         composeTestRule.activity.setContent {
             Column {
                 Text(textTitle)
                 if (composablesShown) {
-                    DemoScopedHiltInjectedViewModelComposable()
+                    DemoScopedKoinInjectedViewModelComposable()
                 }
             }
         }
@@ -101,7 +92,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
         val initialAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
         composablesShown = false // Trigger disposal
         printComposeUiTreeToLog() // Required to trigger recomposition
-        onNodeWithTestTag("Hilt FakeInjectedViewModel Scoped", assertDisplayed = false).assertDoesNotExist()
+        onNodeWithTestTag("Koin FakeInjectedViewModel Scoped", assertDisplayed = false).assertDoesNotExist()
         advanceTimeBy(6000) // Advance more than 5 seconds to pass the disposal delay on ScopedViewModelContainer
         printComposeUiTreeToLog()
         val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
@@ -114,7 +105,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
     }
 
     @Test
-    fun `given two sibling Composables with two instances of the same Hilt ViewModel, when one Composable is disposed, the other ViewModel is NOT cleared`() =
+    fun `given two sibling Composables with two instances of the same Koin ViewModel, when one Composable is disposed, the other ViewModel is NOT cleared`() =
         runTest {
 
             // Given the starting screen with two scoped ViewModels sharing the same ViewModel instance
@@ -123,9 +114,9 @@ class ClearScopedViewModelTests : ComposeTestUtils {
             composeTestRule.activity.setContent {
                 Column {
                     Text(textTitle)
-                    DemoScopedHiltInjectedViewModelComposable()
+                    DemoScopedKoinInjectedViewModelComposable()
                     if (composablesShown) {
-                        DemoScopedHiltInjectedViewModelComposable()
+                        DemoScopedKoinInjectedViewModelComposable()
                     }
                 }
             }
@@ -147,7 +138,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
         }
 
     @Test
-    fun `given two sibling Composables with different Hilt ViewModels, when one Composable is disposed, then only one ViewModel is cleared`() =
+    fun `given two sibling Composables with different Koin ViewModels, when one Composable is disposed, then only one ViewModel is cleared`() =
         runTest {
 
             // Given the starting screen with two scoped ViewModels sharing the same ViewModel instance
@@ -156,9 +147,9 @@ class ClearScopedViewModelTests : ComposeTestUtils {
             composeTestRule.activity.setContent {
                 Column {
                     Text(textTitle)
-                    DemoScopedHiltInjectedViewModelComposable()
+                    DemoScopedKoinInjectedViewModelComposable()
                     if (composablesShown) {
-                        DemoScopedSecondHiltInjectedViewModelComposable()
+                        DemoScopedSecondKoinInjectedViewModelComposable()
                     }
                 }
             }
@@ -184,15 +175,15 @@ class ClearScopedViewModelTests : ComposeTestUtils {
     /////////////////////////////////////////////////////
 
     @Test
-    fun `when the key associated with the Hilt ViewModel changes, then the old scoped ViewModel is cleared`() {
+    fun `when the key associated with the Koin ViewModel changes, then the old scoped ViewModel is cleared`() {
 
-        // Given the starting screen with a Hilt scoped ViewModel
+        // Given the starting screen with a Koin scoped ViewModel
         var viewModelKey by mutableStateOf("initial key")
         val textTitle = "Test text"
         composeTestRule.activity.setContent {
             Column {
                 Text(textTitle)
-                DemoScopedHiltInjectedViewModelComposable(viewModelKey)
+                DemoScopedKoinInjectedViewModelComposable(viewModelKey)
             }
         }
         printComposeUiTreeToLog()
@@ -204,13 +195,12 @@ class ClearScopedViewModelTests : ComposeTestUtils {
         printComposeUiTreeToLog()
         val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
 
-        // Then the Hilt scoped ViewModel is cleared
+        // Then the Koin scoped ViewModel is cleared
         assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 1) {
             "The amount of FakeScopedViewModels that were cleared after key change ($finalAmountOfViewModelsCleared) " +
                     "was not two numbers higher that the amount before the key change ($initialAmountOfViewModelsCleared)"
         }
     }
-
 
     @Test
     fun `when I switch from light mode to night mode, then the one and only scoped ViewModel that's only used in light mode is gone`() = runTest {
@@ -218,12 +208,12 @@ class ClearScopedViewModelTests : ComposeTestUtils {
         composeTestRule.activity.setContent {
             Text("Demo text")
             if (!isSystemInDarkTheme()) {
-                DemoScopedHiltInjectedViewModelComposable()
+                DemoScopedKoinInjectedViewModelComposable()
             }
         }
         printComposeUiTreeToLog()
         // Find the scoped text fields and grab their texts
-        retrieveTextFromNodeWithTestTag("Hilt FakeInjectedViewModel Scoped")
+        retrieveTextFromNodeWithTestTag("Koin FakeInjectedViewModel Scoped")
         advanceTimeBy(1000) // Give time to the ObserveLifecycleWithScopedViewModelContainer to execute lifecycle.addObserver on main thread
 
         // When I change to night mode and apply the configuration change by recreating the Activity
@@ -231,7 +221,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
         composeTestRule.activity.setContent { // Almost empty screen in night mode
             Text("Demo text")
             if (!isSystemInDarkTheme()) {
-                DemoScopedHiltInjectedViewModelComposable()
+                DemoScopedKoinInjectedViewModelComposable()
             }
         }
         printComposeUiTreeToLog()
@@ -242,8 +232,8 @@ class ClearScopedViewModelTests : ComposeTestUtils {
         printComposeUiTreeToLog()
         val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
 
-        // Then the Hilt Injected ViewModel disappears because it was only available in light mode
-        onNodeWithTestTag("Hilt FakeInjectedViewModel Scoped", assertDisplayed = false).assertDoesNotExist()
+        // Then the Koin Injected ViewModel disappears because it was only available in light mode
+        onNodeWithTestTag("Koin FakeInjectedViewModel Scoped", assertDisplayed = false).assertDoesNotExist()
         // And the scoped ViewModel is cleared
         assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 1) {
             "The amount of FakeInjectedViewModel that were cleared after disposal ($finalAmountOfViewModelsCleared) " +

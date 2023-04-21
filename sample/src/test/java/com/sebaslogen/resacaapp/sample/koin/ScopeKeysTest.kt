@@ -1,4 +1,4 @@
-package com.sebaslogen.resacaapp.sample.hilt
+package com.sebaslogen.resacaapp.sample.koin
 
 import androidx.activity.compose.setContent
 import androidx.compose.material.Button
@@ -16,41 +16,38 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.core.os.bundleOf
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.sebaslogen.resaca.hilt.hiltViewModelScoped
+import com.sebaslogen.resaca.koin.koinViewModelScoped
 import com.sebaslogen.resacaapp.sample.ui.main.ComposeActivity
 import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoComposable
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeInjectedViewModel
 import com.sebaslogen.resacaapp.sample.utils.ComposeTestUtils
-import dagger.hilt.android.testing.HiltAndroidRule
-import dagger.hilt.android.testing.HiltAndroidTest
-import dagger.hilt.android.testing.HiltTestApplication
+import com.sebaslogen.resacaapp.sample.viewModelsClearedGloballySharedCounter
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.annotation.Config
+import org.koin.core.parameter.parametersOf
 
 
-@HiltAndroidTest
-@Config(application = HiltTestApplication::class)
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class ScopeKeysTest : ComposeTestUtils {
 
     @get:Rule
-    var hiltRule = HiltAndroidRule(this)
-
-    @get:Rule
     override val composeTestRule = createAndroidComposeRule<ComposeActivity>()
 
     @Test
-    fun `when the key used for hiltViewModelScoped changes, then the scoped ViewModel is different`() {
+    fun `when the key used for koinViewModelScoped changes, then the scoped ViewModel is different`() {
 
         // Given the starting screen with scoped object that uses a key
         composeTestRule.activity.setContent {
             var myKey by remember { mutableStateOf(false) }
             val fakeInjectedViewModel: FakeInjectedViewModel =
-                hiltViewModelScoped(key = myKey, defaultArguments = bundleOf(FakeInjectedViewModel.MY_ARGS_KEY to 123))
+                koinViewModelScoped(
+                    key = myKey,
+                    defaultArguments = bundleOf(FakeInjectedViewModel.MY_ARGS_KEY to 123),
+                    parameters = { parametersOf(viewModelsClearedGloballySharedCounter) }
+                )
             DemoComposable(inputObject = fakeInjectedViewModel, objectType = "FakeInjectedViewModel", scoped = true)
             Button(modifier = Modifier.testTag("Button"),
                 onClick = { myKey = !myKey }) {
