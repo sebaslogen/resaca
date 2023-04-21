@@ -47,7 +47,7 @@ fun DemoScopedKoinSimpleInjectedViewModelComposable(key: String? = null) {
                 viewModelsClearedCounter = viewModelsClearedGloballySharedCounter
             )
         } else {
-            viewModelScoped(key = key) { getKoin().get() }
+            viewModelScoped(key = key) { getKoin().get() } // Koin assisted injection is possible using parameters: getKoin().get { parametersOf(myThing) } }
         }
     DemoComposable(inputObject = fakeInjectedVM, objectType = "Koin FakeSimpleInjectedViewModel", scoped = true)
 }
