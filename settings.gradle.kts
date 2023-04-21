@@ -22,5 +22,6 @@ if (System.getenv("JITPACK") == null) // Remove the sample app to reduce Jitpack
 
 include(
     ":resaca",
-    ":resacahilt"
+    ":resacahilt",
+    ":resacakoin"
 )

@@ -62,6 +62,7 @@ android {
 
 dependencies {
     implementation(project(":resacahilt"))
+    implementation(project(":resacakoin"))
 
     implementation(libs.coroutines.android)
 

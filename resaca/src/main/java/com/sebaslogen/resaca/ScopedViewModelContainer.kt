@@ -115,7 +115,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
             originalObject as? T ?: buildAndStoreObject()
         } else { // First time object creation or externalKey changed
             scopedObjectKeys[positionalMemoizationKey] = externalKey // Set the external key used to track and store the new object version
-            scopedObjectsContainer.remove(positionalMemoizationKey)
+            scopedObjectsContainer.remove(positionalMemoizationKey) // Remove in case key changed
                 ?.also { clearLastDisposedObject(it) } // Old object may need to be cleared before it's forgotten
             buildAndStoreObject()
         }
@@ -161,40 +161,20 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         defaultArguments = defaultArguments
     )
 
+    /**
+     * Restore or build a [ViewModel] using a factory provided or the default factory if none is provided
+     */
     @Composable
-    private fun <T : ViewModel> getOrBuildViewModel(
+    fun <T : ViewModel> getOrBuildViewModel(
         modelClass: Class<T>,
         positionalMemoizationKey: String,
         externalKey: ExternalKey,
-        factory: ViewModelProvider.Factory,
+        factory: ViewModelProvider.Factory?,
         defaultArguments: Bundle,
         viewModelStoreOwner: ViewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
             "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
         }
     ): T = ScopedViewModelUtils.getOrBuildViewModel(
-        modelClass = modelClass,
-        positionalMemoizationKey = positionalMemoizationKey,
-        externalKey = externalKey,
-        factory = factory,
-        viewModelStoreOwner = viewModelStoreOwner,
-        defaultArguments = defaultArguments,
-        scopedObjectsContainer = scopedObjectsContainer,
-        scopedObjectKeys = scopedObjectKeys,
-        cancelDisposal = ::cancelDisposal
-    )
-
-    /**
-     * Restore or build a [ViewModel] using a factory provided or the default factory if none is provided
-     */
-    @Composable
-    fun <T : ViewModel> getOrBuildInjectedViewModel(
-        modelClass: Class<T>,
-        positionalMemoizationKey: String,
-        externalKey: ExternalKey,
-        factory: ViewModelProvider.Factory?,
-        viewModelStoreOwner: ViewModelStoreOwner,
-        defaultArguments: Bundle
-    ): T = ScopedViewModelUtils.getOrBuildInjectedViewModel(
         modelClass = modelClass,
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,

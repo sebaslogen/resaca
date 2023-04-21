@@ -1,15 +1,13 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.kapt)
-    alias(libs.plugins.dagger.hilt.android)
     `maven-publish`
 }
 
 group = "com.github.sebaslogen"
 
 android {
-    namespace = "com.sebaslogen.resaca.hilt"
+    namespace = "com.sebaslogen.resaca.koin"
     compileSdk = libs.versions.compileSdk.get().toInt()
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
@@ -66,18 +64,14 @@ dependencies {
     api(project(":resaca"))
 
     implementation(libs.androidx.core.ktx)
-    implementation(libs.coroutines.android)
+
+    implementation(libs.koin.android)
 
     // Compose dependencies
     implementation(libs.compose.compiler)
     // Integration with ViewModels
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
-
-    // Hilt dependencies
-    implementation(libs.dagger.hilt)
-    implementation(libs.dagger.hilt.navigation.compose)
-    kapt(libs.dagger.hilt.android.compiler)
 }
 
 // Config for publishing artifacts to JitPack
@@ -86,7 +80,7 @@ afterEvaluate {
         publications {
             create<MavenPublication>("Maven") {// Creates a Maven publication called "release"
                 from(components["release"])
-                artifactId = "resacahilt"
+                artifactId = "resacakoin"
             }
         }
     }

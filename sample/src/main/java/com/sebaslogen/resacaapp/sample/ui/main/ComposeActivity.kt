@@ -31,10 +31,12 @@ import androidx.navigation.compose.rememberNavController
 import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoNotScopedObjectComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedHiltInjectedViewModelComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedKoinInjectedObjectComposable
+import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedKoinInjectedViewModelComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedKoinSimpleInjectedViewModelComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedObjectComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedParametrizedViewModelComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedSecondHiltInjectedViewModelComposable
+import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedSecondKoinInjectedViewModelComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedViewModelComposable
 import com.sebaslogen.resacaapp.sample.ui.main.ui.theme.ResacaAppTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -158,6 +160,15 @@ private fun ComposeScreenWithKoinViewModelScoped(navController: NavHostControlle
         DemoScopedObjectComposable()
         DemoScopedKoinInjectedObjectComposable()
         DemoScopedKoinSimpleInjectedViewModelComposable()
+        Text(
+            modifier = Modifier.padding(8.dp),
+            text = "The Koin ViewModel below will be shown in light mode and garbage collected in dark mode"
+        )
+        // The Koin Injected ViewModel is only shown in light mode, to demo how the ViewModel is properly garbage collected in a different config (dark mode)
+        if (!isSystemInDarkTheme()) {
+            DemoScopedKoinInjectedViewModelComposable()
+        }
+        DemoScopedSecondKoinInjectedViewModelComposable()
         NavigationButtons(navController)
     }
 }

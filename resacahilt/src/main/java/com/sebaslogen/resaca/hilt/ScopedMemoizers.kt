@@ -43,7 +43,7 @@ inline fun <reified T : ViewModel> hiltViewModelScoped(key: Any? = null, default
     }
 
     // The object will be built the first time and retrieved in next calls or recompositions
-    return scopedViewModelContainer.getOrBuildInjectedViewModel(
+    return scopedViewModelContainer.getOrBuildViewModel(
         modelClass = T::class.java,
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
