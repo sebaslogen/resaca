@@ -8,6 +8,9 @@
 Short lived View Models provided by [**Koin**](https://insert-koin.io/docs/reference/koin-android/start/) with the right scope in
 Android [Compose](https://developer.android.com/jetpack/compose).
 
+This library (`com.github.sebaslogen.resaca:resacakoin`) is **only** required if you want to use ViewModels with a [SavedStateHandle](https://developer.android.com/topic/libraries/architecture/viewmodel/viewmodel-savedstate)
+construtor parameter. If this is not your case, you can simply use the base resaca library (`com.github.sebaslogen.resaca:resaca`) with `rememberScoped` function in combination with Koin getters.
+
 # Why
 
 Compose allows the creation of fine-grained UI components that can be easily reused like Lego blocks 🧱. Well architected Android apps isolate functionality in
@@ -65,8 +68,8 @@ class MyViewModel(private val stateSaver: SavedStateHandle) : ViewModel()
 
 @Composable
 fun DemoInjectedViewModelWithId(idOne: String = "myFirstId", idTwo: String = "mySecondId") {
-    val scopedVMWithFirstId: MyIdViewModel = koinViewModelScoped(idOne, parameters = { parametersOf(idOne) })
-    val scopedVMWithSecondId: MyIdViewModel = koinViewModelScoped(idTwo, parameters = { parametersOf(idTwo) })
+    val scopedVMWithFirstId: MyIdViewModel = koinViewModelScoped(key = idOne, parameters = { parametersOf(idOne) })
+    val scopedVMWithSecondId: MyIdViewModel = koinViewModelScoped(key = idTwo, parameters = { parametersOf(idTwo) })
     // We now have 2 instances on memory of the same ViewModel type, both inside the same Composable scope
     // When one Id updates only the ViewModel with that Id will be recreated
     // Each ViewModel instance has its own Id
@@ -107,5 +110,8 @@ Here are some sample use cases reported by the users of this library:
 Assisted injection is a dependency injection (DI) pattern that is used to construct an object where some parameters may be provided by the DI framework and
 others must be passed in at creation time (a.k.a “assisted”) by the user, in our case when the `koinViewModelScoped` is requested.
 
-Assisted injection is supported by Koin. When you declare the ViewModel factory in your Koin Module using the `viewModel {}` syntax, 
-you can [declare arguments in the factory](https://github.com/sebaslogen/resaca/blob/main/sample/src/main/java/com/sebaslogen/resacaapp/sample/di/koin/AppModule.kt#L25) that can be [passed as parameters at call time](https://github.com/sebaslogen/resaca/blob/aedb3de32b052668d21d1d6662d631b54da7636f/sample/src/main/java/com/sebaslogen/resacaapp/sample/ui/main/compose/examples/KoinInjectedViewModel.kt#L78).
+Assisted injection is supported by Koin out of the box with the `parametersOf()` syntax. 
+
+When you declare the ViewModel factory in your Koin Module using the `viewModel {}` syntax, then 
+you can [declare arguments in the factory](https://github.com/sebaslogen/resaca/blob/main/sample/src/main/java/com/sebaslogen/resacaapp/sample/di/koin/AppModule.kt#L25).
+Finally, those arguments can be [passed as parameters at call time](https://github.com/sebaslogen/resaca/blob/aedb3de32b052668d21d1d6662d631b54da7636f/sample/src/main/java/com/sebaslogen/resacaapp/sample/ui/main/compose/examples/KoinInjectedViewModel.kt#L78) from your Composable when calling `koinViewModelScoped`.
