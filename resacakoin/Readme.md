@@ -9,7 +9,7 @@ Short lived View Models provided by [**Koin**](https://insert-koin.io/docs/refer
 Android [Compose](https://developer.android.com/jetpack/compose).
 
 This library (`com.github.sebaslogen.resaca:resacakoin`) is **only** required if you want to use ViewModels with a [SavedStateHandle](https://developer.android.com/topic/libraries/architecture/viewmodel/viewmodel-savedstate)
-construtor parameter. If this is not your case, you can simply use the base resaca library (`com.github.sebaslogen.resaca:resaca`) with `rememberScoped` function in combination with Koin getters.
+construtor parameter. If this is not your case, you can simply use the base resaca library (`com.github.sebaslogen.resaca:resaca`) with `viewModelScoped` function in combination with Koin getters.
 
 # Why
 
