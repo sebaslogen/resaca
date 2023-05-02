@@ -20,7 +20,7 @@ androidx-activity = '1.7.1'
 # Compose integration with ViewModels
 androidx-lifecycle = '2.6.1'
 # Hilt
-hilt = '2.45'
+hilt = '2.46'
 hilt-navigation-compose = '1.0.0'
 # Koin
 koin = '3.4.0'
