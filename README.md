@@ -66,7 +66,7 @@ fun DemoScopedViewModel() {
 }
 
 @Composable
-fun DemoScopedViewModelWithDependencies() {
+fun DemoScopedViewModelWithDependency() {
     val myScopedVM: MyViewModelWithDependencies = viewModelScoped { MyViewModelWithDependencies(myDependency) }
     DemoComposable(inputObject = myScopedVM)
 }
@@ -81,7 +81,7 @@ fun DemoViewModelWithKey() {
 }
 
 @Composable
-fun DemoKoinInjectedViewModelWithKey() {
+fun DemoKoinInjectedViewModelWithDependency() {
     val myInjectedScopedVM: MyViewModelWithDependencies = viewModelScoped() { getKoin().get { parametersOf(myConstructorDependency) } }
     DemoComposable(inputObject = myInjectedScopedVM)
 }
