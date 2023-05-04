@@ -141,7 +141,7 @@ Instead of using the `getViewModel` or `koinViewModel` functions from Koin, you 
 
 Usage example: `val viewModel: MyViewModel = viewModelScoped(myId) { getKoin().get { parametersOf(myId) } }`
 
-**Important for Koin**: if you plan to use a ViewModel with a [SavedStateHandle](https://developer.android.com/topic/libraries/architecture/viewmodel/viewmodel-savedstate), then you need to use the `koinViewModelScoped` function instead from the small extension library [**resaca-koin**](https://github.com/sebaslogen/resaca/blob/main/resacakoin/Readme.md).
+**Important for Koin**: if you plan to use a ViewModel with a [SavedStateHandle](https://developer.android.com/topic/libraries/architecture/viewmodel/viewmodel-savedstate), then you need to use the `koinViewModelScoped` function from the small extension library [**resaca-koin**](https://github.com/sebaslogen/resaca/blob/main/resacakoin/Readme.md).
 
 -----
 
@@ -187,7 +187,7 @@ Implementing these interfaces might not trivial.
 - **Complex** integration work is required to correctly implement Parcelable
   or [Saver](https://developer.android.com/reference/kotlin/androidx/compose/runtime/saveable/Saver)
 
-### The new RememberScoped 
+### The new RememberScoped 🪄✨
 
 **[RememberScoped](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/ScopedMemoizers.kt#L33)** function keeps
 objects in memory during the lifecycle of the Composable, even in a few cases where the Composable is disposed of, and then added again. Therefore, it will
@@ -210,12 +210,12 @@ objects in memory during the lifecycle of the Composable, even in a few cases wh
 
 ## RememberScoped lifecycle internal implementation details
 
-This project uses a ViewModel as a container to store all scoped ViewModels and scoped objects.
+This project uses internally a ViewModel as a container to store all scoped ViewModels and scoped objects.
 
 When a Composable is disposed of, we don't know for sure if it will return again later. So at the moment of disposal, we mark in our container the associated
 object to be disposed of after a small delay (currently 5 seconds). During the span of time of this delay, a few things can happen:
 
-- The Composable is not part of the composition anymore after the delay and the associated object is disposed of. 🚮
+- The Composable is not part of the composition anymore after the delay and then the associated object is disposed of. 🚮
 - The LifecycleOwner of the disposed Composable (i.e. the navigation destination where the Composable lived) is paused (e.g. screen went to background) before
   the delay finishes. Then the disposal of the scoped object is canceled, but the object is still marked for disposal at a later stage.
     - This can happen when the application goes through a configuration change and the container Activity is recreated.
@@ -225,7 +225,7 @@ object to be disposed of after a small delay (currently 5 seconds). During the s
   scheduled again to happen after a small delay. At this point two things can happen:
     - The Composable becomes part of the composition again and the `rememberScoped`/`viewModelScoped` function restores the associated object while also
       canceling any pending delayed disposal. 🎉
-    - The Composable is not part of the composition anymore after the delay and the associated object is disposed of. 🚮
+    - The Composable is not part of the composition anymore after the delay and then the associated object is disposed of. 🚮
 
 Notes:
 
