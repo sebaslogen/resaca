@@ -32,18 +32,38 @@ Until now...
 
 Add the Jitpack repo and include the library (less than 5Kb):
 
+
+<details open>
+  <summary>Kotlin (KTS)</summary>
+  
+```kotlin
+repositories {
+     [..]
+     maven { setUrl("https://jitpack.io") }
+}
+dependencies {
+    // The latest version of the lib is available in the badget at the top, replace X.X.X with that version
+    implementation("com.github.sebaslogen.resaca:resaca:X.X.X")
+}
+```
+</details>
+
+<details>
+  <summary>Groovy</summary>
+
 ```gradle
-   allprojects {
-       repositories {
-           [..]
-           maven { url "https://jitpack.io" }
-       }
-   }
-   dependencies {
-       // The latest version of the lib is available in the badget at the top, replace X.X.X with that version
-       implementation 'com.github.sebaslogen.resaca:resaca:X.X.X'
-   }
-```  
+allprojects {
+    repositories {
+        [..]
+        maven { url "https://jitpack.io" }
+    }
+}
+dependencies {
+    // The latest version of the lib is available in the badget at the top, replace X.X.X with that version
+    implementation 'com.github.sebaslogen.resaca:resaca:X.X.X'
+}
+```
+</details>
 
 # Usage
 
