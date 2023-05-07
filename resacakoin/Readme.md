@@ -68,15 +68,27 @@ dependencies {
 
 Inside your `@Composable` function create and retrieve a ViewModel using `koinViewModelScoped` to remember any ViewModel that you have defined in your Koin `module`. This is all that's needed 🪄✨
 
-Example
+Examples:
 
+
+<details open>
+  <summary>Scope to a Composable a ViewModel injected by Koin with SavedStateHandle</summary>
+  
 ```kotlin
 @Composable
 fun DemoInjectedViewModelScoped() {
     val myInjectedViewModel: MyViewModel = koinViewModelScoped()
     DemoComposable(viewModel = myInjectedViewModel)
 }
+  
+class MyViewModel(private val stateSaver: SavedStateHandle) : ViewModel()
+```
+</details>
 
+<details>
+  <summary>Scope to a Composable a ViewModel injected by Koin with SavedStateHandle and a key</summary>
+  
+```kotlin
 @Composable
 fun DemoInjectedViewModelWithKey(keyOne: String = "myFirstKey", keyTwo: String = "mySecondKey") {
     val scopedVMWithFirstKey: MyViewModel = koinViewModelScoped(keyOne)
@@ -88,7 +100,13 @@ fun DemoInjectedViewModelWithKey(keyOne: String = "myFirstKey", keyTwo: String =
 }
 
 class MyViewModel(private val stateSaver: SavedStateHandle) : ViewModel()
+```
+</details>
 
+<details>
+  <summary>Scope to a Composable a ViewModel injected by Koin with SavedStateHandle and an argument/parameter/id (assisted injection)</summary>
+  
+```kotlin
 @Composable
 fun DemoInjectedViewModelWithId(idOne: String = "myFirstId", idTwo: String = "mySecondId") {
     val scopedVMWithFirstId: MyIdViewModel = koinViewModelScoped(key = idOne, parameters = { parametersOf(idOne) })
@@ -102,6 +120,7 @@ fun DemoInjectedViewModelWithId(idOne: String = "myFirstId", idTwo: String = "my
 
 class MyIdViewModel(private val stateSaver: SavedStateHandle, private val id: String) : ViewModel()
 ```
+</details>
 
 Once you use the `koinViewModelScoped` function, the same object will be restored as long as the Composable is part of the composition, even if it _temporarily_
 leaves composition on configuration change (e.g. screen rotation, change to dark mode, etc.) or while being in the backstack.
@@ -113,8 +132,8 @@ nor `ViewModelProviders` factories, otherwise they will be retained in the scope
 
 To use the `koinViewModelScoped` function you need to follow these 2 Koin configuration steps:
 
-- Add a configuration module variable with the Koin factories for your ViewModels. [See example here](https://github.com/sebaslogen/resaca/blob/main/sample/src/main/java/com/sebaslogen/resacaapp/sample/di/koin/AppModule.kt#L17)
-- Initialize Koin with the module you just created inside the `onCreate` of your application. [See example here](https://github.com/sebaslogen/resaca/blob/main/sample/src/main/java/com/sebaslogen/resacaapp/sample/ResacaSampleApp.kt#L16)
+1. Add a configuration module variable with the Koin factories for your ViewModels. [See example here](https://github.com/sebaslogen/resaca/blob/main/sample/src/main/java/com/sebaslogen/resacaapp/sample/di/koin/AppModule.kt#L17)
+1. Initialize Koin (with the module you just created in step 1) inside the `onCreate` of your application. [See example here](https://github.com/sebaslogen/resaca/blob/main/sample/src/main/java/com/sebaslogen/resacaapp/sample/ResacaSampleApp.kt#L16)
 
 For a complete guide to Koin check the official documentation. Here are the [setup](https://insert-koin.io/docs/setup/koin/) and
 the [Koin ViewModel](https://insert-koin.io/docs/reference/koin-android/viewmodel) docs.
