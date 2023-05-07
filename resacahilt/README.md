@@ -102,7 +102,6 @@ class MyViewModel @Inject constructor(private val stateSaver: SavedStateHandle) 
 ```
 </details>
 
-
 <details>
   <summary>Scope to a Composable a ViewModel injected by Hilt with an argument or id (pseudo assisted injection)</summary>
   
