@@ -156,7 +156,7 @@ Here are some sample use cases reported by the users of this library:
   class with different ids. For example, a screen of holiday destinations with multiple pages and each page with its own `HolidayDestinationViewModel`.
 - ❤️ Isolated and stateful UI components like a **favorite button** that are widely used across the screens. This `FavoriteViewModel` can be very small, focused
   and only require an id to work without affecting the rest of the screen's UI and state.
-- 🗪 Dialog pop-ups can have their own business-logic with state that is better to isolate in a separate ViewModel but the lifespan of these dialogs might be short, 
+- 🗪 **Dialog pop-ups** can have their own business-logic with state that is better to isolate in a separate ViewModel but the lifespan of these dialogs might be short, 
 so it's important to clean-up the ViewModel associated to a Dialog after it has been closed.
 
 # Demo app
