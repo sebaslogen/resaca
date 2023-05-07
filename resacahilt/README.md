@@ -84,7 +84,7 @@ class MyViewModel @Inject constructor(private val stateSaver: SavedStateHandle) 
 </details>
 
 <details>
-  <summary>Scope to a Composable a ViewModel with a key</summary>
+  <summary>Scope to a Composable a ViewModel injected by Hilt with a key</summary>
   
 ```kotlin
 @Composable
@@ -104,7 +104,7 @@ class MyViewModel @Inject constructor(private val stateSaver: SavedStateHandle) 
 
 
 <details>
-  <summary>Scope to a Composable a ViewModel with an argument or id (pseudo assisted injection)</summary>
+  <summary>Scope to a Composable a ViewModel injected by Hilt with an argument or id (pseudo assisted injection)</summary>
   
 ```kotlin
 @Composable
