@@ -8,8 +8,8 @@
 Short lived View Models provided by [**Koin**](https://insert-koin.io/docs/reference/koin-android/start/) with the right scope in
 Android [Compose](https://developer.android.com/jetpack/compose).
 
-This library (`com.github.sebaslogen.resaca:resacakoin`) is **only required if you want to use ViewModels with a [SavedStateHandle](https://developer.android.com/topic/libraries/architecture/viewmodel/viewmodel-savedstate)**
-construtor parameter. If this is not your case, you can simply use the base resaca library (`com.github.sebaslogen.resaca:resaca`) with `viewModelScoped` function in combination with Koin getters.
+> Note: This library (`com.github.sebaslogen.resaca:resacakoin`) is **only required if you want to use ViewModels with a [SavedStateHandle](https://developer.android.com/topic/libraries/architecture/viewmodel/viewmodel-savedstate)**
+construtor parameter. If this is not your case, you can simply use the base resaca library (`com.github.sebaslogen.resaca:resaca`) with `viewModelScoped` function in combination with Koin getters, [see example](https://github.com/sebaslogen/resaca/blob/main/README.md#koin-).
 
 # Why
 
@@ -28,18 +28,41 @@ Until now...
 
 Add the Jitpack repo and include the library:
 
+<details open>
+  <summary>Kotlin (KTS)</summary>
+  
+```kotlin
+// In settings.gradle.kts
+dependencyResolutionManagement {
+    repositories {
+         [..]
+         maven { setUrl("https://jitpack.io") }
+    }
+}
+// In module's build.gradle.kts
+dependencies {
+    // The latest version of the lib is available in the badget at the top, replace X.X.X with that version
+    implementation("com.github.sebaslogen.resaca:resacakoin:X.X.X")
+}
+```
+</details>
+
+<details>
+  <summary>Groovy</summary>
+  
 ```gradle
-   allprojects {
-       repositories {
-           [..]
-           maven { url "https://jitpack.io" }
-       }
-   }
-   dependencies {
-       // The latest version of the lib is available in the badget at the top, replace X.X.X with that version
-       implementation 'com.github.sebaslogen.resaca:resacakoin:X.X.X'
-   }
-```  
+allprojects {
+    repositories {
+        [..]
+        maven { url "https://jitpack.io" }
+    }
+}
+dependencies {
+    // The latest version of the lib is available in the badget at the top, replace X.X.X with that version
+    implementation 'com.github.sebaslogen.resaca:resacakoin:X.X.X'
+}
+```
+</details>
 
 # Usage
 
@@ -83,7 +106,7 @@ class MyIdViewModel(private val stateSaver: SavedStateHandle, private val id: St
 Once you use the `koinViewModelScoped` function, the same object will be restored as long as the Composable is part of the composition, even if it _temporarily_
 leaves composition on configuration change (e.g. screen rotation, change to dark mode, etc.) or while being in the backstack.
 
-⚠️ Note that ViewModels provided with `koinViewModelScoped` **should not be created** using any of the Koin `koinViewModel()` or Compose `getViewModel()`
+> ⚠️ Note that ViewModels provided with `koinViewModelScoped` **should not be created** using any of the Koin `koinViewModel()` or Compose `getViewModel()`
 nor `ViewModelProviders` factories, otherwise they will be retained in the scope of the screen regardless of `koinViewModelScoped`.
 
 # Basic Koin setup
@@ -104,6 +127,8 @@ Here are some sample use cases reported by the users of this library:
   class with different ids. For example, a screen of holiday destinations with multiple pages and each page with its own `HolidayDestinationViewModel`.
 - ❤️ Isolated and stateful UI components like a **favorite button** that are widely used across the screens. This `FavoriteViewModel` can be very small, focused
   and only require an id to work without affecting the rest of the screen's UI and state.
+- 🗪 **Dialog pop-ups** can have their own business-logic with state that is better to isolate in a separate ViewModel but the lifespan of these dialogs might be short, 
+so it's important to clean-up the ViewModel associated to a Dialog after it has been closed.
 
 # Assisted Injection
 
