@@ -77,7 +77,7 @@ Inside your `@Composable` function create and retrieve an object using `remember
 Examples:
 
 <details open>
-  <summary>Scope an object to a Composable</summary>
+  <summary>Scope to a Composable an object</summary>
   
 ```kotlin
 @Composable
@@ -89,7 +89,7 @@ fun DemoScopedObject() {
 </details>
 
 <details open>
-  <summary>Scope a ViewModel to a Composable</summary>
+  <summary>Scope to a Composable a ViewModel</summary>
   
 ```kotlin
 @Composable
@@ -101,7 +101,7 @@ fun DemoScopedViewModel() {
 </details>
 
 <details>
-  <summary>Scope a ViewModel with a dependency to a Composable</summary>
+  <summary>Scope to a Composable a ViewModel with a dependency</summary>
   
 ```kotlin
 @Composable
@@ -113,7 +113,7 @@ fun DemoScopedViewModelWithDependency() {
 </details>
 
 <details>
-  <summary>Scope a ViewModel with a key to a Composable</summary>
+  <summary>Scope to a Composable a ViewModel with a key</summary>
   
 ```kotlin
 @Composable
@@ -128,7 +128,7 @@ fun DemoViewModelWithKey() {
 </details>
 
 <details>
-  <summary>Scope a ViewModel with a dependency injected with Koin to a Composable</summary>
+  <summary>Scope to a Composable a ViewModel with a dependency injected with Koin</summary>
   
 ```kotlin
 @Composable
