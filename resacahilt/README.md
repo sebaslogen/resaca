@@ -66,15 +66,27 @@ dependencies {
 Inside your `@Composable` function create and retrieve a ViewModel using `hiltViewModelScoped` to remember any `@HiltViewModel` annotated ViewModel. This
 together with the standard Hilt configuration is all that's needed 🪄✨
 
-Example
+Examples:
 
+<details open>
+  <summary>Scope to a Composable a ViewModel injected by Hilt</summary>
+  
 ```kotlin
 @Composable
 fun DemoInjectedViewModelScoped() {
     val myInjectedViewModel: MyViewModel = hiltViewModelScoped()
     DemoComposable(viewModel = myInjectedViewModel)
 }
+  
+@HiltViewModel
+class MyViewModel @Inject constructor(private val stateSaver: SavedStateHandle) : ViewModel()
+```
+</details>
 
+<details>
+  <summary>Scope to a Composable a ViewModel with a key</summary>
+  
+```kotlin
 @Composable
 fun DemoInjectedViewModelWithKey(keyOne: String = "myFirstKey", keyTwo: String = "mySecondKey") {
     val scopedVMWithFirstKey: MyViewModel = hiltViewModelScoped(keyOne)
@@ -84,7 +96,17 @@ fun DemoInjectedViewModelWithKey(keyOne: String = "myFirstKey", keyTwo: String =
     DemoComposable(inputObject = scopedVMWithFirstKey)
     DemoComposable(inputObject = scopedVMWithSecondKey)
 }
+  
+@HiltViewModel
+class MyViewModel @Inject constructor(private val stateSaver: SavedStateHandle) : ViewModel()
+```
+</details>
 
+
+<details>
+  <summary>Scope to a Composable a ViewModel with an argument or id (pseudo assisted injection)</summary>
+  
+```kotlin
 @Composable
 fun DemoInjectedViewModelWithId(idOne: String = "myFirstId", idTwo: String = "mySecondId") {
     val scopedVMWithFirstId: MyIdViewModel = hiltViewModelScoped(idOne, defaultArguments = bundleOf(MY_ARGS_KEY to idOne))
@@ -95,7 +117,20 @@ fun DemoInjectedViewModelWithId(idOne: String = "myFirstId", idTwo: String = "my
     DemoComposable(inputObject = scopedVMWithFirstId)
     DemoComposable(inputObject = scopedVMWithSecondId)
 }
+  
+@HiltViewModel
+class MyIdViewModel @Inject constructor(
+    private val stateSaver: SavedStateHandle
+) : ViewModel() {
+
+    companion object {
+        const val MY_ARGS_KEY = "MY_ARGS_KEY"
+    }
+
+    val viewModelId = stateSaver.get<String>(MY_ARGS_KEY)
+}
 ```
+</details>
 
 Once you use the `hiltViewModelScoped` function, the same object will be restored as long as the Composable is part of the composition, even if it _temporarily_
 leaves composition on configuration change (e.g. screen rotation, change to dark mode, etc.) or while being in the backstack.
