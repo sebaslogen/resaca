@@ -50,7 +50,7 @@ dependencies {
 
 <details>
   <summary>Groovy</summary>
-
+  
 ```gradle
 allprojects {
     repositories {
@@ -70,27 +70,48 @@ dependencies {
 Inside your `@Composable` function create and retrieve an object using `rememberScoped` to remember any type of object (except ViewModels). For ViewModels use
 `viewModelScoped`. That's all 🪄✨
 
-Examples
+Examples:
 
+<details open>
+  <summary>Scope an object to a Composable</summary>
+  
 ```kotlin
 @Composable
 fun DemoScopedObject() {
     val myRepository: MyRepository = rememberScoped { MyRepository() }
     DemoComposable(inputObject = myRepository)
 }
+```
+</details>
 
+<details open>
+  <summary>Scope a ViewModel to a Composable</summary>
+  
+```kotlin
 @Composable
 fun DemoScopedViewModel() {
     val myScopedVM: MyViewModel = viewModelScoped()
     DemoComposable(inputObject = myScopedVM)
 }
+```
+</details>
 
+<details>
+  <summary>Scope a ViewModel with a dependency to a Composable</summary>
+  
+```kotlin
 @Composable
 fun DemoScopedViewModelWithDependency() {
     val myScopedVM: MyViewModelWithDependencies = viewModelScoped { MyViewModelWithDependencies(myDependency) }
     DemoComposable(inputObject = myScopedVM)
 }
+```
+</details>
 
+<details>
+  <summary>Scope a ViewModel with a key to a Composable</summary>
+  
+```kotlin
 @Composable
 fun DemoViewModelWithKey() {
     val scopedVMWithFirstKey: MyViewModel = viewModelScoped("myFirstKey") { MyViewModel("myFirstKey") }
@@ -99,13 +120,20 @@ fun DemoViewModelWithKey() {
     DemoComposable(inputObject = scopedVMWithFirstKey)
     DemoComposable(inputObject = scopedVMWithSecondKey)
 }
+```
+</details>
 
+<details>
+  <summary>Scope a ViewModel with a dependency injected with Koin to a Composable</summary>
+  
+```kotlin
 @Composable
 fun DemoKoinInjectedViewModelWithDependency() {
     val myInjectedScopedVM: MyViewModelWithDependencies = viewModelScoped() { getKoin().get { parametersOf(myConstructorDependency) } }
     DemoComposable(inputObject = myInjectedScopedVM)
 }
 ```
+</details>
 
 Once you use the `rememberScoped` or `viewModelScoped` functions, the same object will be restored as long as the Composable is part of the composition, even if
 it _temporarily_ leaves composition on configuration change (e.g. screen rotation, change to dark mode, etc.) or while being in the backstack.
@@ -113,10 +141,10 @@ it _temporarily_ leaves composition on configuration change (e.g. screen rotatio
 For ViewModels, in addition to being forgotten when they're really not needed anymore, their _coroutineScope_ will also be automatically canceled because
 ViewModel's `onCleared` method will be automatically called by this library.
 
-💡 _Optional key_: a key can be provided to the call, `rememberScoped(key) { ... }` or `viewModelScoped(key) { ... }`. This makes possible to forget an old
+> 💡 _Optional key_: a key can be provided to the call, `rememberScoped(key) { ... }` or `viewModelScoped(key) { ... }`. This makes possible to forget an old
 object when there is new input data during a recomposition (e.g. a new input id for your ViewModel).
 
-⚠️ Note that ViewModels remembered with `viewModelScoped` **should not be created** using any of the Compose `viewModel()` or `ViewModelProviders` factories,
+> ⚠️ Note that ViewModels remembered with `viewModelScoped` **should not be created** using any of the Compose `viewModel()` or `ViewModelProviders` factories,
 otherwise they will be retained in the scope of the screen regardless of `viewModelScoped`. Also, if a ViewModel is remembered with `rememberScoped` its
 clean-up method won't be called, that's the reason to use `viewModelScoped` instead.
 
@@ -161,7 +189,7 @@ Instead of using the `getViewModel` or `koinViewModel` functions from Koin, you 
 
 Usage example: `val viewModel: MyViewModel = viewModelScoped(myId) { getKoin().get { parametersOf(myId) } }`
 
-**Important for Koin**: if you plan to use a ViewModel with a [SavedStateHandle](https://developer.android.com/topic/libraries/architecture/viewmodel/viewmodel-savedstate), then you need to use the `koinViewModelScoped` function from the small extension library [**resaca-koin**](https://github.com/sebaslogen/resaca/blob/main/resacakoin/Readme.md).
+> **Note**: if you plan to use a ViewModel with a [SavedStateHandle](https://developer.android.com/topic/libraries/architecture/viewmodel/viewmodel-savedstate), then you need to use the `koinViewModelScoped` function from the small extension library [**resaca-koin**](https://github.com/sebaslogen/resaca/blob/main/resacakoin/Readme.md).
 
 -----
 
