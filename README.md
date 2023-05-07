@@ -37,10 +37,14 @@ Add the Jitpack repo and include the library (less than 5Kb):
   <summary>Kotlin (KTS)</summary>
   
 ```kotlin
-repositories {
-     [..]
-     maven { setUrl("https://jitpack.io") }
+// In settings.gradle.kts
+dependencyResolutionManagement {
+    repositories {
+         [..]
+         maven { setUrl("https://jitpack.io") }
+    }
 }
+// In module's build.gradle.kts
 dependencies {
     // The latest version of the lib is available in the badget at the top, replace X.X.X with that version
     implementation("com.github.sebaslogen.resaca:resaca:X.X.X")
