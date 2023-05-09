@@ -19,5 +19,8 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
+      - name: Run API Check
+        run: ./gradlew apiCheck
+
       - name: Run tests
         run: ./gradlew :sample:cleanTestDebugUnitTest :sample:testDebugUnitTest --tests "com.sebaslogen.resacaapp.*"
