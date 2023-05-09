@@ -1,0 +1,51 @@
+public final class com/sebaslogen/resaca/BuildConfig {
+	public static final field BUILD_TYPE Ljava/lang/String;
+	public static final field DEBUG Z
+	public static final field LIBRARY_PACKAGE_NAME Ljava/lang/String;
+	public fun <init> ()V
+}
+
+public final class com/sebaslogen/resaca/RememberScopedObserver : androidx/compose/runtime/RememberObserver {
+	public static final field $stable I
+	public fun <init> (Lcom/sebaslogen/resaca/ScopedViewModelContainer;Ljava/lang/String;)V
+	public fun onAbandoned ()V
+	public fun onForgotten ()V
+	public fun onRemembered ()V
+}
+
+public final class com/sebaslogen/resaca/ScopedMemoizersKt {
+	public static final fun ObserveComposableDisposal (Ljava/lang/String;Lcom/sebaslogen/resaca/ScopedViewModelContainer;Landroidx/compose/runtime/Composer;I)V
+	public static final fun ObserveLifecycleWithScopedViewModelContainer (Lcom/sebaslogen/resaca/ScopedViewModelContainer;Landroidx/compose/runtime/Composer;I)V
+	public static final fun ObserveLifecycles (Lcom/sebaslogen/resaca/ScopedViewModelContainer;Ljava/lang/String;Landroidx/compose/runtime/Composer;I)V
+	public static final fun generateKeysAndObserveLifecycle (Ljava/lang/Object;Landroidx/compose/runtime/Composer;I)Lkotlin/Triple;
+	public static final fun rememberScoped (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;II)Ljava/lang/Object;
+}
+
+public final class com/sebaslogen/resaca/ScopedViewModelContainer : androidx/lifecycle/ViewModel, androidx/lifecycle/LifecycleEventObserver {
+	public static final field $stable I
+	public fun <init> ()V
+	public final fun getOrBuildViewModel-0Qu5jqc (Ljava/lang/Class;Ljava/lang/String;ILandroidx/lifecycle/ViewModelProvider$Factory;Landroid/os/Bundle;Landroidx/lifecycle/ViewModelStoreOwner;Landroidx/compose/runtime/Composer;II)Landroidx/lifecycle/ViewModel;
+	public final fun getOrBuildViewModel-W-Xy7lE (Ljava/lang/Class;Ljava/lang/String;ILandroid/os/Bundle;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;I)Landroidx/lifecycle/ViewModel;
+	public final fun getOrBuildViewModel-x_P2lNw (Ljava/lang/Class;Ljava/lang/String;ILandroid/os/Bundle;Landroidx/compose/runtime/Composer;I)Landroidx/lifecycle/ViewModel;
+	public fun onStateChanged (Landroidx/lifecycle/LifecycleOwner;Landroidx/lifecycle/Lifecycle$Event;)V
+}
+
+public final class com/sebaslogen/resaca/ScopedViewModelContainer$ExternalKey {
+	public static final synthetic fun box-impl (I)Lcom/sebaslogen/resaca/ScopedViewModelContainer$ExternalKey;
+	public static fun constructor-impl (I)I
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (ILjava/lang/Object;)Z
+	public static final fun equals-impl0 (II)Z
+	public fun hashCode ()I
+	public static fun hashCode-impl (I)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (I)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()I
+}
+
+public final class com/sebaslogen/resaca/ScopedViewModelOwner {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/String;Ljava/lang/Class;Landroidx/lifecycle/ViewModelProvider$Factory;Landroid/os/Bundle;Landroidx/lifecycle/ViewModelStoreOwner;)V
+	public final fun updateViewModelProvider (Landroidx/lifecycle/ViewModelStoreOwner;)V
+}
+

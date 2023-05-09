@@ -12,6 +12,7 @@ appcompat = '1.6.1'
 constraintlayout = '2.1.4'
 junit-version = '4.13.2'
 robolectric-version = '4.10.2'
+binary-compatibility-validator = '0.13.1'
 # Compose
 compose-bom = '2023.05.00' # https://developer.android.com/jetpack/compose/bom/bom-mapping
 compose-compiler = '1.4.7'
@@ -74,3 +75,4 @@ android-library = { id = 'com.android.library', version.ref = 'agp' }
 kotlin-android = { id = 'org.jetbrains.kotlin.android', version.ref = 'kotlin' }
 kotlin-kapt = { id = 'org.jetbrains.kotlin.kapt', version.ref = 'kotlin' }
 dagger-hilt-android = { id = 'com.google.dagger.hilt.android', version.ref = 'hilt' }
+binary-compatibility-validator = { id = 'org.jetbrains.kotlinx.binary-compatibility-validator', version.ref = 'binary-compatibility-validator' }

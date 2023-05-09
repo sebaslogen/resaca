@@ -6,13 +6,18 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.kapt) apply false
     alias(libs.plugins.dagger.hilt.android) apply false
+    alias(libs.plugins.binary.compatibility.validator)
+}
+
+val sampleModuleName = "sample"
+
+apiValidation {
+    ignoredProjects.addAll(listOf(sampleModuleName))
 }
 
 tasks.register("clean", Delete::class) {
     delete(rootProject.buildDir)
 }
-
-val sampleModuleName = "sample"
 
 subprojects {
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
