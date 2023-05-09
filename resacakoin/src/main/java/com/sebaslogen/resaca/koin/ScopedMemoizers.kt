@@ -36,7 +36,7 @@ import org.koin.core.scope.Scope
  */
 @OptIn(KoinInternalApi::class)
 @Composable
-inline fun <reified T : ViewModel> koinViewModelScoped(
+public inline fun <reified T : ViewModel> koinViewModelScoped(
     key: Any? = null,
     qualifier: Qualifier? = null,
     scope: Scope = GlobalContext.get().scopeRegistry.rootScope,

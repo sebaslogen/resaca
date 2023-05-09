@@ -30,7 +30,7 @@ import java.util.*
  * @param builder Factory function to produce a new value that will be remembered.
  */
 @Composable
-fun <T : Any> rememberScoped(key: Any? = null, builder: @DisallowComposableCalls () -> T): T {
+public fun <T : Any> rememberScoped(key: Any? = null, builder: @DisallowComposableCalls () -> T): T {
     require(key !is Function0<*>) { "The Key for rememberScoped should not be a lambda" }
 
     val (scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: String, externalKey: ScopedViewModelContainer.ExternalKey) =
@@ -62,7 +62,7 @@ fun <T : Any> rememberScoped(key: Any? = null, builder: @DisallowComposableCalls
  * @param defaultArguments A [Bundle] containing all the default arguments that will be provided to the [ViewModel].
  */
 @Composable
-inline fun <reified T : ViewModel> viewModelScoped(key: Any? = null, defaultArguments: Bundle = Bundle.EMPTY): T {
+public inline fun <reified T : ViewModel> viewModelScoped(key: Any? = null, defaultArguments: Bundle = Bundle.EMPTY): T {
     require(key !is Function0<*>) { "The Key for viewModelScoped should not be a lambda" }
 
     val (scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: String, externalKey: ScopedViewModelContainer.ExternalKey) =
@@ -96,7 +96,7 @@ inline fun <reified T : ViewModel> viewModelScoped(key: Any? = null, defaultArgu
  * @param builder Factory function to produce a new [ViewModel] that will be remembered.
  */
 @Composable
-inline fun <reified T : ViewModel> viewModelScoped(
+public inline fun <reified T : ViewModel> viewModelScoped(
     key: Any? = null,
     defaultArguments: Bundle = Bundle.EMPTY,
     noinline builder: @DisallowComposableCalls () -> T
@@ -117,7 +117,7 @@ inline fun <reified T : ViewModel> viewModelScoped(
 }
 
 @Composable
-fun generateKeysAndObserveLifecycle(key: Any?): Triple<ScopedViewModelContainer, String, ScopedViewModelContainer.ExternalKey> {
+public fun generateKeysAndObserveLifecycle(key: Any?): Triple<ScopedViewModelContainer, String, ScopedViewModelContainer.ExternalKey> {
     val scopedViewModelContainer: ScopedViewModelContainer = viewModel()
 
     // This key will be used to identify, retrieve and remove the stored object in the ScopedViewModelContainer

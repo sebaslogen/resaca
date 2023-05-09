@@ -16,7 +16,7 @@ import kotlin.coroutines.CoroutineContext
 /**
  * Set of functions to help create, store, retrieve and clear a [ViewModel].
  */
-object ScopedViewModelUtils {
+internal object ScopedViewModelUtils {
 
     /**
      * Returns an existing [ViewModel] of type [T] or creates a new one if none was present in the [scopedObjectsContainer].
@@ -28,7 +28,7 @@ object ScopedViewModelUtils {
      * by a [ScopedViewModelOwner] which will be the actual object stored in the [scopedObjectsContainer].
      */
     @Composable
-    inline fun <T : ViewModel> getOrBuildViewModel(
+    public inline fun <T : ViewModel> getOrBuildViewModel(
         modelClass: Class<T>,
         positionalMemoizationKey: String,
         externalKey: ScopedViewModelContainer.ExternalKey,

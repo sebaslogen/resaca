@@ -1,7 +1,13 @@
 package com.sebaslogen.resaca
 
 import android.os.Bundle
-import androidx.lifecycle.*
+import androidx.lifecycle.DEFAULT_ARGS_KEY
+import androidx.lifecycle.HasDefaultViewModelProviderFactory
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.MutableCreationExtras
 
@@ -19,7 +25,7 @@ import androidx.lifecycle.viewmodel.MutableCreationExtras
  * @param defaultArguments [Bundle] of default arguments that will be provided to the [ViewModel] through the [SavedStateHandle]
  * @param viewModelStoreOwner Used to extract possible defaultViewModelCreationExtras and defaultViewModelProviderFactory
  */
-class ScopedViewModelProvider(
+internal class ScopedViewModelProvider(
     private val factory: ViewModelProvider.Factory?,
     private val viewModelStore: ViewModelStore,
     private val defaultArguments: Bundle,

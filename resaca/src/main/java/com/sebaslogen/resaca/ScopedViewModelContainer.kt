@@ -50,7 +50,7 @@ import kotlin.collections.set
  * - the foreground/background state of the container [LifecycleOwner]
  * - the configuration changing state of the container [Activity]
  */
-class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
+public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
 
     /**
      * Mark whether the container of this class (usually a screen like an Activity, a Fragment or a Compose destination)
@@ -99,7 +99,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      */
     @Suppress("UNCHECKED_CAST")
     @Composable
-    fun <T : Any> getOrBuildObject(
+    internal fun <T : Any> getOrBuildObject(
         positionalMemoizationKey: String,
         externalKey: ExternalKey,
         builder: @DisallowComposableCalls () -> T
@@ -125,7 +125,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      * Restore or build a [ViewModel] using the default factory for ViewModels without constructor parameters
      */
     @Composable
-    fun <T : ViewModel> getOrBuildViewModel(
+    public fun <T : ViewModel> getOrBuildViewModel(
         modelClass: Class<T>,
         positionalMemoizationKey: String,
         externalKey: ExternalKey,
@@ -147,7 +147,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      * Restore or build a [ViewModel] using the provided [builder] as the factory
      */
     @Composable
-    fun <T : ViewModel> getOrBuildViewModel(
+    public fun <T : ViewModel> getOrBuildViewModel(
         modelClass: Class<T>,
         positionalMemoizationKey: String,
         externalKey: ExternalKey,
@@ -165,7 +165,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      * Restore or build a [ViewModel] using a factory provided or the default factory if none is provided
      */
     @Composable
-    fun <T : ViewModel> getOrBuildViewModel(
+    public fun <T : ViewModel> getOrBuildViewModel(
         modelClass: Class<T>,
         positionalMemoizationKey: String,
         externalKey: ExternalKey,
@@ -191,7 +191,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      * that the object might be also disposed from this container only when the stored object
      * is not going to be used anymore (e.g. after configuration change or container fragment returning from backstack)
      */
-    fun onDisposedFromComposition(key: String) {
+    internal fun onDisposedFromComposition(key: String) {
         markedForDisposal.add(key) // Marked to be disposed after onResume
         scheduleToDisposeBeforeGoingToBackground(key) // Schedule to dispose this object before onPause
     }
@@ -310,7 +310,7 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      * In this case, we can safely assume the object was never requested again
      * after the configuration change finished and the container screen was again in the foreground.
      */
-    fun setIsChangingConfiguration(newState: Boolean) {
+    internal fun setIsChangingConfiguration(newState: Boolean) {
         isChangingConfiguration = newState
     }
 
@@ -323,9 +323,9 @@ class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     @Immutable
     @JvmInline
     @Suppress("unused") // Used for equals comparisons
-    value class ExternalKey(private val value: Int) {
+    public value class ExternalKey(private val value: Int) {
 
-        companion object {
+        internal companion object {
             fun from(objectInstance: Any?): ExternalKey = ExternalKey(objectInstance.hashCode())
         }
     }

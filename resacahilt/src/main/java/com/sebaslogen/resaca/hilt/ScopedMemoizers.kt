@@ -34,7 +34,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
  * @param defaultArguments A [Bundle] containing all the default arguments that will be provided to the [ViewModel].
  */
 @Composable
-inline fun <reified T : ViewModel> hiltViewModelScoped(key: Any? = null, defaultArguments: Bundle = Bundle.EMPTY): T {
+public inline fun <reified T : ViewModel> hiltViewModelScoped(key: Any? = null, defaultArguments: Bundle = Bundle.EMPTY): T {
     val (scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: String, externalKey: ScopedViewModelContainer.ExternalKey) =
         generateKeysAndObserveLifecycle(key = key)
 
@@ -59,7 +59,7 @@ inline fun <reified T : ViewModel> hiltViewModelScoped(key: Any? = null, default
  * and use its factory, if all else fails then use the default factory.
  */
 @Composable
-inline fun createHiltViewModelFactory(viewModelStoreOwner: ViewModelStoreOwner): ViewModelProvider.Factory? =
+public inline fun createHiltViewModelFactory(viewModelStoreOwner: ViewModelStoreOwner): ViewModelProvider.Factory? =
     if (viewModelStoreOwner is NavBackStackEntry) {
         HiltViewModelFactory(
             context = LocalContext.current,

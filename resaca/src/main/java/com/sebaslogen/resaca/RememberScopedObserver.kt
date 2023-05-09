@@ -13,7 +13,7 @@ import androidx.compose.runtime.RememberObserver
  * @param scopedViewModelContainer the container that stores the object remembered together with this [RememberScopedObserver]
  * @param positionalMemoizationKey the key to find the object remembered together with this [RememberScopedObserver] inside the provided [scopedViewModelContainer]
  */
-class RememberScopedObserver(
+public class RememberScopedObserver(
     private val scopedViewModelContainer: ScopedViewModelContainer,
     private val positionalMemoizationKey: String
 ) : RememberObserver {

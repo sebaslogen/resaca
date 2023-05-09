@@ -21,7 +21,7 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion as
  * @param defaultArguments [Bundle] of default arguments that will be provided to the [ViewModel] through the [SavedStateHandle]
  * @param viewModelStoreOwner Used to extract possible defaultViewModelCreationExtras and defaultViewModelProviderFactory
  */
-class ScopedViewModelOwner<T : ViewModel>(
+public class ScopedViewModelOwner<T : ViewModel>(
     private val key: String,
     private val modelClass: Class<T>,
     private val factory: ViewModelProvider.Factory?,
@@ -32,7 +32,7 @@ class ScopedViewModelOwner<T : ViewModel>(
     private val viewModelStore = ViewModelStore()
     private val scopedViewModelProvider = ScopedViewModelProvider(factory, viewModelStore, defaultArguments, viewModelStoreOwner)
 
-    val viewModel: T
+    internal val viewModel: T
         @Suppress("ReplaceGetOrSet")
         get() {
             val canonicalName = modelClass.canonicalName ?: throw IllegalArgumentException("Local and anonymous classes can not be ViewModels")
@@ -44,11 +44,11 @@ class ScopedViewModelOwner<T : ViewModel>(
         scopedViewModelProvider.updateViewModelProvider(viewModelStoreOwner)
     }
 
-    fun clear() {
+    internal fun clear() {
         viewModelStore.clear()
     }
 
-    companion object {
+    internal companion object {
         /**
          * Returns a [ViewModelProvider.Factory] based on the given ViewModel [builder].
          */
