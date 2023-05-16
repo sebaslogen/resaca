@@ -25,5 +25,5 @@ jobs:
       - name: Run Lint
         run: ./gradlew lint
 
-      - name: Run tests
-        run: ./gradlew :sample:cleanTestDebugUnitTest :sample:testDebugUnitTest --tests "com.sebaslogen.resacaapp.*"
+      - name: Run tests with code coverage
+        run: ./gradlew :sample:cleanTestDebugUnitTest :sample:testDebugUnitTest koverHtmlReportDebug --tests "com.sebaslogen.resacaapp.*"
