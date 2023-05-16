@@ -38,7 +38,7 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
-    packagingOptions {
+    packaging {
         resources {
             excludes += setOf(
                 // Exclude AndroidX version files
@@ -52,6 +52,9 @@ android {
                 "/META-INF/{AL2.0,LGPL2.1}",
             )
         }
+    }
+    lint {
+        baseline = file("lint-baseline.xml")
     }
     testOptions {
         unitTests {
