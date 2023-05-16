@@ -132,7 +132,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         defaultArguments: Bundle
     ): T {
         val owner = checkNotNull(LocalViewModelStoreOwner.current) { "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner" }
-        val factory = if (owner is HasDefaultViewModelProviderFactory) owner.defaultViewModelProviderFactory else ViewModelProvider.NewInstanceFactory.instance
+        val factory = if (owner is HasDefaultViewModelProviderFactory) owner.defaultViewModelProviderFactory else ViewModelNewInstanceFactory.instance
         return getOrBuildViewModel(
             modelClass = modelClass,
             positionalMemoizationKey = positionalMemoizationKey,

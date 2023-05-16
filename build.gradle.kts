@@ -20,6 +20,9 @@ tasks.register("clean", Delete::class) {
 }
 
 subprojects {
+    /**
+     * Enable Strict API to force the library modules to explicitly declare visibility of function and classes in the API
+     */
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
         kotlinOptions {
             jvmTarget = JavaVersion.VERSION_17.toString()

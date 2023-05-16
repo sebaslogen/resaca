@@ -115,9 +115,15 @@ dependencies {
 }
 
 tasks.withType<AbstractTestTask> {
+    // Add test output to gradle console
     afterSuite(KotlinClosure2({ desc: TestDescriptor, result: TestResult ->
         if (desc.parent == null) { // will match the outermost suite
             println("Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)")
         }
     }))
+
+    // Disable unit tests for release build type (Robolectric limitations)
+    if (name.contains("testReleaseUnitTest")) {
+        enabled = false
+    }
 }
