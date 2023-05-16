@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.kotlin.kapt) apply false
     alias(libs.plugins.dagger.hilt.android) apply false
     alias(libs.plugins.binary.compatibility.validator)
+    alias(libs.plugins.kover) apply false
 }
 
 val sampleModuleName = "sample"

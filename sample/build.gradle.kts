@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.dagger.hilt.android)
+    alias(libs.plugins.kover)
 }
 
 android {
@@ -128,5 +129,54 @@ tasks.withType<AbstractTestTask> {
     // Disable unit tests for release build type (Robolectric limitations)
     if (name.contains("testReleaseUnitTest")) {
         enabled = false
+    }
+}
+
+
+/*
+ * Kover code coverage configs for library modules
+ */
+dependencies {
+    kover(project(":resaca"))
+    kover(project(":resacahilt"))
+    kover(project(":resacakoin"))
+}
+
+koverAndroid {
+    report("debug") {
+        filters {
+            excludes {
+                classes(
+                    "*Fragment",
+                    "*Fragment\$*",
+                    "*Activity",
+                    "*Activity\$*",
+                    "*.databinding.*",
+                    "*.BuildConfig",
+                    "*ComposableSingletons\$*",
+                    "*ColorKt*",
+                    "*ThemeKt*",
+                    "*TypeKt*",
+                    "hilt_aggregated_deps.*",
+                    "*dagger.hilt.internal.aggregatedroot.codegen*",
+                    "*com.sebaslogen.resacaapp.sample*",
+                )
+            }
+            html {
+                onCheck = true
+            }
+            xml {
+                onCheck = true
+            }
+            verify {
+                onCheck = true
+            }
+        }
+
+        verify {
+            rule {
+                minBound(90)
+            }
+        }
     }
 }
