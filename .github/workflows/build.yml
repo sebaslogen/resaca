@@ -26,7 +26,7 @@ jobs:
         run: ./gradlew lint
 
       - name: Run tests with code coverage
-        run: ./gradlew :sample:cleanTestDebugUnitTest :sample:testDebugUnitTest koverHtmlReportDebug --tests "com.sebaslogen.resacaapp.*"
+        run: ./gradlew check
         
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
