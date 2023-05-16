@@ -22,5 +22,8 @@ jobs:
       - name: Run API Check
         run: ./gradlew apiCheck
 
+      - name: Run Lint
+        run: ./gradlew lint
+
       - name: Run tests
         run: ./gradlew :sample:cleanTestDebugUnitTest :sample:testDebugUnitTest --tests "com.sebaslogen.resacaapp.*"
