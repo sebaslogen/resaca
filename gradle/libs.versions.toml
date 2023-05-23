@@ -11,7 +11,7 @@ navigation = '2.5.3'
 appcompat = '1.6.1'
 constraintlayout = '2.1.4'
 junit-version = '4.13.2'
-robolectric-version = '4.10.2'
+robolectric-version = '4.10.3'
 binary-compatibility-validator = '0.13.1'
 kover = '0.7.0-Alpha'
 # Compose
