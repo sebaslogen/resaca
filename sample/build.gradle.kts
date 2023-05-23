@@ -142,8 +142,8 @@ dependencies {
     kover(project(":resacakoin"))
 }
 
-koverAndroid {
-    report("debug") {
+koverReport {
+    androidReports("debug") {
         filters {
             excludes {
                 classes(
