@@ -159,7 +159,8 @@ koverReport {
                     "*TypeKt*",
                     "hilt_aggregated_deps.*",
                     "*dagger.hilt.internal.aggregatedroot.codegen*",
-                    "*com.sebaslogen.resacaapp.sample*",
+                    "*com.sebaslogen.resacaapp.sample*", // Ignore sample code
+                    "*com.sebaslogen.resaca.ViewModelNewInstanceFactory*", // Skip class that is not used in code but used as backup for ViewModelFactory
                 )
             }
             html {

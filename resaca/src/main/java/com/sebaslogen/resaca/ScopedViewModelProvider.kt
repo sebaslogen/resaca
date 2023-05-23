@@ -78,7 +78,6 @@ internal class ScopedViewModelProvider(
             else -> ViewModelProvider(owner = object : ViewModelStoreOwner {
                 override val viewModelStore: ViewModelStore
                     get() = this@ScopedViewModelProvider.viewModelStore
-
             })
         }
     }
