@@ -49,10 +49,10 @@ internal class ScopedViewModelProvider(
     private fun updateViewModelProviderDependencies(viewModelStoreOwner: ViewModelStoreOwner): Boolean {
         val newExtras =
             if (viewModelStoreOwner is HasDefaultViewModelProviderFactory) {
-                viewModelStoreOwner.defaultViewModelCreationExtras.addDefaultArguments()
+                viewModelStoreOwner.defaultViewModelCreationExtras
             } else {
-                CreationExtras.Empty.addDefaultArguments()
-            }
+                CreationExtras.Empty
+            }.addDefaultArguments()
         val newViewModelStoreOwnerDefaultViewModelProviderFactory =
             (viewModelStoreOwner as? HasDefaultViewModelProviderFactory)?.defaultViewModelProviderFactory
 
