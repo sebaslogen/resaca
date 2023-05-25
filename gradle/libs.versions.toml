@@ -1,5 +1,5 @@
 [versions]
-agp = '8.0.1'
+agp = "8.0.2"
 kotlin = '1.8.21'
 compileSdk = '33'
 minSdk = '21'
@@ -18,7 +18,7 @@ kover = '0.7.0'
 compose-bom = '2023.05.01' # https://developer.android.com/jetpack/compose/bom/bom-mapping
 compose-compiler = '1.4.7'
 # Compose integration with Activities
-androidx-activity = '1.7.1'
+androidx-activity = '1.7.2'
 # Compose integration with ViewModels
 androidx-lifecycle = '2.6.1'
 # Hilt
