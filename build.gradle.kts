@@ -13,7 +13,8 @@ plugins {
 val sampleModuleName = "sample"
 
 apiValidation {
-    ignoredProjects.addAll(listOf(sampleModuleName))
+    if (System.getenv("JITPACK") == null) // This block is only applicable outside of Jitpack (local builds)
+        ignoredProjects.addAll(listOf(sampleModuleName))
 }
 
 tasks.register("clean", Delete::class) {
