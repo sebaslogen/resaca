@@ -98,10 +98,8 @@ dependencies {
     // Compose dependencies and integration libs
 
     implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.lifecycle.viewmodel.ktx)
     // Compose integration with ViewModels
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.bundles.androidx.lifecycle.viewmodel)
     implementation(libs.androidx.navigation.compose)
 
     // Compose dependencies

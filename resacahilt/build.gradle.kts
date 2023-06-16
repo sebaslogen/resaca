@@ -72,8 +72,7 @@ dependencies {
     // Compose dependencies
     implementation(libs.compose.compiler)
     // Integration with ViewModels
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.bundles.androidx.lifecycle.viewmodel)
 
     // Hilt dependencies
     implementation(libs.dagger.hilt)

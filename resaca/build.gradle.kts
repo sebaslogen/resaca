@@ -62,13 +62,12 @@ android {
 dependencies {
 
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.coroutines.android)
 
     // Compose dependencies
     implementation(libs.compose.compiler)
     // Integration with ViewModels
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.bundles.androidx.lifecycle.viewmodel)
 }
 
 // Config for publishing artifacts to JitPack
