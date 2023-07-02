@@ -1,13 +1,13 @@
 [versions]
 agp = "8.0.2"
-kotlin = '1.8.21'
+kotlin = '1.8.22'
 compileSdk = '33'
 minSdk = '21'
 targetSdk = '33'
-coroutines = '1.7.1'
+coroutines = '1.7.2'
 material = '1.9.0'
 core-ktx = '1.10.1'
-navigation = '2.5.3'
+navigation = '2.6.0'
 appcompat = '1.6.1'
 constraintlayout = '2.1.4'
 junit-version = '4.13.2'
@@ -15,8 +15,8 @@ robolectric-version = '4.10.3'
 binary-compatibility-validator = '0.13.2'
 kover = '0.7.1'
 # Compose
-compose-bom = '2023.05.01' # https://developer.android.com/jetpack/compose/bom/bom-mapping
-compose-compiler = '1.4.7'
+compose-bom = '2023.06.01' # https://developer.android.com/jetpack/compose/bom/bom-mapping
+compose-compiler = '1.4.8'
 # Compose integration with Activities
 androidx-activity = '1.7.2'
 # Compose integration with ViewModels
@@ -25,7 +25,8 @@ androidx-lifecycle = '2.6.1'
 hilt = '2.46.1'
 hilt-navigation-compose = '1.0.0'
 # Koin
-koin = '3.4.1'
+koin = '3.4.2'
+koin-test = '3.4.1'
 
 [libraries]
 # Android libraries
@@ -61,7 +62,7 @@ dagger-hilt-android-testing = { module = 'com.google.dagger:hilt-android-testing
 dagger-hilt-navigation-compose = { module = 'androidx.hilt:hilt-navigation-compose', version.ref = 'hilt-navigation-compose' }
 
 koin-android = { module = 'io.insert-koin:koin-android', version.ref = 'koin' }
-koin-android-test = { module = 'io.insert-koin:koin-android-test', version.ref = 'koin' }
+koin-android-test = { module = 'io.insert-koin:koin-android-test', version.ref = 'koin-test' }
 
 # Test libraries
 junit = { module = 'junit:junit', version.ref = 'junit-version' }
