@@ -26,7 +26,7 @@ hilt = '2.46.1'
 hilt-navigation-compose = '1.0.0'
 # Koin
 koin = '3.4.2'
-koin-test = '3.4.1'
+koin-test = '3.4.2'
 
 [libraries]
 # Android libraries
