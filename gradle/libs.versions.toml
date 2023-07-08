@@ -1,6 +1,6 @@
 [versions]
 agp = "8.0.2"
-kotlin = '1.8.22'
+kotlin = '1.9.0'
 compileSdk = '33'
 minSdk = '21'
 targetSdk = '33'
