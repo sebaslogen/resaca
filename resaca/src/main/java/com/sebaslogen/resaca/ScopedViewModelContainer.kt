@@ -325,6 +325,8 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     @Suppress("unused") // Used for equals comparisons
     public value class ExternalKey(private val value: Int) {
 
+        override fun toString(): String = value.toString()
+
         internal companion object {
             fun from(objectInstance: Any?): ExternalKey = ExternalKey(objectInstance.hashCode())
         }

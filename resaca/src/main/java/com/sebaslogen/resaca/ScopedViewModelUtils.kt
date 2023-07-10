@@ -58,7 +58,7 @@ internal object ScopedViewModelUtils {
                     }
                 scopedObjectKeys[positionalMemoizationKey] = externalKey // Set the new external key used to track and store the new object version
                 val newScopedViewModelOwner = ScopedViewModelOwner(
-                    key = positionalMemoizationKey,
+                    key = positionalMemoizationKey + externalKey, // Both keys needed to handle recreation by ViewModelProvider when any of these keys changes
                     modelClass = modelClass,
                     factory = factory,
                     defaultArguments = defaultArguments,
