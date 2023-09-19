@@ -25,8 +25,7 @@ androidx-lifecycle = '2.6.2'
 hilt = '2.48'
 hilt-navigation-compose = '1.0.0'
 # Koin
-koin = '3.4.3'
-koin-test = '3.4.3'
+koin = '3.5.0'
 
 [libraries]
 # Android libraries
@@ -62,7 +61,7 @@ dagger-hilt-android-testing = { module = 'com.google.dagger:hilt-android-testing
 dagger-hilt-navigation-compose = { module = 'androidx.hilt:hilt-navigation-compose', version.ref = 'hilt-navigation-compose' }
 
 koin-android = { module = 'io.insert-koin:koin-android', version.ref = 'koin' }
-koin-android-test = { module = 'io.insert-koin:koin-android-test', version.ref = 'koin-test' }
+koin-android-test = { module = 'io.insert-koin:koin-android-test', version.ref = 'koin' }
 
 # Test libraries
 junit = { module = 'junit:junit', version.ref = 'junit-version' }
