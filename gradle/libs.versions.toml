@@ -27,6 +27,7 @@ hilt-navigation-compose = '1.0.0'
 # Koin
 koin = '3.5.0'
 
+
 [libraries]
 # Android libraries
 android-material = { module = 'com.google.android.material:material', version.ref = 'material' }
@@ -49,7 +50,6 @@ compose-ui-toolingPreview = { module = 'androidx.compose.ui:ui-tooling-preview' 
 compose-ui-test-junit = { module = 'androidx.compose.ui:ui-test-junit4' }
 compose-ui-test-manifest = { module = 'androidx.compose.ui:ui-test-manifest' }
 
-kotlin-stdlib-common = { module = 'org.jetbrains.kotlin:kotlin-stdlib-common', version.ref = 'kotlin' }
 coroutines-android = { module = 'org.jetbrains.kotlinx:kotlinx-coroutines-android', version.ref = 'coroutines' }
 kotlin-coroutines-test = { module = 'org.jetbrains.kotlinx:kotlinx-coroutines-test', version.ref = 'coroutines' }
 
