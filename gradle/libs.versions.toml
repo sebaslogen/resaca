@@ -7,7 +7,7 @@ targetSdk = '34'
 coroutines = '1.7.3'
 material = '1.9.0'
 core-ktx = '1.12.0'
-navigation = '2.7.2'
+navigation = '2.7.3'
 appcompat = '1.6.1'
 constraintlayout = '2.1.4'
 junit-version = '4.13.2'
@@ -15,7 +15,7 @@ robolectric-version = '4.10.3'
 binary-compatibility-validator = '0.13.2'
 kover = '0.7.3'
 # Compose
-compose-bom = '2023.09.00' # https://developer.android.com/jetpack/compose/bom/bom-mapping
+compose-bom = '2023.09.01' # https://developer.android.com/jetpack/compose/bom/bom-mapping
 compose-compiler = '1.5.3'
 # Compose integration with Activities
 androidx-activity = '1.7.2'
