@@ -37,8 +37,7 @@ class ComposeActivityRecreationTests : ComposeTestUtils {
                 retrieveTextFromNodeWithTestTag("Koin FakeInjectedViewModel Scoped")
 
                 // When I change to night mode and apply the configuration change by recreating the Activity
-                RuntimeEnvironment.setQualifiers("+night")
-                activity.recreate()
+                RuntimeEnvironment.setQualifiers("+night") // This triggers activity re-creation
                 printComposeUiTreeToLog()
 
                 // Then the scoped object is still the same but the Koin Injected ViewModel disappears

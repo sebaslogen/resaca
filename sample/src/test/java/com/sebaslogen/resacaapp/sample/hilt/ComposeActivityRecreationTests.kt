@@ -1,6 +1,7 @@
 package com.sebaslogen.resacaapp.sample.hilt
 
 import android.content.Intent
+import android.util.Log
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -37,8 +38,7 @@ class ComposeActivityRecreationTests : ComposeTestUtils {
                 retrieveTextFromNodeWithTestTag("Hilt FakeInjectedViewModel Scoped")
 
                 // When I change to night mode and apply the configuration change by recreating the Activity
-                RuntimeEnvironment.setQualifiers("+night")
-                activity.recreate()
+                RuntimeEnvironment.setQualifiers("+night") // This triggers activity re-creation
                 printComposeUiTreeToLog()
 
                 // Then the scoped object is still the same but the Hilt Injected ViewModel disappears
