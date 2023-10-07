@@ -2,17 +2,35 @@ package com.sebaslogen.resaca
 
 import android.app.Activity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
+import android.view.Choreographer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisallowComposableCalls
 import androidx.compose.runtime.Immutable
-import androidx.lifecycle.*
+import androidx.lifecycle.HasDefaultViewModelProviderFactory
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import java.util.concurrent.ConcurrentSkipListSet
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
+import kotlin.coroutines.resume
 
+//TODO: Change docs about delayed disposal + Readme
 /**
  * [ViewModel] class used to store objects and [ViewModel]s as long as the
  * requester doesn't completely leave composition (even temporary)
@@ -28,20 +46,20 @@ import kotlin.collections.set
  * In Compose, we don't know for sure at the moment of disposal if the
  * Composable will be disposed for good or if it will return again later.
  * Therefore, at the moment of disposal, we mark in our container the scoped
- * associated object to be disposed after a small delay (currently 5 seconds).
- * During the span of time of this delay a few things can happen:
- * - The Composable is not part of the composition anymore after the delay and the associated object is disposed.
+ * associated object to be disposed after the next frame when the Activity is resumed.
+ * During the span of time of this next frame a few things can happen:
+ * - The Composable is not part of the composition anymore after the next frame and the associated object is disposed.
  * - The [LifecycleOwner] of the disposed Composable (i.e. the navigation destination where the Composable lived)
- * is paused (e.g. screen went to background) before the delay finishes. Then the disposal of the scoped object is cancelled,
+ * is paused (e.g. screen went to background) before the next frame happened. Then the disposal of the scoped object is cancelled,
  * but the object is still marked for disposal at a later stage after resume of the [LifecycleOwner].
  *      * This can happen when the application goes through a configuration change and the container Activity/Fragment is recreated.
  *      * This can also happen when the Composable is part of a Fragment that has been pushed to the backstack.
  * - When the [LifecycleOwner] of the disposed Composable is resumed (i.e. screen comes back to foreground),
- * then the disposal of the associated object is scheduled again to happen after a small delay.
+ * then the disposal of the associated object is scheduled again to happen after the next frame when the Activity is resumed.
  * At this point two things can happen:
  *      * The Composable becomes part of the composition again and the [rememberScoped] function restores
- *      the associated object while also cancelling any pending delayed disposal.
- *      * The Composable is not part of the composition anymore after the delay and the associated object is disposed.
+ *      the associated object while also cancelling any pending disposal in the next frame when the Activity is resumed.
+ *      * The Composable is not part of the composition anymore after the next frame and the associated object is disposed.
  *
  *
  * To detect when the requester Composable is not needed anymore (has left composition and
@@ -51,6 +69,13 @@ import kotlin.collections.set
  * - the configuration changing state of the container [Activity]
  */
 public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
+
+    /**
+     * Handler to post work to the main thread and used to wait for the first frame after Activity resumes,
+     * when this happens it is safe to continue with scheduled disposal of objects that are
+     * not required after configuration change.
+     */
+    private val handler = Handler(Looper.getMainLooper())
 
     /**
      * Mark whether the container of this class (usually a screen like an Activity, a Fragment or a Compose destination)
@@ -88,11 +113,6 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      * the container of this [ScopedViewModelContainer] class goes to the background (making [isInForeground] false)
      */
     private val disposingJobs: MutableMap<String, Job> = mutableMapOf()
-
-    /**
-     * Time to wait until disposing an object from the [scopedObjectsContainer] after it has been scheduled for disposal
-     */
-    private val disposeDelayTimeMillis: Long = 5000
 
     /**
      * Restore or build an object of type [T] using the provided [builder] as the factory
@@ -209,9 +229,9 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      * This makes possible to garbage collect objects that were disposed by Compose right before the container screen went
      * to background ([Lifecycle.Event.ON_PAUSE]) and are not required anymore whe the screen is back in foreground ([Lifecycle.Event.ON_RESUME])
      *
-     * Disposal delay: Instead of immediately disposing the object after [Lifecycle.Event.ON_RESUME], launch a coroutine with a delay
-     * to give the Activity/Fragment enough time to recreate the desired UI after resuming or configuration change.
-     * Upon disposal, [ViewModel] objects will also be requested to cancel all their coroutines in their [CoroutineScope]
+     * Postponed disposal: Instead of immediately disposing the object after [Lifecycle.Event.ON_RESUME], launch a coroutine that awaits
+     * for the first frame to give the Activity/Fragment enough time to recreate the desired UI after resuming or configuration change.
+     * Upon disposal, [ViewModel] objects will also be requested to cancel all their coroutines in their [CoroutineScope].
      */
     private fun scheduleToDisposeAfterReturningFromBackground() {
         markedForDisposal.forEach { key ->
@@ -220,37 +240,77 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     }
 
     /**
-     * Dispose/Forget the object -if present- in [scopedObjectsContainer] after a small delay.
+     * Dispose/Forget the object -if present- in [scopedObjectsContainer] but wait for the next frame when the Activity is resumed if UI is not in foreground
      * We store the deletion job with the given [key] in the [disposingJobs] to make sure we don't schedule the same work twice.
      * An optional [removalCondition] is provided to check at removal time, e.g. to make sure no object is removed while in the background
      *
      * @param key Key of the object stored in either [scopedObjectsContainer] to be de-referenced for GC
-     * @param removalCondition Last check at disposal time to prevent disposal when this condition is not met.
      *
-     *                          By default we want to remove only when:
-     *                          - scope is in the foreground, because if it's in the background it might be needed again when returning to foreground,
-     *                          in that case the decision will be deferred to [scheduleToDisposeAfterReturningFromBackground]
-     *                          - or when recreating due configuration changes, because after a configuration change, the [cancelDisposal] should have been
-     *                          called once the scoped object was requested again, the fact that this is still scheduled means it's not needed
-     *                          after the configuration change.
-     *                               Note: [isChangingConfiguration] is only required when no other object scoped to this container is still alive, otherwise,
-     *                               the [isInForeground] will be used to dispose objects that are completely gone after a configuration change.
+     * By default we want to remove only when:
+     * - scope is in the foreground, because if it's in the background it might be needed again when returning to foreground,
+     * in that case the decision will be deferred to [scheduleToDisposeAfterReturningFromBackground]
+     * - or when recreating due configuration changes, because after a configuration change, the [cancelDisposal] should have been
+     * called once the scoped object was requested again, the fact that this is still scheduled after the first frame means
+     * it's not needed after the configuration change.
+     *      Note: [isChangingConfiguration] is only required when no other object scoped to this container is still alive, otherwise,
+     *      the [isInForeground] will be used to dispose objects that are completely gone after a configuration change.
      */
-    private fun scheduleToDispose(key: String, removalCondition: () -> Boolean = { isInForeground || isChangingConfiguration }) {
+    private fun scheduleToDispose(key: String) {
         if (disposingJobs.containsKey(key)) return // Already disposing, quit
 
         val newDisposingJob = viewModelScope.launch {
-            delay(disposeDelayTimeMillis)
+            Log.d("Sebas", "scheduleToDispose")
+            if (!isInForeground) awaitChoreographerFramePostFrontOfQueue() // When in background, wait for the next frame when the Activity is resumed
             withContext(NonCancellable) { // We treat the disposal/remove/clear block as an atomic transaction
-                if (removalCondition()) {
+                Log.d("Sebas", "scheduleToDispose REMOVING")
+                if (isInForeground || isChangingConfiguration) {
+                    Log.d("Sebas", "scheduleToDispose REMOVED")
                     markedForDisposal.remove(key)
                     scopedObjectKeys.remove(key)
                     scopedObjectsContainer.remove(key)?.also { clearLastDisposedObject(it) }
+                } else {
+                    Log.d("Sebas", "scheduleToDispose NOT REMOVED because we are in the background")
                 }
                 disposingJobs.remove(key)
             }
         }
         disposingJobs[key] = newDisposingJob
+    }
+
+    /**
+     * Await for the next frame when the Activity is resumed.
+     * See these blog posts for more info:
+     * - https://blog.p-y.wtf/whilesubscribed5000
+     * - https://developer.squareup.com/blog/a-journey-on-the-android-main-thread-lifecycle-bits/
+     *
+     * In a nutshell: Any work posted to the main thread while the UI is in the background
+     * will be scheduled to be executed after the next frame when the Activity is resumed.
+     * If the Activity never comes back, then the work will be cancelled and
+     * the FrameCallback will be removed thanks to the coroutine scope cancellation.
+     */
+    private suspend fun awaitChoreographerFramePostFrontOfQueue() {
+        suspendCancellableCoroutine { continuation ->
+            val frameCallback = Choreographer.FrameCallback {
+                Log.d("Sebas", "FrameCallback executed")
+                handler.postAtFrontOfQueue { // This needs to be posted and run right after Activity resumes
+                    Log.d("Sebas", "postAtFrontOfQueue")
+                    handler.post {
+                        Log.d("Sebas", "post")
+                        if (!continuation.isCompleted) {
+                            Log.d("Sebas", "post + resume + should remove NOW")
+                            continuation.resume(Unit)
+                        }
+                    }
+                }
+            }
+            Log.d("Sebas", "FrameCallback posted")
+            Choreographer.getInstance().postFrameCallback(frameCallback)
+
+            continuation.invokeOnCancellation {
+                Log.d("Sebas", "FrameCallback cancelled")
+                Choreographer.getInstance().removeFrameCallback(frameCallback)
+            }
+        }
     }
 
     /**
@@ -271,6 +331,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     override fun onCleared() {
         // Cancel disposal jobs, all those references will be garbage collected anyway with this ViewModel
         disposingJobs.forEach { (_, job) -> job.cancel() }
+        Log.d("Sebas", "CLEARING ALL ${scopedObjectsContainer.size} OBJECTS")
         // Cancel all coroutines, Closeables and ViewModels hosted in this object
         val objectsToClear: MutableList<Any> = scopedObjectsContainer.values.toMutableList()
         while (objectsToClear.isNotEmpty()) {
@@ -284,20 +345,24 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         when (event) {
             Lifecycle.Event.ON_RESUME -> { // Note Fragment View creation happens before this onResume
+                Log.d("Sebas", "ON_RESUME")
                 isInForeground = true
                 isChangingConfiguration = false // Clear this flag when the scope is resumed
                 scheduleToDisposeAfterReturningFromBackground()
             }
 
             Lifecycle.Event.ON_PAUSE -> {
+                Log.d("Sebas", "ON_PAUSE")
                 isInForeground = false
             }
 
             Lifecycle.Event.ON_DESTROY -> { // Remove ourselves so that this ViewModel can be garbage collected
+                Log.d("Sebas", "ON_DESTROY")
                 source.lifecycle.removeObserver(this)
             }
 
             else -> {
+                Log.d("Sebas", "onSomethingElse ${event.name}")
                 // No-Op: the other lifecycle event are irrelevant for this class
             }
         }
@@ -306,7 +371,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     /**
      * We need to track if the last object was disposed with a configuration change,
      * because, if no other scoped object in this container observes the [isInForeground] state,
-     * after a delay, the object can safely be disposed of.
+     * after the next frame when the Activity is resumed, the object can safely be disposed of.
      * In this case, we can safely assume the object was never requested again
      * after the configuration change finished and the container screen was again in the foreground.
      */
