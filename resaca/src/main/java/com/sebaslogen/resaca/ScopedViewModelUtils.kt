@@ -1,7 +1,6 @@
 package com.sebaslogen.resaca
 
 import android.os.Bundle
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -40,7 +39,6 @@ internal object ScopedViewModelUtils {
         scopedObjectKeys: MutableMap<String, ScopedViewModelContainer.ExternalKey>,
         cancelDisposal: ((String) -> Unit)
     ): T {
-        Log.d("Sebas", "REQUEST CANCEL DISPOSAL OF ViewModel $positionalMemoizationKey - it's being requested again")
         cancelDisposal(positionalMemoizationKey)
 
         val originalScopedViewModelOwner: ScopedViewModelOwner<T>? =

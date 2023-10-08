@@ -202,7 +202,7 @@ Here are a few suggestions of how to provide objects in combination with this li
 
 - When using the Lazy* family of Composables it is recommended that you use `rememberScoped`/`viewModelScoped` outside the scope of Composables created by Lazy
   constructors (e.g. LazyColumn) because there is a chance that a lazy initialized Composable will be disposed of when it is not visible anymore (e.g. scrolled
-  away) and that will also dispose of the `rememberScoped`/`viewModelScoped` object (after a few seconds), this might not be the intended behavior. For more
+  away) and that will also dispose of the `rememberScoped`/`viewModelScoped` object immediately, this might not be the intended behavior. For more
   info see Compose's [State Hoisting](https://developer.android.com/jetpack/compose/state#state-hoisting).
 - When a Composable is used more than once in the same screen with the same input, then the ViewModel (or business logic object) should be provided only once
   with `viewModelScoped` at a higher level in the tree using Compose's [State Hoisting](https://developer.android.com/jetpack/compose/state#state-hoisting).
@@ -277,19 +277,19 @@ This project uses internally a ViewModel as a container to store all scoped View
   <summary>What happens when a Composable is disposed?</summary>
   
 When a Composable is disposed of, we don't know for sure if it will return again later. So at the moment of disposal, we mark in our container the associated
-object to be disposed of after a small delay (currently 5 seconds). During the span of time of this delay, a few things can happen:
+object to be disposed of after the next frame when the Activity is resumed. During the span of time of this next frame, a few things can happen:
 
-- The Composable is not part of the composition anymore after the delay and then the associated object is disposed of. 🚮
+- The Composable is not part of the composition anymore after the next frame and the associated object is disposed of. 🚮
 - The LifecycleOwner of the disposed Composable (i.e. the navigation destination where the Composable lived) is paused (e.g. screen went to background) before
-  the delay finishes. Then the disposal of the scoped object is canceled, but the object is still marked for disposal at a later stage.
+  the next frame happened. Then the disposal of the scoped object is canceled, but the object is still marked for disposal at a later stage.
     - This can happen when the application goes through a configuration change and the container Activity is recreated.
     - Also when the Composable is part of a Fragment that has been pushed to the backstack.
     - And also when the Composable is part of a Compose Navigation destination that has been pushed to the backstack.
 - When the LifecycleOwner of the disposed Composable is resumed (e.g. Fragment comes back to foreground), then the disposal of the associated object is
-  scheduled again to happen after a small delay. At this point two things can happen:
+  scheduled again to happen after the next frame when the Activity is resumed. At this point two things can happen:
     - The Composable becomes part of the composition again and the `rememberScoped`/`viewModelScoped` function restores the associated object while also
-      canceling any pending delayed disposal. 🎉
-    - The Composable is not part of the composition anymore after the delay and then the associated object is disposed of. 🚮
+      cancelling any pending disposal in the next frame when the Activity is resumed. 🎉
+    - The Composable is not part of the composition anymore after the next frame and then the associated object is disposed of. 🚮
 
 > **Note**:
 

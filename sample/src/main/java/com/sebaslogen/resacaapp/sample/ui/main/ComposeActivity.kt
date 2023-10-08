@@ -2,9 +2,6 @@ package com.sebaslogen.resacaapp.sample.ui.main
 
 import android.app.Activity
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -64,26 +61,8 @@ class ComposeActivity : ComponentActivity() {
         const val START_DESTINATION = "START_DESTINATION"
     }
 
-    override fun onPause() {
-        super.onPause()
-        Log.d("Sebas", "PAUSE")
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.d("Sebas", "RESUME")
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d("Sebas", "DESTROY")
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("Sebas", "CREATE")
-        val handler = Handler(Looper.getMainLooper())
-        handler.post { Log.d("Sebas", "Posted ON_CREATE") }
 
         setContent {
             ResacaAppTheme {

@@ -102,7 +102,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
         composablesShown = false // Trigger disposal
         printComposeUiTreeToLog() // Required to trigger recomposition
         onNodeWithTestTag("Hilt FakeInjectedViewModel Scoped", assertDisplayed = false).assertDoesNotExist()
-        advanceTimeBy(6000) // Advance more than 5 seconds to pass the disposal delay on ScopedViewModelContainer
+        advanceTimeBy(100) // Advance time to allow clear call on ScopedViewModelContainer to be processed before querying the counter
         printComposeUiTreeToLog()
         val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
 
@@ -135,7 +135,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
             val initialAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
             composablesShown = false // Trigger disposal
             composeTestRule.onNodeWithText(textTitle).assertExists() // Required to trigger recomposition
-            advanceTimeBy(6000) // Advance more than 5 seconds to pass the disposal delay on ScopedViewModelContainer
+            advanceTimeBy(100) // Advance time to allow clear call on ScopedViewModelContainer to be processed before querying the counter
             printComposeUiTreeToLog()
             val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
 
@@ -168,7 +168,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
             val initialAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
             composablesShown = false // Trigger disposal
             composeTestRule.onNodeWithText(textTitle).assertExists() // Required to trigger recomposition
-            advanceTimeBy(6000) // Advance more than 5 seconds to pass the disposal delay on ScopedViewModelContainer
+            advanceTimeBy(100) // Advance time to allow clear call on ScopedViewModelContainer to be processed before querying the counter
             printComposeUiTreeToLog()
             val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
 
