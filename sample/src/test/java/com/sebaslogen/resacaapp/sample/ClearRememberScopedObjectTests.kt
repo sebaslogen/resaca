@@ -8,6 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.sebaslogen.resaca.COMPOSITION_RESUMED_TIMEOUT_IN_SECONDS
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedObjectComposable
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeRepo
 import com.sebaslogen.resacaapp.sample.utils.ComposeTestUtils
@@ -50,7 +51,7 @@ class ClearRememberScopedObjectTests : ComposeTestUtils {
         val initialAmountOfCloseableClosed = closeableClosedGloballySharedCounter.get()
         composablesShown = false // Trigger disposal
         composeTestRule.onNodeWithText(textTitle).assertExists() // Required to trigger recomposition
-        advanceTimeBy(6000) // Advance more than 5 seconds to pass the disposal delay on ScopedViewModelContainer
+        advanceTimeBy(100) // Advance time to allow clear call on ScopedViewModelContainer to be processed before querying the counter
         printComposeUiTreeToLog()
         val finalAmountOfCloseableClosed = closeableClosedGloballySharedCounter.get()
 
@@ -84,7 +85,7 @@ class ClearRememberScopedObjectTests : ComposeTestUtils {
             val initialAmountOfCloseablesCleared = closeableClosedGloballySharedCounter.get()
             composablesShown = false // Trigger disposal
             composeTestRule.onNodeWithText(textTitle).assertExists() // Required to trigger recomposition
-            advanceTimeBy(6000) // Advance more than 5 seconds to pass the disposal delay on ScopedViewModelContainer
+            advanceTimeBy(100) // Advance time to allow clear call on ScopedViewModelContainer to be processed before querying the counter
             printComposeUiTreeToLog()
             val finalAmountOfCloseablesCleared = closeableClosedGloballySharedCounter.get()
 
