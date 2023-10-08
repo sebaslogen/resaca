@@ -1,28 +1,37 @@
 package com.sebaslogen.resacaapp.sample.utils
 
-import androidx.compose.ui.test.*
+import android.content.Intent
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.filterToOne
+import androidx.compose.ui.test.hasParent
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
+import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.text.AnnotatedString
+import androidx.test.core.app.ActivityScenario
+import androidx.test.core.app.ApplicationProvider
+import com.sebaslogen.resacaapp.sample.ui.main.ComposeActivity
+import com.sebaslogen.resacaapp.sample.ui.main.koinViewModelScopedDestination
 import com.sebaslogen.resacaapp.sample.ui.main.showSingleScopedViewModel
 import org.junit.After
 import org.junit.Before
 import org.koin.core.context.stopKoin
-import org.robolectric.shadows.ShadowLog
 
 interface ComposeTestUtils {
 
-    val composeTestRule: ComposeContentTestRule
+    val composeTestRule: ComposeTestRule
 
     @Before
-    @Throws(Exception::class)
-    fun setUp() {
-        ShadowLog.stream = System.out // Redirect Logcat to console output to read printToLog Compose debug messages
+    fun internalSetUp() {
         showSingleScopedViewModel = null
     }
 
     @After
-    fun tearDown() {
-        stopKoin()
+    fun internalTearDown() {
         showSingleScopedViewModel = null
     }
 

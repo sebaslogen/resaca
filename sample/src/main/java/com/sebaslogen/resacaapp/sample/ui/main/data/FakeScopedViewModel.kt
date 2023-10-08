@@ -27,7 +27,7 @@ class FakeScopedViewModel(private val stateSaver: SavedStateHandle) : ViewModel(
     private val viewModelsClearedCounter: AtomicInteger = viewModelsClearedGloballySharedCounter
 
     override fun onCleared() {
-        super.onCleared()
         viewModelsClearedCounter.incrementAndGet()
+        super.onCleared()
     }
 }

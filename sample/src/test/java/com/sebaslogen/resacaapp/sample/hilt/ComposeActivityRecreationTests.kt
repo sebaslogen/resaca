@@ -1,21 +1,23 @@
 package com.sebaslogen.resacaapp.sample.hilt
 
 import android.content.Intent
-import android.util.Log
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.sebaslogen.resaca.COMPOSITION_RESUMED_TIMEOUT_IN_SECONDS
 import com.sebaslogen.resacaapp.sample.ui.main.ComposeActivity
 import com.sebaslogen.resacaapp.sample.ui.main.ComposeActivity.Companion.START_DESTINATION
+import com.sebaslogen.resacaapp.sample.ui.main.hiltSingleViewModelScopedDestination
 import com.sebaslogen.resacaapp.sample.ui.main.hiltViewModelScopedDestination
+import com.sebaslogen.resacaapp.sample.ui.main.showSingleScopedViewModel
 import com.sebaslogen.resacaapp.sample.utils.ComposeTestUtils
+import com.sebaslogen.resacaapp.sample.viewModelsClearedGloballySharedCounter
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.RuntimeEnvironment
 
 @RunWith(AndroidJUnit4::class)
 class ComposeActivityRecreationTests : ComposeTestUtils {
@@ -25,20 +27,20 @@ class ComposeActivityRecreationTests : ComposeTestUtils {
 
     @Test
     fun `when I switch from light mode to night mode, then the Hilt injected scoped ViewModel that's only used in light mode is gone`() {
-
-        // Given the starting screen with Hilt injected ViewModel scoped that is ONLY shown in light mode
+        // Given the starting screen with Hilt ViewModel scoped that is ONLY shown in light mode
         val launchIntent = Intent(ApplicationProvider.getApplicationContext(), ComposeActivity::class.java).apply {
             putExtra(START_DESTINATION, hiltViewModelScopedDestination)
         }
         ActivityScenario.launch<ComposeActivity>(launchIntent).use { scenario ->
             scenario.onActivity { activity: ComposeActivity ->
-                printComposeUiTreeToLog()
                 // Find the scoped text fields and grab their texts
                 val initialFakeScopedRepoText = retrieveTextFromNodeWithTestTag("FakeRepo Scoped")
                 retrieveTextFromNodeWithTestTag("Hilt FakeInjectedViewModel Scoped")
+                printComposeUiTreeToLog()
 
                 // When I change to night mode and apply the configuration change by recreating the Activity
-                RuntimeEnvironment.setQualifiers("+night") // This triggers activity re-creation
+                showSingleScopedViewModel = false // This is a fake night-mode change but it will remove Composable after Activity re-creation
+                activity.recreate()
                 printComposeUiTreeToLog()
 
                 // Then the scoped object is still the same but the Hilt Injected ViewModel disappears
@@ -70,6 +72,37 @@ class ComposeActivityRecreationTests : ComposeTestUtils {
                 // Then the scoped objects are still the same
                 onNodeWithTestTag("FakeRepo Scoped").assertIsDisplayed().assertTextEquals(initialFakeScopedRepoText)
                 onNodeWithTestTag("Hilt FakeInjectedViewModel Scoped").assertIsDisplayed().assertTextEquals(initialHiltFakeScopedViewModelText)
+            }
+        }
+    }
+
+    @Test
+    fun `when I switch from light mode to night mode, then the one and only Hilt scoped ViewModel that's only used in light mode is gone`() {
+        // Given the starting screen with ViewModel scoped that is ONLY shown in light mode
+        val launchIntent = Intent(ApplicationProvider.getApplicationContext(), ComposeActivity::class.java).apply {
+            putExtra(START_DESTINATION, hiltSingleViewModelScopedDestination)
+        }
+        ActivityScenario.launch<ComposeActivity>(launchIntent).use { scenario ->
+            scenario.onActivity { activity: ComposeActivity ->
+                // Find the scoped text fields and grab their texts
+                retrieveTextFromNodeWithTestTag("Hilt FakeInjectedViewModel Scoped")
+                val initialAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+                printComposeUiTreeToLog()
+
+                // When I change to night mode and apply the configuration change by recreating the Activity
+                showSingleScopedViewModel = false // This is a fake night-mode change but it will remove Composable after Activity re-creation
+                activity.recreate()
+                printComposeUiTreeToLog()
+                Thread.sleep(COMPOSITION_RESUMED_TIMEOUT_IN_SECONDS * 1000) // Wait for the ViewModel to be cleared
+                printComposeUiTreeToLog() // Second print is needed to push the main thread forward
+                val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+
+                // Then the scoped ViewModel disappears
+                onNodeWithTestTag("Hilt FakeInjectedViewModel Scoped", assertDisplayed = false).assertDoesNotExist()
+                assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 1) {
+                    "The amount of FakeInjectedViewModel that were cleared after key change ($finalAmountOfViewModelsCleared) " +
+                            "was not higher that the amount before the key change ($initialAmountOfViewModelsCleared)"
+                }
             }
         }
     }

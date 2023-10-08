@@ -93,6 +93,16 @@ dependencies {
     testImplementation(libs.dagger.hilt.android.testing)
     kaptTest(libs.dagger.hilt.android.compiler)
     testImplementation(libs.koin.android.test)
+    // Espresso dependencies for Activity recreation tests
+    androidTestImplementation(libs.espresso)
+    androidTestImplementation(libs.test.runner)
+    androidTestImplementation(libs.test.rules)
+    androidTestImplementation(libs.androidx.junit.ktx)
+    androidTestImplementation(platform(libs.compose.bom))
+    androidTestImplementation(libs.compose.ui.test.junit)
+    androidTestImplementation(libs.koin.android.test)
+//    androidTestImplementation(libs.kotlin.coroutines.test) // TODO : Remove
+//    androidTestImplementation(libs.junit)
 
 
     // Compose dependencies and integration libs

@@ -21,7 +21,7 @@ class FakeSimpleInjectedViewModel @Inject constructor(
 ) : ViewModel() {
 
     override fun onCleared() {
-        super.onCleared()
         viewModelsClearedCounter.incrementAndGet()
+        super.onCleared()
     }
 }

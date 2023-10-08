@@ -29,7 +29,7 @@ class FakeInjectedViewModel @Inject constructor(
     val viewModelId = stateSaver.get<Int>(MY_ARGS_KEY)
 
     override fun onCleared() {
-        super.onCleared()
         viewModelsClearedCounter.incrementAndGet()
+        super.onCleared()
     }
 }

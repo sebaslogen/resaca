@@ -19,16 +19,22 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import java.util.concurrent.ConcurrentSkipListSet
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
+import kotlin.coroutines.coroutineContext
 import kotlin.coroutines.resume
+
+public const val COMPOSITION_RESUMED_TIMEOUT_IN_SECONDS: Long = 1
 
 //TODO: Change docs about delayed disposal + Readme
 /**
@@ -76,6 +82,12 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      * not required after configuration change.
      */
     private val handler = Handler(Looper.getMainLooper())
+
+    /**
+     * Lock to wait for the first composition after Activity resumes.
+     * This is apparently only required in automated Espresso tests.
+     */
+    private var compositionResumedTimeout = CountDownLatch(1)
 
     /**
      * Mark whether the container of this class (usually a screen like an Activity, a Fragment or a Compose destination)
@@ -126,7 +138,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     ): T {
         @Composable
         fun buildAndStoreObject() = builder.invoke().apply { scopedObjectsContainer[positionalMemoizationKey] = this }
-
+        Log.d("Sebas", "REQUEST CANCEL DISPOSAL OF Object $positionalMemoizationKey - it's being requested again - ${Thread.currentThread().name}")
         cancelDisposal(positionalMemoizationKey)
 
         val originalObject: Any? = scopedObjectsContainer[positionalMemoizationKey]
@@ -259,17 +271,17 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         if (disposingJobs.containsKey(key)) return // Already disposing, quit
 
         val newDisposingJob = viewModelScope.launch {
-            Log.d("Sebas", "scheduleToDispose")
-            if (!isInForeground) awaitChoreographerFramePostFrontOfQueue() // When in background, wait for the next frame when the Activity is resumed
+            Log.d("Sebas", "scheduleToDispose of $key - ${Thread.currentThread().name}")
+            if (!isInForeground) awaitChoreographerFramePostFrontOfQueue(key) // When in background, wait for the next frame when the Activity is resumed
             withContext(NonCancellable) { // We treat the disposal/remove/clear block as an atomic transaction
-                Log.d("Sebas", "scheduleToDispose REMOVING")
+                Log.d("Sebas", "scheduleToDispose REMOVING $key - ${Thread.currentThread().name}")
                 if (isInForeground || isChangingConfiguration) {
-                    Log.d("Sebas", "scheduleToDispose REMOVED")
+                    Log.d("Sebas", "scheduleToDispose REMOVED $key - ${Thread.currentThread().name}")
                     markedForDisposal.remove(key)
                     scopedObjectKeys.remove(key)
                     scopedObjectsContainer.remove(key)?.also { clearLastDisposedObject(it) }
                 } else {
-                    Log.d("Sebas", "scheduleToDispose NOT REMOVED because we are in the background")
+                    Log.d("Sebas", "scheduleToDispose NOT REMOVED $key because we are in the background - ${Thread.currentThread().name}")
                 }
                 disposingJobs.remove(key)
             }
@@ -288,26 +300,35 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      * If the Activity never comes back, then the work will be cancelled and
      * the FrameCallback will be removed thanks to the coroutine scope cancellation.
      */
-    private suspend fun awaitChoreographerFramePostFrontOfQueue() {
+    private suspend fun awaitChoreographerFramePostFrontOfQueue(key: String) {
+        val localCoroutineScope = CoroutineScope(coroutineContext)
         suspendCancellableCoroutine { continuation ->
             val frameCallback = Choreographer.FrameCallback {
-                Log.d("Sebas", "FrameCallback executed")
+                Log.d("Sebas", "FrameCallback executed for $key - ${Thread.currentThread().name}")
                 handler.postAtFrontOfQueue { // This needs to be posted and run right after Activity resumes
-                    Log.d("Sebas", "postAtFrontOfQueue")
-                    handler.post {
-                        Log.d("Sebas", "post")
-                        if (!continuation.isCompleted) {
-                            Log.d("Sebas", "post + resume + should remove NOW")
-                            continuation.resume(Unit)
+                    Log.d("Sebas", "postAtFrontOfQueue for $key - ${Thread.currentThread().name}")
+                    localCoroutineScope.launch {
+                        withContext(Dispatchers.IO) { // This needs to be done in IO because it's a blocking call
+                            // This extra wait is needed to make sure Composition happens after resume on Espresso tests
+                            Log.d("Sebas", "waiting resume signal for $key - ${Thread.currentThread().name}")
+                            compositionResumedTimeout.await(COMPOSITION_RESUMED_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS) // Wait for Compose lifecycle to resume and first composition to happen
+                        }
+                        Log.d("Sebas", "finished waiting for resume for $key - ${Thread.currentThread().name}")
+                        handler.post {
+                            Log.d("Sebas", "post for $key - ${Thread.currentThread().name}")
+                            if (!continuation.isCompleted) {
+                                Log.d("Sebas", "post + resume + should remove NOW for $key - ${Thread.currentThread().name}")
+                                continuation.resume(Unit)
+                            }
                         }
                     }
                 }
             }
-            Log.d("Sebas", "FrameCallback posted")
+            Log.d("Sebas", "FrameCallback posted for $key - ${Thread.currentThread().name}")
             Choreographer.getInstance().postFrameCallback(frameCallback)
 
             continuation.invokeOnCancellation {
-                Log.d("Sebas", "FrameCallback cancelled")
+                Log.d("Sebas", "FrameCallback cancelled for $key - ${Thread.currentThread().name}")
                 Choreographer.getInstance().removeFrameCallback(frameCallback)
             }
         }
@@ -321,6 +342,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     }
 
     private fun cancelDisposal(key: String) {
+        Log.d("Sebas", "CANCELLING DISPOSAL OF $key - ${Thread.currentThread().name}")
         disposingJobs.remove(key)?.cancel() // Cancel scheduled disposal
         markedForDisposal.remove(key) // Un-mark for disposal in case it's not yet scheduled for disposal
     }
@@ -331,7 +353,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     override fun onCleared() {
         // Cancel disposal jobs, all those references will be garbage collected anyway with this ViewModel
         disposingJobs.forEach { (_, job) -> job.cancel() }
-        Log.d("Sebas", "CLEARING ALL ${scopedObjectsContainer.size} OBJECTS")
+        Log.d("Sebas", "CLEARING ALL ${scopedObjectsContainer.size} OBJECTS - ${Thread.currentThread().name}")
         // Cancel all coroutines, Closeables and ViewModels hosted in this object
         val objectsToClear: MutableList<Any> = scopedObjectsContainer.values.toMutableList()
         while (objectsToClear.isNotEmpty()) {
@@ -348,6 +370,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
                 Log.d("Sebas", "ON_RESUME")
                 isInForeground = true
                 isChangingConfiguration = false // Clear this flag when the scope is resumed
+                compositionResumedTimeout.countDown() // Signal that the first composition after resume is happening
                 scheduleToDisposeAfterReturningFromBackground()
             }
 
@@ -359,6 +382,8 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
             Lifecycle.Event.ON_DESTROY -> { // Remove ourselves so that this ViewModel can be garbage collected
                 Log.d("Sebas", "ON_DESTROY")
                 source.lifecycle.removeObserver(this)
+                compositionResumedTimeout.countDown() // Clear any pending waiting latch
+                compositionResumedTimeout = CountDownLatch(1) // Start a new latch for the next time this ViewModel is used after resume
             }
 
             else -> {
