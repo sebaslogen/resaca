@@ -10,10 +10,7 @@ core-ktx = '1.12.0'
 navigation = '2.7.4'
 appcompat = '1.6.1'
 constraintlayout = '2.1.4'
-junit-version = '4.13.2'
-robolectric-version = '4.10.3'
 binary-compatibility-validator = '0.13.2'
-kover = '0.7.3'
 # Compose
 compose-bom = '2023.10.00' # https://developer.android.com/jetpack/compose/bom/bom-mapping
 compose-compiler = '1.5.3'
@@ -26,6 +23,15 @@ hilt = '2.48.1'
 hilt-navigation-compose = '1.0.0'
 # Koin
 koin = '3.5.0'
+# Test
+junit-version = '4.13.2'
+kover = '0.7.3'
+robolectric-version = '4.10.3'
+espresso = "3.5.1"
+testRunner = "1.5.2"
+testRules = "1.5.0"
+junitKtx = "1.1.5"
+
 
 
 [libraries]
@@ -66,6 +72,10 @@ koin-android-test = { module = 'io.insert-koin:koin-android-test', version.ref =
 # Test libraries
 junit = { module = 'junit:junit', version.ref = 'junit-version' }
 robolectric = { module = 'org.robolectric:robolectric', version.ref = 'robolectric-version' }
+espresso = { module = 'androidx.test.espresso:espresso-core', version.ref = 'espresso' }
+test-runner = { module = 'androidx.test:runner', version.ref = 'testRunner' }
+test-rules = { module = 'androidx.test:rules', version.ref = 'testRules' }
+androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
 
 
 [bundles]

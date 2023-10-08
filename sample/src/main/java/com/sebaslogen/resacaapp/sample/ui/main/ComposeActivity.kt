@@ -2,6 +2,9 @@ package com.sebaslogen.resacaapp.sample.ui.main
 
 import android.app.Activity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -44,8 +47,15 @@ import dagger.hilt.android.AndroidEntryPoint
 const val rememberScopedDestination = "rememberScopedDestination"
 const val viewModelScopedDestination = "viewModelScopedDestination"
 const val hiltViewModelScopedDestination = "hiltViewModelScopedDestination"
+const val hiltSingleViewModelScopedDestination = "hiltSingleViewModelScopedDestination"
 const val koinViewModelScopedDestination = "koinViewModelScopedDestination"
+const val koinSingleViewModelScopedDestination = "koinSingleViewModelScopedDestination"
 
+/**
+ * This global boolean is only used in automated tests to fake
+ * the configuration change + activity re-creation + composable gone from composition.
+ */
+var showSingleScopedViewModel: Boolean? = null
 
 @AndroidEntryPoint // This annotation is required for Hilt to work anywhere inside this Activity
 class ComposeActivity : ComponentActivity() {
@@ -54,8 +64,26 @@ class ComposeActivity : ComponentActivity() {
         const val START_DESTINATION = "START_DESTINATION"
     }
 
+    override fun onPause() {
+        super.onPause()
+        Log.d("Sebas", "PAUSE")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("Sebas", "RESUME")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("Sebas", "DESTROY")
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d("Sebas", "CREATE")
+        val handler = Handler(Looper.getMainLooper())
+        handler.post { Log.d("Sebas", "Posted ON_CREATE") }
 
         setContent {
             ResacaAppTheme {
@@ -88,8 +116,14 @@ fun ScreensWithNavigation(navController: NavHostController = rememberNavControll
         composable(hiltViewModelScopedDestination) {
             ComposeScreenWithHiltViewModelScoped(navController)
         }
+        composable(hiltSingleViewModelScopedDestination) { // This destination is only used in automated tests
+            ComposeScreenWithSingleHiltViewModelScoped(navController)
+        }
         composable(koinViewModelScopedDestination) {
             ComposeScreenWithKoinViewModelScoped(navController)
+        }
+        composable(koinSingleViewModelScopedDestination) { // This destination is only used in automated tests
+            ComposeScreenWithSingleKoinViewModelScoped(navController)
         }
     }
 }
@@ -122,7 +156,7 @@ private fun ComposeScreenWithSingleViewModelScoped(navController: NavHostControl
             text = "The ViewModel below will be shown in light mode and garbage collected in dark mode"
         )
         // The ViewModel is only shown in light mode, to demo how the ViewModel is properly garbage collected in a different config (dark mode)
-        if (!isSystemInDarkTheme()) {
+        if (showSingleScopedViewModel ?: !isSystemInDarkTheme()) {
             DemoScopedViewModelComposable()
         }
         NavigationButtons(navController)
@@ -142,10 +176,31 @@ private fun ComposeScreenWithHiltViewModelScoped(navController: NavHostControlle
             text = "The Hilt ViewModel below will be shown in light mode and garbage collected in dark mode"
         )
         // The Hilt Injected ViewModel is only shown in light mode, to demo how the ViewModel is properly garbage collected in a different config (dark mode)
-        if (!isSystemInDarkTheme()) {
+        if (showSingleScopedViewModel ?: !isSystemInDarkTheme()) {
             DemoScopedHiltInjectedViewModelComposable()
         }
         DemoScopedSecondHiltInjectedViewModelComposable()
+        NavigationButtons(navController)
+    }
+}
+
+/**
+ * This Screen is only used in automated tests
+ */
+@Composable
+private fun ComposeScreenWithSingleHiltViewModelScoped(navController: NavHostController) {
+    Column(
+        modifier = Modifier.verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            modifier = Modifier.padding(8.dp),
+            text = "The ViewModel below will be shown in light mode and garbage collected in dark mode"
+        )
+        // The ViewModel is only shown in light mode, to demo how the ViewModel is properly garbage collected in a different config (dark mode)
+        if (showSingleScopedViewModel ?: !isSystemInDarkTheme()) {
+            DemoScopedHiltInjectedViewModelComposable()
+        }
         NavigationButtons(navController)
     }
 }
@@ -165,10 +220,31 @@ private fun ComposeScreenWithKoinViewModelScoped(navController: NavHostControlle
             text = "The Koin ViewModel below will be shown in light mode and garbage collected in dark mode"
         )
         // The Koin Injected ViewModel is only shown in light mode, to demo how the ViewModel is properly garbage collected in a different config (dark mode)
-        if (!isSystemInDarkTheme()) {
+        if (showSingleScopedViewModel ?: !isSystemInDarkTheme()) {
             DemoScopedKoinInjectedViewModelComposable()
         }
         DemoScopedSecondKoinInjectedViewModelComposable()
+        NavigationButtons(navController)
+    }
+}
+
+/**
+ * This Screen is only used in automated tests
+ */
+@Composable
+private fun ComposeScreenWithSingleKoinViewModelScoped(navController: NavHostController) {
+    Column(
+        modifier = Modifier.verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            modifier = Modifier.padding(8.dp),
+            text = "The ViewModel below will be shown in light mode and garbage collected in dark mode"
+        )
+        // The ViewModel is only shown in light mode, to demo how the ViewModel is properly garbage collected in a different config (dark mode)
+        if (showSingleScopedViewModel ?: !isSystemInDarkTheme()) {
+            DemoScopedKoinInjectedViewModelComposable()
+        }
         NavigationButtons(navController)
     }
 }

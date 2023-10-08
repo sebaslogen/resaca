@@ -201,43 +201,4 @@ class ClearScopedViewModelTests : ComposeTestUtils {
                     "was not two numbers higher that the amount before the key change ($initialAmountOfViewModelsCleared)"
         }
     }
-
-    @Test
-    fun `when I switch from light mode to night mode, then the one and only scoped ViewModel that's only used in light mode is gone`() = runTest {
-        // Given the starting screen with ViewModel scoped that is ONLY shown in light mode
-        composeTestRule.activity.setContent {
-            Text("Demo text")
-            if (!isSystemInDarkTheme()) {
-                DemoScopedKoinInjectedViewModelComposable()
-            }
-        }
-        printComposeUiTreeToLog()
-        // Find the scoped text fields and grab their texts
-        retrieveTextFromNodeWithTestTag("Koin FakeInjectedViewModel Scoped")
-        advanceTimeBy(1000) // Give time to the ObserveLifecycleWithScopedViewModelContainer to execute lifecycle.addObserver on main thread
-
-        // When I change to night mode and apply the configuration change by recreating the Activity
-        RuntimeEnvironment.setQualifiers("+night") // This triggers activity re-creation
-        composeTestRule.activity.setContent { // Almost empty screen in night mode
-            Text("Demo text")
-            if (!isSystemInDarkTheme()) {
-                DemoScopedKoinInjectedViewModelComposable()
-            }
-        }
-        printComposeUiTreeToLog()
-
-        // When one Composable with a scoped ViewModel is not part of composition anymore and disposed
-        val initialAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
-        advanceTimeBy(6000) // Advance more than 5 seconds to pass the disposal delay on ScopedViewModelContainer
-        printComposeUiTreeToLog()
-        val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
-
-        // Then the Koin Injected ViewModel disappears because it was only available in light mode
-        onNodeWithTestTag("Koin FakeInjectedViewModel Scoped", assertDisplayed = false).assertDoesNotExist()
-        // And the scoped ViewModel is cleared
-        assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 1) {
-            "The amount of FakeInjectedViewModel that were cleared after disposal ($finalAmountOfViewModelsCleared) " +
-                    "was not higher that the amount before disposal ($initialAmountOfViewModelsCleared)"
-        }
-    }
 }
