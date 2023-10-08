@@ -101,8 +101,6 @@ dependencies {
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.compose.ui.test.junit)
     androidTestImplementation(libs.koin.android.test)
-//    androidTestImplementation(libs.kotlin.coroutines.test) // TODO : Remove
-//    androidTestImplementation(libs.junit)
 
 
     // Compose dependencies and integration libs
