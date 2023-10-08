@@ -1,7 +1,6 @@
 package com.sebaslogen.resacaapp.sample.hilt
 
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Text
 import androidx.compose.runtime.getValue
@@ -29,7 +28,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 
 @HiltAndroidTest
