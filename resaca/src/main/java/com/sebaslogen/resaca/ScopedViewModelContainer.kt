@@ -27,15 +27,12 @@ import kotlinx.coroutines.withContext
 import java.util.concurrent.ConcurrentSkipListSet
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
-import kotlin.collections.component1
-import kotlin.collections.component2
 import kotlin.collections.set
 import kotlin.coroutines.coroutineContext
 import kotlin.coroutines.resume
 
 public const val COMPOSITION_RESUMED_TIMEOUT_IN_SECONDS: Long = 1
 
-//TODO: Change docs about delayed disposal + Readme
 /**
  * [ViewModel] class used to store objects and [ViewModel]s as long as the
  * requester doesn't completely leave composition (even temporary)
