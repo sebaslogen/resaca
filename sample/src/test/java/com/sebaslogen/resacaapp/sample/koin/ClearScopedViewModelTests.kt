@@ -1,7 +1,6 @@
 package com.sebaslogen.resacaapp.sample.koin
 
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Text
 import androidx.compose.runtime.getValue
@@ -26,11 +25,17 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.RuntimeEnvironment
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class ClearScopedViewModelTests : ComposeTestUtils {
+    init {
+        callFromTestInit()
+    }
+
+    override fun callFromTestInit() {
+        preTestInitializationToEmptyComposeDestination()
+    }
 
     @get:Rule
     override val composeTestRule = createAndroidComposeRule<ComposeActivity>()
@@ -100,7 +105,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
         // Then the scoped ViewModel is cleared
         assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 1) {
             "The amount of FakeInjectedViewModel that were cleared after disposal ($finalAmountOfViewModelsCleared) " +
-                    "was not higher that the amount before disposal ($initialAmountOfViewModelsCleared)"
+                    "was not one higher that the amount before disposal ($initialAmountOfViewModelsCleared)"
         }
     }
 

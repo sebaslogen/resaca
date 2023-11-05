@@ -24,6 +24,13 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class ScopeKeysTest : ComposeTestUtils {
+    init {
+        callFromTestInit()
+    }
+
+    override fun callFromTestInit() {
+        preTestInitializationToEmptyComposeDestination()
+    }
 
     @get:Rule
     override val composeTestRule = createComposeRule()

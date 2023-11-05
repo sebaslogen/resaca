@@ -11,6 +11,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sebaslogen.resaca.COMPOSITION_RESUMED_TIMEOUT_IN_SECONDS
 import com.sebaslogen.resacaapp.sample.ui.main.ComposeActivity
+import com.sebaslogen.resacaapp.sample.ui.main.rememberScopedDestination
 import com.sebaslogen.resacaapp.sample.ui.main.showSingleScopedViewModel
 import com.sebaslogen.resacaapp.sample.ui.main.viewModelScopedDestination
 import com.sebaslogen.resacaapp.sample.utils.ComposeTestUtils
@@ -21,6 +22,13 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class ComposeActivityRecreationTests : ComposeTestUtils {
+    init {
+        callFromTestInit()
+    }
+
+    override fun callFromTestInit() {
+        ComposeActivity.defaultDestination = rememberScopedDestination // This is needed to reset the destination to the default one on the release app
+    }
 
     @get:Rule
     override val composeTestRule = createComposeRule()

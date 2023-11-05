@@ -41,6 +41,7 @@ import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedViewMo
 import com.sebaslogen.resacaapp.sample.ui.main.ui.theme.ResacaAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
+const val emptyDestination = "emptyDestination"
 const val rememberScopedDestination = "rememberScopedDestination"
 const val viewModelScopedDestination = "viewModelScopedDestination"
 const val hiltViewModelScopedDestination = "hiltViewModelScopedDestination"
@@ -59,6 +60,11 @@ class ComposeActivity : ComponentActivity() {
 
     companion object {
         const val START_DESTINATION = "START_DESTINATION"
+
+        /**
+         * Global for testing purposes
+         */
+        var defaultDestination = rememberScopedDestination
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,7 +73,7 @@ class ComposeActivity : ComponentActivity() {
         setContent {
             ResacaAppTheme {
                 Surface(color = MaterialTheme.colors.background) {
-                    val startDestination = intent.extras?.getString(START_DESTINATION) ?: rememberScopedDestination
+                    val startDestination = intent.extras?.getString(START_DESTINATION) ?: defaultDestination
                     Column(Modifier.fillMaxWidth()) {
                         IconButton( // Recreate Activity on Refresh button pressed to test scoped objects
                             modifier = Modifier.align(Alignment.End),
@@ -86,6 +92,9 @@ class ComposeActivity : ComponentActivity() {
 @Composable
 fun ScreensWithNavigation(navController: NavHostController = rememberNavController(), startDestination: String = rememberScopedDestination) {
     NavHost(navController = navController, startDestination = startDestination) {
+        composable(emptyDestination) {
+            Text(text = "Empty destination")
+        }
         composable(rememberScopedDestination) {
             ComposeScreenWithRememberScoped(navController)
         }

@@ -16,6 +16,13 @@ import org.junit.runner.RunWith
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class AssistedInjectionTest : ComposeTestUtils {
+    init {
+        callFromTestInit()
+    }
+
+    override fun callFromTestInit() {
+        preTestInitializationToEmptyComposeDestination()
+    }
 
     @get:Rule
     override val composeTestRule = createComposeRule()

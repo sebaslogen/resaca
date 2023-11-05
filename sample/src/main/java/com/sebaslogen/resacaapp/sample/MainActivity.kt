@@ -16,16 +16,17 @@ import com.sebaslogen.resacaapp.sample.ui.main.data.FakeScopedViewModel
 import com.sebaslogen.resacaapp.sample.ui.main.navigateToFragmentTwo
 import java.io.Closeable
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicLong
 
 /**
  * Global counter to track the number of scoped [Closeable] ([FakeRepo]) that have been correctly closed
  */
-val closeableClosedGloballySharedCounter = AtomicInteger(0)
+val closeableClosedGloballySharedCounter: AtomicLong = AtomicLong(0)
 
 /**
  * Global counter to track the number of scoped ViewModels ([FakeScopedViewModel]) that have been correctly cleared
  */
-val viewModelsClearedGloballySharedCounter = AtomicInteger(0)
+val viewModelsClearedGloballySharedCounter: AtomicInteger = AtomicInteger(0)
 
 class MainActivity : AppCompatActivity() {
 

@@ -4,7 +4,7 @@ import com.sebaslogen.resacaapp.sample.closeableClosedGloballySharedCounter
 import java.io.Closeable
 
 class FakeRepo : Closeable {
-    var counter = 0
+    var someData: String = "Some fake data"
 
     override fun close() {
         closeableClosedGloballySharedCounter.incrementAndGet()

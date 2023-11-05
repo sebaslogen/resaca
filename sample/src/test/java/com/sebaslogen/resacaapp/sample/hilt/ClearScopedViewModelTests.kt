@@ -35,6 +35,13 @@ import org.robolectric.annotation.Config
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class ClearScopedViewModelTests : ComposeTestUtils {
+    init {
+        callFromTestInit()
+    }
+
+    override fun callFromTestInit() {
+        preTestInitializationToEmptyComposeDestination()
+    }
 
     @get:Rule
     var hiltRule = HiltAndroidRule(this)

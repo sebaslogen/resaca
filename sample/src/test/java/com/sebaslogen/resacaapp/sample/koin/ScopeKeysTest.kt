@@ -32,6 +32,13 @@ import org.koin.core.parameter.parametersOf
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class ScopeKeysTest : ComposeTestUtils {
+    init {
+        callFromTestInit()
+    }
+
+    override fun callFromTestInit() {
+        preTestInitializationToEmptyComposeDestination()
+    }
 
     @get:Rule
     override val composeTestRule = createAndroidComposeRule<ComposeActivity>()
