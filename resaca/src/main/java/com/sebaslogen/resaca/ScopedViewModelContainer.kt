@@ -103,24 +103,24 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      * Container of object keys associated with their [ExternalKey],
      * the [ExternalKey] will be used to track and store new versions of the object to be stored/restored
      */
-    private val scopedObjectKeys: MutableMap<String, ExternalKey> = mutableMapOf()
+    private val scopedObjectKeys: MutableMap<InternalKey, ExternalKey> = mutableMapOf()
 
     /**
      * Generic objects container
      */
-    private val scopedObjectsContainer: MutableMap<String, Any> = mutableMapOf()
+    private val scopedObjectsContainer: MutableMap<InternalKey, Any> = mutableMapOf()
 
     /**
      * List of keys for the objects that will be disposed (forgotten from this class so they can be garbage collected) in the near future
      */
-    private val markedForDisposal: ConcurrentSkipListSet<String> = ConcurrentSkipListSet<String>()
+    private val markedForDisposal: ConcurrentSkipListSet<InternalKey> = ConcurrentSkipListSet<InternalKey>()
 
     /**
      * List of [Job]s associated with an object (through its key) that is scheduled to be disposed very soon, unless
      * the object is requested again (and [cancelDisposal] is triggered) or
      * the container of this [ScopedViewModelContainer] class goes to the background (making [isInForeground] false)
      */
-    private val disposingJobs: MutableMap<String, Job> = mutableMapOf()
+    private val disposingJobs: MutableMap<InternalKey, Job> = mutableMapOf()
 
     /**
      * Restore or build an object of type [T] using the provided [builder] as the factory
@@ -128,7 +128,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     @Suppress("UNCHECKED_CAST")
     @Composable
     internal fun <T : Any> getOrBuildObject(
-        positionalMemoizationKey: String,
+        positionalMemoizationKey: InternalKey,
         externalKey: ExternalKey,
         builder: @DisallowComposableCalls () -> T
     ): T {
@@ -154,7 +154,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     @Composable
     public fun <T : ViewModel> getOrBuildViewModel(
         modelClass: Class<T>,
-        positionalMemoizationKey: String,
+        positionalMemoizationKey: InternalKey,
         externalKey: ExternalKey,
         defaultArguments: Bundle
     ): T {
@@ -176,7 +176,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     @Composable
     public fun <T : ViewModel> getOrBuildViewModel(
         modelClass: Class<T>,
-        positionalMemoizationKey: String,
+        positionalMemoizationKey: InternalKey,
         externalKey: ExternalKey,
         defaultArguments: Bundle,
         builder: @DisallowComposableCalls () -> T
@@ -194,7 +194,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     @Composable
     public fun <T : ViewModel> getOrBuildViewModel(
         modelClass: Class<T>,
-        positionalMemoizationKey: String,
+        positionalMemoizationKey: InternalKey,
         externalKey: ExternalKey,
         factory: ViewModelProvider.Factory?,
         defaultArguments: Bundle,
@@ -218,16 +218,30 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      * that the object might be also disposed from this container only when the stored object
      * is not going to be used anymore (e.g. after configuration change or container fragment returning from backstack)
      */
-    internal fun onDisposedFromComposition(key: String) {
+    internal fun onDisposedFromComposition(key: InternalKey) {
         markedForDisposal.add(key) // Marked to be disposed after onResume
         scheduleToDisposeBeforeGoingToBackground(key) // Schedule to dispose this object before onPause
+    }
+
+    /**
+     * Triggered when the Composable that created the [KeyInScopeResolver] is disposed and signals this container
+     * that the [KeyInScopeResolver] is not in scope anymore so all the [ExternalKey]s contained in the [KeyInScopeResolver]
+     * need to be disposed of.
+     */
+    internal fun <T> onDisposedFromComposition(keyInScopeResolver: KeyInScopeResolver<T>) {
+        scopedObjectKeys.forEach { (key, externalKey: ExternalKey) ->
+            val scopeKeyWithResolver: ScopeKeyWithResolver<*>? = externalKey.scopeKeyWithResolver() // Get the KeyInScopeResolver if ExternalKey is one
+            if (scopeKeyWithResolver is ScopeKeyWithResolver && scopeKeyWithResolver.keyInScopeResolver == keyInScopeResolver) {
+                onDisposedFromComposition(key = key) // Mark it to be disposed if the disposed KeyInScopeResolver matches
+            }
+        }
     }
 
     /**
      * Schedules the object referenced by this [key] in the [scopedObjectsContainer]
      * to be removed (so it can be garbage collected) if the screen associated with this is still in foreground ([isInForeground])
      */
-    private fun scheduleToDisposeBeforeGoingToBackground(key: String) {
+    private fun scheduleToDisposeBeforeGoingToBackground(key: InternalKey) {
         scheduleToDispose(key = key)
     }
 
@@ -249,7 +263,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     /**
      * Dispose/Forget the object -if present- in [scopedObjectsContainer] but wait for the next frame when the Activity is resumed if UI is not in foreground
      * We store the deletion job with the given [key] in the [disposingJobs] to make sure we don't schedule the same work twice.
-     * An optional [removalCondition] is provided to check at removal time, e.g. to make sure no object is removed while in the background
+     * TODO: explain objectExternalKeyNotInScope
      *
      * @param key Key of the object stored in either [scopedObjectsContainer] to be de-referenced for GC
      *
@@ -262,16 +276,20 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      *      Note: [isChangingConfiguration] is only required when no other object scoped to this container is still alive, otherwise,
      *      the [isInForeground] will be used to dispose objects that are completely gone after a configuration change.
      */
-    private fun scheduleToDispose(key: String) {
+    private fun scheduleToDispose(key: InternalKey) {
         if (disposingJobs.containsKey(key)) return // Already disposing, quit
 
         val newDisposingJob = viewModelScope.launch {
             if (!isInForeground) awaitChoreographerFramePostFrontOfQueue() // When in background, wait for the next frame when the Activity is resumed
             withContext(NonCancellable) { // We treat the disposal/remove/clear block as an atomic transaction
                 if (isInForeground || isChangingConfiguration) {
-                    markedForDisposal.remove(key)
-                    scopedObjectKeys.remove(key)
-                    scopedObjectsContainer.remove(key)?.also { clearLastDisposedObject(it) }
+                    val externalKey: ExternalKey? = scopedObjectKeys[key]
+                    val objectExternalKeyNotInScope = externalKey?.scopeKeyWithResolver()?.isKeyInScope() != true
+                    if (objectExternalKeyNotInScope) { // If the key is not in scope, then the object is not needed anymore
+                        markedForDisposal.remove(key)
+                        scopedObjectKeys.remove(key)
+                        scopedObjectsContainer.remove(key)?.also { clearLastDisposedObject(it) }
+                    }
                 }
                 disposingJobs.remove(key)
             }
@@ -323,7 +341,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         ScopedViewModelUtils.clearLastDisposedObject(disposedObject, objectsContainer)
     }
 
-    private fun cancelDisposal(key: String) {
+    private fun cancelDisposal(key: InternalKey) {
         disposingJobs.remove(key)?.cancel() // Cancel scheduled disposal
         markedForDisposal.remove(key) // Un-mark for disposal in case it's not yet scheduled for disposal
     }
@@ -388,13 +406,13 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      */
     @Immutable
     @JvmInline
-    @Suppress("unused") // Used for equals comparisons
-    public value class ExternalKey(private val value: Int) {
+    public value class ExternalKey(private val value: Any?) {
+        internal fun scopeKeyWithResolver(): ScopeKeyWithResolver<*>? = value as? ScopeKeyWithResolver<*>
+    }
 
-        override fun toString(): String = value.toString()
-
-        internal companion object {
-            fun from(objectInstance: Any?): ExternalKey = ExternalKey(objectInstance.hashCode())
-        }
+    @Immutable
+    @JvmInline
+    public value class InternalKey(public val value: String) : Comparable<InternalKey> {
+        override fun compareTo(other: InternalKey): Int = value.compareTo(other.value)
     }
 }

@@ -1,6 +1,7 @@
 package com.sebaslogen.resaca
 
 import androidx.compose.runtime.RememberObserver
+import com.sebaslogen.resaca.ScopedViewModelContainer.*
 
 /**
  * When an object of this class is remembered in a composition (i.e. as part of a Composable function's body),
@@ -15,7 +16,7 @@ import androidx.compose.runtime.RememberObserver
  */
 public class RememberScopedObserver(
     private val scopedViewModelContainer: ScopedViewModelContainer,
-    private val positionalMemoizationKey: String
+    private val positionalMemoizationKey: InternalKey
 ) : RememberObserver {
 
     private fun onDisposed() {

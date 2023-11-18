@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.sebaslogen.resaca.ScopedViewModelContainer.ExternalKey
+import com.sebaslogen.resaca.ScopedViewModelContainer.InternalKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
 import java.io.Closeable
@@ -30,14 +32,14 @@ internal object ScopedViewModelUtils {
     @Composable
     public inline fun <T : ViewModel> getOrBuildViewModel(
         modelClass: Class<T>,
-        positionalMemoizationKey: String,
-        externalKey: ScopedViewModelContainer.ExternalKey,
+        positionalMemoizationKey: InternalKey,
+        externalKey: ExternalKey,
         factory: ViewModelProvider.Factory?,
         viewModelStoreOwner: ViewModelStoreOwner,
         defaultArguments: Bundle,
-        scopedObjectsContainer: MutableMap<String, Any>,
-        scopedObjectKeys: MutableMap<String, ScopedViewModelContainer.ExternalKey>,
-        cancelDisposal: ((String) -> Unit)
+        scopedObjectsContainer: MutableMap<InternalKey, Any>,
+        scopedObjectKeys: MutableMap<InternalKey, ExternalKey>,
+        cancelDisposal: ((InternalKey) -> Unit)
     ): T {
         cancelDisposal(positionalMemoizationKey)
 
@@ -78,8 +80,8 @@ internal object ScopedViewModelUtils {
     @Suppress("UNCHECKED_CAST")
     @PublishedApi
     internal fun <T : ViewModel> restoreAndUpdateScopedViewModelOwner(
-        positionalMemoizationKey: String,
-        scopedObjectsContainer: MutableMap<String, Any>,
+        positionalMemoizationKey: InternalKey,
+        scopedObjectsContainer: MutableMap<InternalKey, Any>,
         viewModelStoreOwner: ViewModelStoreOwner
     ): ScopedViewModelOwner<T>? =
         (scopedObjectsContainer[positionalMemoizationKey] as? ScopedViewModelOwner<T>)
@@ -124,3 +126,6 @@ internal object ScopedViewModelUtils {
         if (viewModelMissingInContainer) scopedViewModelOwner.clear()
     }
 }
+
+private operator fun InternalKey.plus(externalKey: ExternalKey): String =
+    this.hashCode().toString() + externalKey.hashCode().toString()
