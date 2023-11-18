@@ -13,6 +13,8 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.NavBackStackEntry
 import com.sebaslogen.resaca.ScopedViewModelContainer
+import com.sebaslogen.resaca.ScopedViewModelContainer.ExternalKey
+import com.sebaslogen.resaca.ScopedViewModelContainer.InternalKey
 import com.sebaslogen.resaca.ScopedViewModelOwner
 import com.sebaslogen.resaca.generateKeysAndObserveLifecycle
 import dagger.hilt.android.AndroidEntryPoint
@@ -35,7 +37,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
  */
 @Composable
 public inline fun <reified T : ViewModel> hiltViewModelScoped(key: Any? = null, defaultArguments: Bundle = Bundle.EMPTY): T {
-    val (scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: String, externalKey: ScopedViewModelContainer.ExternalKey) =
+    val (scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: InternalKey, externalKey: ExternalKey) =
         generateKeysAndObserveLifecycle(key = key)
 
     val viewModelStoreOwner: ViewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {

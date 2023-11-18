@@ -12,9 +12,21 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.*
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.sebaslogen.resaca.ScopedViewModelContainer.ExternalKey
+import com.sebaslogen.resaca.ScopedViewModelContainer.InternalKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.*
+
+
+/**
+ * TODO: Docs and how to use
+ */
+@Composable
+public fun <T : Any, K : Any> rememberScoped(key: K, keyInScopeResolver: KeyInScopeResolver<K>, builder: @DisallowComposableCalls () -> T): T {
+    val scopeKeyWithResolver: ScopeKeyWithResolver<K> = remember(key, keyInScopeResolver) { ScopeKeyWithResolver(key, keyInScopeResolver) }
+    return rememberScoped(key = scopeKeyWithResolver, builder = builder)
+}
 
 /**
  * Return an object created with the provided [builder] function and store this object
@@ -33,7 +45,7 @@ import java.util.*
 public fun <T : Any> rememberScoped(key: Any? = null, builder: @DisallowComposableCalls () -> T): T {
     require(key !is Function0<*>) { "The Key for rememberScoped should not be a lambda" }
 
-    val (scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: String, externalKey: ScopedViewModelContainer.ExternalKey) =
+    val (scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: InternalKey, externalKey: ExternalKey) =
         generateKeysAndObserveLifecycle(key)
 
     // The object will be built the first time and retrieved in next calls or recompositions
@@ -42,6 +54,15 @@ public fun <T : Any> rememberScoped(key: Any? = null, builder: @DisallowComposab
         externalKey = externalKey,
         builder = builder
     )
+}
+
+/**
+ * TODO: Docs and how to use
+ */
+@Composable
+public inline fun <reified T : ViewModel, K : Any> viewModelScoped(key: K, noinline keyInScopeResolver: KeyInScopeResolver<K>, defaultArguments: Bundle = Bundle.EMPTY): T {
+    val scopeKeyWithResolver: ScopeKeyWithResolver<K> = remember(key, keyInScopeResolver) { ScopeKeyWithResolver(key, keyInScopeResolver) }
+    return viewModelScoped(key = scopeKeyWithResolver, defaultArguments = defaultArguments)
 }
 
 /**
@@ -65,7 +86,7 @@ public fun <T : Any> rememberScoped(key: Any? = null, builder: @DisallowComposab
 public inline fun <reified T : ViewModel> viewModelScoped(key: Any? = null, defaultArguments: Bundle = Bundle.EMPTY): T {
     require(key !is Function0<*>) { "The Key for viewModelScoped should not be a lambda" }
 
-    val (scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: String, externalKey: ScopedViewModelContainer.ExternalKey) =
+    val (scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: InternalKey, externalKey: ExternalKey) =
         generateKeysAndObserveLifecycle(key)
 
     // The object will be built the first time and retrieved in next calls or recompositions
@@ -103,7 +124,7 @@ public inline fun <reified T : ViewModel> viewModelScoped(
 ): T {
     require(key !is Function0<*>) { "The Key for viewModelScoped should not be a lambda" }
 
-    val (scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: String, externalKey: ScopedViewModelContainer.ExternalKey) =
+    val (scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: InternalKey, externalKey: ExternalKey) =
         generateKeysAndObserveLifecycle(key)
 
     // The object will be built the first time and retrieved in next calls or recompositions
@@ -117,14 +138,14 @@ public inline fun <reified T : ViewModel> viewModelScoped(
 }
 
 @Composable
-public fun generateKeysAndObserveLifecycle(key: Any?): Triple<ScopedViewModelContainer, String, ScopedViewModelContainer.ExternalKey> {
+public fun generateKeysAndObserveLifecycle(key: Any?): Triple<ScopedViewModelContainer, InternalKey, ExternalKey> {
     val scopedViewModelContainer: ScopedViewModelContainer = viewModel()
 
     // This key will be used to identify, retrieve and remove the stored object in the ScopedViewModelContainer
     // across recompositions and configuration changes
-    val positionalMemoizationKey: String = rememberSaveable { UUID.randomUUID().toString() }
+    val positionalMemoizationKey = InternalKey(rememberSaveable { UUID.randomUUID().toString() })
     // The external key will be used to track and store new versions of the object, based on [key] input parameter
-    val externalKey: ScopedViewModelContainer.ExternalKey = ScopedViewModelContainer.ExternalKey.from(key)
+    val externalKey: ExternalKey = ExternalKey(key)
 
     ObserveLifecycles(scopedViewModelContainer, positionalMemoizationKey)
 
@@ -133,7 +154,7 @@ public fun generateKeysAndObserveLifecycle(key: Any?): Triple<ScopedViewModelCon
 
 @Composable
 @PublishedApi
-internal inline fun ObserveLifecycles(scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: String) {
+internal inline fun ObserveLifecycles(scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: InternalKey) {
     // Observe this destination's lifecycle to detect screen resumed/paused/destroyed
     // and remember or forget this object correctly from the container (so it can be garbage collected when needed)
     ObserveLifecycleWithScopedViewModelContainer(scopedViewModelContainer)
@@ -149,7 +170,10 @@ internal inline fun ObserveLifecycles(scopedViewModelContainer: ScopedViewModelC
  */
 @Composable
 @PublishedApi
-internal inline fun ObserveComposableDisposal(positionalMemoizationKey: String, scopedViewModelContainer: ScopedViewModelContainer) {
+internal inline fun ObserveComposableDisposal(
+    positionalMemoizationKey: InternalKey,
+    scopedViewModelContainer: ScopedViewModelContainer
+) {
     remember(positionalMemoizationKey) { RememberScopedObserver(scopedViewModelContainer, positionalMemoizationKey) }
 }
 

@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import com.sebaslogen.resaca.ScopedViewModelContainer
+import com.sebaslogen.resaca.ScopedViewModelContainer.ExternalKey
+import com.sebaslogen.resaca.ScopedViewModelContainer.InternalKey
 import com.sebaslogen.resaca.ScopedViewModelOwner
 import com.sebaslogen.resaca.generateKeysAndObserveLifecycle
 import org.koin.androidx.viewmodel.factory.KoinViewModelFactory
@@ -44,7 +46,7 @@ public inline fun <reified T : ViewModel> koinViewModelScoped(
     defaultArguments: Bundle = Bundle.EMPTY
 ): T {
 
-    val (scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: String, externalKey: ScopedViewModelContainer.ExternalKey) =
+    val (scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: InternalKey, externalKey: ExternalKey) =
         generateKeysAndObserveLifecycle(key = key)
 
     // The object will be built the first time and retrieved in next calls or recompositions
