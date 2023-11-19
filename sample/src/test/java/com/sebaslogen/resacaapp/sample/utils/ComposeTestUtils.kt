@@ -26,13 +26,13 @@ interface ComposeTestUtils {
      */
     fun preTestInitializationToEmptyComposeDestination() {
         ComposeActivity.defaultDestination = emptyDestination
+        showSingleScopedViewModel = null
     }
 
     @Before
     @Throws(Exception::class)
     fun setUp() {
         ShadowLog.stream = System.out // Redirect Logcat to console output to read printToLog Compose debug messages
-        showSingleScopedViewModel = null
     }
 
     @After
