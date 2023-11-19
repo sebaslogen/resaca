@@ -12,8 +12,11 @@ public data class ScopeKeyWithResolver<K : Any>(val key: K, val keyInScopeResolv
     internal fun isKeyInScope(): Boolean = keyInScopeResolver(key)
 }
 
+/**
+ * TODO: Docs
+ */
 @Composable
-public fun <T : Any> keyInScopeResolverFor(inputListOfKeys: Collection<T>): KeyInScopeResolver<T> {
+public fun <T : Any> rememberKeysInScope(inputListOfKeys: Collection<T>): KeyInScopeResolver<T> {
 
     val keysList: MutableList<T> = remember { inputListOfKeys.toMutableList() } // Create our own keys container
 
@@ -28,7 +31,7 @@ public fun <T : Any> keyInScopeResolverFor(inputListOfKeys: Collection<T>): KeyI
 
     DisposableEffect(keyScopedResolver, scopedViewModelContainer) {
         onDispose {
-            keysList.clear()
+            keysList.clear() // The keys in this list are no longer in scope and should be cleared here and in the container
             scopedViewModelContainer.onDisposedFromComposition(keyScopedResolver)
         }
     }
