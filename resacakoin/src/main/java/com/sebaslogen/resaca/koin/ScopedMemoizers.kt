@@ -2,14 +2,18 @@ package com.sebaslogen.resaca.koin
 
 import android.os.Bundle
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
+import com.sebaslogen.resaca.KeyInScopeResolver
+import com.sebaslogen.resaca.ScopeKeyWithResolver
 import com.sebaslogen.resaca.ScopedViewModelContainer
 import com.sebaslogen.resaca.ScopedViewModelContainer.ExternalKey
 import com.sebaslogen.resaca.ScopedViewModelContainer.InternalKey
 import com.sebaslogen.resaca.ScopedViewModelOwner
 import com.sebaslogen.resaca.generateKeysAndObserveLifecycle
+import com.sebaslogen.resaca.viewModelScoped
 import org.koin.androidx.viewmodel.factory.KoinViewModelFactory
 import org.koin.core.annotation.KoinInternalApi
 import org.koin.core.context.GlobalContext
@@ -17,6 +21,29 @@ import org.koin.core.parameter.ParametersDefinition
 import org.koin.core.qualifier.Qualifier
 import org.koin.core.scope.Scope
 
+/**
+ * TODO: Docs and how to use
+ * TODO: Tests for this function
+ */
+@OptIn(KoinInternalApi::class)
+@Composable
+public inline fun <reified T : ViewModel, K : Any> koinViewModelScoped(
+    key: K,
+    noinline keyInScopeResolver: KeyInScopeResolver<K>,
+    qualifier: Qualifier? = null,
+    scope: Scope = GlobalContext.get().scopeRegistry.rootScope,
+    noinline parameters: ParametersDefinition? = null,
+    defaultArguments: Bundle = Bundle.EMPTY
+): T {
+    val scopeKeyWithResolver: ScopeKeyWithResolver<K> = remember(key, keyInScopeResolver) { ScopeKeyWithResolver(key, keyInScopeResolver) }
+    return koinViewModelScoped(
+        key = scopeKeyWithResolver,
+        qualifier = qualifier,
+        scope = scope,
+        parameters = parameters,
+        defaultArguments = defaultArguments
+    )
+}
 
 /**
  * Return a [ViewModel] provided by a Koin [ViewModelProvider.Factory] and a [ViewModelProvider].

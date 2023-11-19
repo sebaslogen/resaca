@@ -4,6 +4,7 @@ package com.sebaslogen.resaca.hilt
 
 import android.os.Bundle
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.HiltViewModelFactory
 import androidx.lifecycle.ViewModel
@@ -12,6 +13,8 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.NavBackStackEntry
+import com.sebaslogen.resaca.KeyInScopeResolver
+import com.sebaslogen.resaca.ScopeKeyWithResolver
 import com.sebaslogen.resaca.ScopedViewModelContainer
 import com.sebaslogen.resaca.ScopedViewModelContainer.ExternalKey
 import com.sebaslogen.resaca.ScopedViewModelContainer.InternalKey
@@ -19,6 +22,20 @@ import com.sebaslogen.resaca.ScopedViewModelOwner
 import com.sebaslogen.resaca.generateKeysAndObserveLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
+
+/**
+ * TODO: Docs and how to use
+ * TODO: Tests for this function
+ */
+@Composable
+public inline fun <reified T : ViewModel, K : Any> hiltViewModelScoped(
+    key: K,
+    noinline keyInScopeResolver: KeyInScopeResolver<K>,
+    defaultArguments: Bundle = Bundle.EMPTY
+): T {
+    val scopeKeyWithResolver: ScopeKeyWithResolver<K> = remember(key, keyInScopeResolver) { ScopeKeyWithResolver(key, keyInScopeResolver) }
+    return hiltViewModelScoped(key = scopeKeyWithResolver, defaultArguments = defaultArguments)
+}
 
 /**
  * Return a [ViewModel] (annotated with [HiltViewModel]) provided by a Hilt [ViewModelProvider.Factory] and a [ViewModelProvider].
