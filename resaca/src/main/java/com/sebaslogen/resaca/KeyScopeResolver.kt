@@ -18,9 +18,9 @@ public data class ScopeKeyWithResolver<K : Any>(val key: K, val keyInScopeResolv
 @Composable
 public fun <T : Any> rememberKeysInScope(inputListOfKeys: Collection<T>): KeyInScopeResolver<T> {
 
-    val keysList: MutableList<T> = remember { inputListOfKeys.toMutableList() } // Create our own keys container
+    val keysList: MutableList<T> = rememberScoped { inputListOfKeys.toMutableList() } // Create our own keys container
 
-    val keyScopedResolver: KeyInScopeResolver<T> = remember { { key: T -> keysList.contains(key) } } // Resolves if a key is contained in the list
+    val keyScopedResolver: KeyInScopeResolver<T> = rememberScoped { { key: T -> keysList.contains(key) } } // Resolves if a key is contained in the list
 
     val scopedViewModelContainer: ScopedViewModelContainer = viewModel() // Get the container of scoped objects
 
