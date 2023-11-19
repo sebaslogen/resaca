@@ -21,6 +21,7 @@ import java.util.*
 
 /**
  * TODO: Docs and how to use
+ * TODO: Tests for this function
  */
 @Composable
 public fun <T : Any, K : Any> rememberScoped(key: K, keyInScopeResolver: KeyInScopeResolver<K>, builder: @DisallowComposableCalls () -> T): T {
@@ -60,7 +61,11 @@ public fun <T : Any> rememberScoped(key: Any? = null, builder: @DisallowComposab
  * TODO: Docs and how to use
  */
 @Composable
-public inline fun <reified T : ViewModel, K : Any> viewModelScoped(key: K, noinline keyInScopeResolver: KeyInScopeResolver<K>, defaultArguments: Bundle = Bundle.EMPTY): T {
+public inline fun <reified T : ViewModel, K : Any> viewModelScoped(
+    key: K,
+    noinline keyInScopeResolver: KeyInScopeResolver<K>,
+    defaultArguments: Bundle = Bundle.EMPTY
+): T {
     val scopeKeyWithResolver: ScopeKeyWithResolver<K> = remember(key, keyInScopeResolver) { ScopeKeyWithResolver(key, keyInScopeResolver) }
     return viewModelScoped(key = scopeKeyWithResolver, defaultArguments = defaultArguments)
 }
@@ -96,6 +101,21 @@ public inline fun <reified T : ViewModel> viewModelScoped(key: Any? = null, defa
         externalKey = externalKey,
         defaultArguments = defaultArguments
     )
+}
+
+/**
+ * TODO: Docs and how to use
+ * TODO: Tests for this function
+ */
+@Composable
+public inline fun <reified T : ViewModel, K : Any> viewModelScoped(
+    key: K,
+    noinline keyInScopeResolver: KeyInScopeResolver<K>,
+    defaultArguments: Bundle = Bundle.EMPTY,
+    noinline builder: @DisallowComposableCalls () -> T
+): T {
+    val scopeKeyWithResolver: ScopeKeyWithResolver<K> = remember(key, keyInScopeResolver) { ScopeKeyWithResolver(key, keyInScopeResolver) }
+    return viewModelScoped(key = scopeKeyWithResolver, defaultArguments = defaultArguments, builder = builder)
 }
 
 /**
