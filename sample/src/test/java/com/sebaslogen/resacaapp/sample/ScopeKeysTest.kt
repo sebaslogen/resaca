@@ -33,6 +33,7 @@ import com.sebaslogen.resacaapp.sample.ui.main.data.FakeRepo
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeScopedViewModel
 import com.sebaslogen.resacaapp.sample.utils.ComposeTestUtils
 import com.sebaslogen.resacaapp.sample.utils.MainDispatcherRule
+import com.sebaslogen.resacaapp.sample.utils.NumberContainer
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
@@ -201,9 +202,5 @@ class ScopeKeysTest : ComposeTestUtils {
             "The amount of FakeScopedViewModels that were cleared after change ($finalAmountOfViewModelsCleared) " +
                     "was not one more that the amount before the change ($initialAmountOfViewModelsCleared)."
         }
-    }
-
-    data class NumberContainer(val number: Int) {
-        override fun toString(): String = number.toString()
     }
 }
