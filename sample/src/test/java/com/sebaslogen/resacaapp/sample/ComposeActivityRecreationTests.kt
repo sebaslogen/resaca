@@ -15,8 +15,6 @@ import com.sebaslogen.resacaapp.sample.ui.main.rememberScopedDestination
 import com.sebaslogen.resacaapp.sample.ui.main.showSingleScopedViewModel
 import com.sebaslogen.resacaapp.sample.ui.main.viewModelScopedDestination
 import com.sebaslogen.resacaapp.sample.utils.ComposeTestUtils
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -94,17 +92,15 @@ class ComposeActivityRecreationTests : ComposeTestUtils {
                 showSingleScopedViewModel = false // This is a fake night-mode change but it will remove Composable after Activity re-creation
                 activity.recreate()
                 printComposeUiTreeToLog()
-                runBlocking {
-                    delay(COMPOSITION_RESUMED_TIMEOUT_IN_SECONDS * 1000) // Wait for the ViewModel to be cleared
-                    printComposeUiTreeToLog() // Second print is needed to push the main thread forward
-                    val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+                Thread.sleep(COMPOSITION_RESUMED_TIMEOUT_IN_SECONDS * 1000) // Wait for the ViewModel to be cleared
+                printComposeUiTreeToLog() // Second print is needed to push the main thread forward
+                val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
 
-                    // Then the scoped ViewModel disappears
-                    onNodeWithTestTag("FakeInjectedViewModel Scoped", assertDisplayed = false).assertDoesNotExist()
-                    assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 1) {
-                        "The amount of FakeInjectedViewModel that were cleared after key change ($finalAmountOfViewModelsCleared) " +
-                                "was not higher that the amount before the key change ($initialAmountOfViewModelsCleared)"
-                    }
+                // Then the scoped ViewModel disappears
+                onNodeWithTestTag("FakeInjectedViewModel Scoped", assertDisplayed = false).assertDoesNotExist()
+                assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 1) {
+                    "The amount of FakeInjectedViewModel that were cleared after key change ($finalAmountOfViewModelsCleared) " +
+                            "was not higher that the amount before the key change ($initialAmountOfViewModelsCleared)"
                 }
             }
         }
