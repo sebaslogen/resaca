@@ -22,7 +22,6 @@ import org.koin.core.scope.Scope
 
 /**
  * TODO: Docs and how to use
- * TODO: Tests for this function
  */
 @OptIn(KoinInternalApi::class)
 @Composable

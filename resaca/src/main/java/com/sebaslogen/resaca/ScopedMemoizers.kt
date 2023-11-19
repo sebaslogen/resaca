@@ -21,7 +21,6 @@ import java.util.*
 
 /**
  * TODO: Docs and how to use
- * TODO: Tests for this function
  */
 @Composable
 public fun <T : Any, K : Any> rememberScoped(key: K, keyInScopeResolver: KeyInScopeResolver<K>, builder: @DisallowComposableCalls () -> T): T {
@@ -105,7 +104,6 @@ public inline fun <reified T : ViewModel> viewModelScoped(key: Any? = null, defa
 
 /**
  * TODO: Docs and how to use
- * TODO: Tests for this function
  */
 @Composable
 public inline fun <reified T : ViewModel, K : Any> viewModelScoped(
@@ -165,7 +163,7 @@ public fun generateKeysAndObserveLifecycle(key: Any?): Triple<ScopedViewModelCon
     // across recompositions and configuration changes
     val positionalMemoizationKey = InternalKey(rememberSaveable { UUID.randomUUID().toString() })
     // The external key will be used to track and store new versions of the object, based on [key] input parameter
-    val externalKey: ExternalKey = ExternalKey(key)
+    val externalKey = ExternalKey(key)
 
     ObserveLifecycles(scopedViewModelContainer, positionalMemoizationKey)
 

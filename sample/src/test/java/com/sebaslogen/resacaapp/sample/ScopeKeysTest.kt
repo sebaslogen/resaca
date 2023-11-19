@@ -29,8 +29,10 @@ import com.sebaslogen.resaca.rememberKeysInScope
 import com.sebaslogen.resaca.rememberScoped
 import com.sebaslogen.resaca.viewModelScoped
 import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoComposable
+import com.sebaslogen.resacaapp.sample.ui.main.data.FakeInjectedRepo
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeRepo
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeScopedViewModel
+import com.sebaslogen.resacaapp.sample.ui.main.data.FakeSimpleInjectedViewModel
 import com.sebaslogen.resacaapp.sample.utils.ComposeTestUtils
 import com.sebaslogen.resacaapp.sample.utils.MainDispatcherRule
 import com.sebaslogen.resacaapp.sample.utils.NumberContainer
@@ -85,7 +87,50 @@ class ScopeKeysTest : ComposeTestUtils {
     }
 
     @Test
-    fun `Given a long lazy list when the first item is not visible anymore, then it remains in the container and it's not cleared`() = runTest {
+    fun `Given a long lazy list when the first item is not visible anymore, then its manually created ViewModel remains in the container and it's not cleared`() =
+        runTest {
+            // Given the starting screen with long lazy list of scoped objects remembering their keys
+            val listItems = (1..1000).toList().map { NumberContainer(it) }
+            var height by mutableStateOf(1000.dp)
+            composeTestRule.setContent {
+                Box(modifier = Modifier.size(width = 200.dp, height = height)) {
+                    val keys = rememberKeysInScope(inputListOfKeys = listItems)
+                    LazyColumn(modifier = Modifier.fillMaxHeight()) {
+                        items(items = listItems, key = { it.number }) { item ->
+                            Box(modifier = Modifier.size(width = 200.dp, height = 100.dp)) {
+                                val fakeScopedVM: FakeSimpleInjectedViewModel = viewModelScoped(key = item, keyInScopeResolver = keys) {
+                                    FakeSimpleInjectedViewModel(
+                                        repository = FakeInjectedRepo(),
+                                        viewModelsClearedCounter = viewModelsClearedGloballySharedCounter
+                                    )
+                                }
+                                DemoComposable(inputObject = fakeScopedVM, objectType = "FakeSimpleInjectedViewModel $item", scoped = true)
+                            }
+                        }
+                    }
+                }
+            }
+            printComposeUiTreeToLog()
+
+            // When the size of the content changes and only one item fits on the screen
+            val initialAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+            height = 150.dp // Trigger recomposition
+            onNodeWithTestTag("FakeSimpleInjectedViewModel 1 Scoped").assertExists() // Required to trigger recomposition
+            advanceTimeBy(1000) // Advance time to allow clear call on ScopedViewModelContainer to be processed before querying the counter
+            printComposeUiTreeToLog()
+
+            // Then no scoped ViewModels are cleared
+            val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+            onNodeWithTestTag("FakeSimpleInjectedViewModel 1 Scoped").assertExists()
+            onNodeWithTestTag("FakeSimpleInjectedViewModel 5 Scoped", assertDisplayed = false).assertIsNotDisplayed() // Required to trigger recomposition
+            assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared) {
+                "The amount of FakeSimpleInjectedViewModels that were cleared after change ($finalAmountOfViewModelsCleared) " +
+                        "was not the same that the amount before the change ($initialAmountOfViewModelsCleared). It should be 0"
+            }
+        }
+
+    @Test
+    fun `Given a long lazy list when the first item is not visible anymore, then its ViewModel remains in the container and it's not cleared`() = runTest {
 
         // Given the starting screen with long lazy list of scoped objects remembering their keys
         val listItems = (1..1000).toList().map { NumberContainer(it) }
@@ -123,7 +168,7 @@ class ScopeKeysTest : ComposeTestUtils {
     }
 
     @Test
-    fun `Given a long lazy list when the an item is removed from the list, then it is cleared from the container`() = runTest {
+    fun `Given a long lazy list when the an item is removed from the list, then its ViewModel is cleared from the container`() = runTest {
 
         // Given the starting screen with long lazy list of scoped objects remembering their keys
         val items: SnapshotStateList<NumberContainer> = (1..1000).toList().map { NumberContainer(it) }.toMutableStateList()
@@ -161,7 +206,7 @@ class ScopeKeysTest : ComposeTestUtils {
     }
 
     @Test
-    fun `Given a long lazy list when the whole list with the keyInScope is disposed of, then it is cleared from the container`() = runTest {
+    fun `Given a long lazy list when the whole list with the keyInScope is disposed of, then its ViewModel is cleared from the container`() = runTest {
 
         // Given the starting screen with long lazy list of scoped objects remembering their keys
         val totalScopedViewModels = 7
