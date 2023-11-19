@@ -27,15 +27,14 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.sebaslogen.resaca.hilt.hiltViewModelScoped
 import com.sebaslogen.resaca.koin.koinViewModelScoped
 import com.sebaslogen.resaca.rememberKeysInScope
 import com.sebaslogen.resacaapp.sample.ui.main.ComposeActivity
 import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoComposable
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeInjectedViewModel
+import com.sebaslogen.resacaapp.sample.ui.main.data.NumberContainer
 import com.sebaslogen.resacaapp.sample.utils.ComposeTestUtils
 import com.sebaslogen.resacaapp.sample.utils.MainDispatcherRule
-import com.sebaslogen.resacaapp.sample.utils.NumberContainer
 import com.sebaslogen.resacaapp.sample.viewModelsClearedGloballySharedCounter
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceTimeBy
