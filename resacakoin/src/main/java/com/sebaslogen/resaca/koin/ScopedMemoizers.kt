@@ -13,7 +13,6 @@ import com.sebaslogen.resaca.ScopedViewModelContainer.ExternalKey
 import com.sebaslogen.resaca.ScopedViewModelContainer.InternalKey
 import com.sebaslogen.resaca.ScopedViewModelOwner
 import com.sebaslogen.resaca.generateKeysAndObserveLifecycle
-import com.sebaslogen.resaca.viewModelScoped
 import org.koin.androidx.viewmodel.factory.KoinViewModelFactory
 import org.koin.core.annotation.KoinInternalApi
 import org.koin.core.context.GlobalContext
