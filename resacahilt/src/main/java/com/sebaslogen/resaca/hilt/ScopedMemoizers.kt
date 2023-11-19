@@ -25,7 +25,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 
 /**
  * TODO: Docs and how to use
- * TODO: Tests for this function
  */
 @Composable
 public inline fun <reified T : ViewModel, K : Any> hiltViewModelScoped(

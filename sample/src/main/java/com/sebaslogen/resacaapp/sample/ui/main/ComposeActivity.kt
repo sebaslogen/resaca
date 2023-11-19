@@ -28,6 +28,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.sebaslogen.resaca.rememberKeysInScope
+import com.sebaslogen.resaca.rememberScoped
+import com.sebaslogen.resaca.viewModelScoped
+import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoNotScopedObjectComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedHiltInjectedViewModelComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedKoinInjectedObjectComposable
@@ -38,6 +42,8 @@ import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedParame
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedSecondHiltInjectedViewModelComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedSecondKoinInjectedViewModelComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedViewModelComposable
+import com.sebaslogen.resacaapp.sample.ui.main.data.FakeRepo
+import com.sebaslogen.resacaapp.sample.ui.main.data.FakeScopedViewModel
 import com.sebaslogen.resacaapp.sample.ui.main.ui.theme.ResacaAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -141,11 +147,19 @@ private fun ComposeScreenWithSingleViewModelScoped(navController: NavHostControl
     ) {
         Text(
             modifier = Modifier.padding(8.dp),
-            text = "The ViewModel below will be shown in light mode and garbage collected in dark mode"
+            text = "The objects below will be shown only in light mode and ViewModel will be garbage collected in dark mode"
         )
         // The ViewModel is only shown in light mode, to demo how the ViewModel is properly garbage collected in a different config (dark mode)
+        val key = "MyKey"
+        val keys = rememberKeysInScope(inputListOfKeys = listOf(key))
         if (showSingleScopedViewModel ?: !isSystemInDarkTheme()) {
             DemoScopedViewModelComposable()
+            Text(
+                modifier = Modifier.padding(8.dp),
+                text = "The FakeRepo will survive being disposed of in light mode due to KeysInScope"
+            )
+            val fakeRepo: FakeRepo = rememberScoped(key = key, keyInScopeResolver = keys) { FakeRepo() }
+            DemoComposable(inputObject = fakeRepo, objectType = "FakeRepo", scoped = true)
         }
         NavigationButtons(navController)
     }

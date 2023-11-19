@@ -98,7 +98,7 @@ class ScopeKeysTest : ComposeTestUtils {
     }
 
     @Test
-    fun `Given a long lazy list when the first item is not visible anymore, then it remains in the container and it's not cleared`() = runTest {
+    fun `Given a long lazy list when the first item is not visible anymore, then its ViewModel remains in the container and it's not cleared`() = runTest {
 
         // Given the starting screen with long lazy list of scoped objects remembering their keys
         val listItems = (1..1000).toList().map { NumberContainer(it) }
@@ -136,7 +136,7 @@ class ScopeKeysTest : ComposeTestUtils {
     }
 
     @Test
-    fun `Given a long lazy list when the an item is removed from the list, then it is cleared from the container`() = runTest {
+    fun `Given a long lazy list when the an item is removed from the list, then its ViewModel is cleared from the container`() = runTest {
 
         // Given the starting screen with long lazy list of scoped objects remembering their keys
         val items: SnapshotStateList<NumberContainer> = (1..1000).toList().map { NumberContainer(it) }.toMutableStateList()
@@ -174,7 +174,7 @@ class ScopeKeysTest : ComposeTestUtils {
     }
 
     @Test
-    fun `Given a long lazy list when the whole list with the keyInScope is disposed of, then it is cleared from the container`() = runTest {
+    fun `Given a long lazy list when the whole list with the keyInScope is disposed of, then its ViewModel is cleared from the container`() = runTest {
 
         // Given the starting screen with long lazy list of scoped objects remembering their keys
         val totalScopedViewModels = 7
