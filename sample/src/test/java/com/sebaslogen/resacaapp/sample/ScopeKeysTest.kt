@@ -25,7 +25,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.sebaslogen.resaca.keyInScopeResolverFor
+import com.sebaslogen.resaca.rememberKeysInScope
 import com.sebaslogen.resaca.rememberScoped
 import com.sebaslogen.resaca.viewModelScoped
 import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoComposable
@@ -91,7 +91,7 @@ class ScopeKeysTest : ComposeTestUtils {
         var height by mutableStateOf(1000.dp)
         composeTestRule.setContent {
             Box(modifier = Modifier.size(width = 200.dp, height = height)) {
-                val keys = keyInScopeResolverFor(inputListOfKeys = listItems)
+                val keys = rememberKeysInScope(inputListOfKeys = listItems)
                 LazyColumn(modifier = Modifier.fillMaxHeight()) {
                     items(items = listItems, key = { it.number }) { item ->
                         Box(modifier = Modifier.size(width = 200.dp, height = 100.dp)) {
@@ -129,7 +129,7 @@ class ScopeKeysTest : ComposeTestUtils {
         composeTestRule.setContent {
             Box(modifier = Modifier.size(width = 200.dp, height = 1000.dp)) {
                 val listItems: SnapshotStateList<NumberContainer> = remember { items }
-                val keys = keyInScopeResolverFor(inputListOfKeys = listItems)
+                val keys = rememberKeysInScope(inputListOfKeys = listItems)
                 LazyColumn(modifier = Modifier.fillMaxHeight()) {
                     items(items = listItems, key = { it.number }) { item ->
                         Box(modifier = Modifier.size(width = 200.dp, height = 100.dp)) {
@@ -172,7 +172,7 @@ class ScopeKeysTest : ComposeTestUtils {
                 Text(textTitle)
                 Box(modifier = Modifier.size(width = 200.dp, height = 1000.dp)) {
                     if (shown) {
-                        val keys = keyInScopeResolverFor(inputListOfKeys = listItems)
+                        val keys = rememberKeysInScope(inputListOfKeys = listItems)
                         LazyColumn(modifier = Modifier.fillMaxHeight()) {
                             items(items = listItems, key = { it.number }) { item ->
                                 Box(modifier = Modifier.size(width = 200.dp, height = 100.dp)) {
