@@ -33,9 +33,9 @@ import com.sebaslogen.resacaapp.sample.ui.main.data.FakeInjectedRepo
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeRepo
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeScopedViewModel
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeSimpleInjectedViewModel
+import com.sebaslogen.resacaapp.sample.ui.main.data.NumberContainer
 import com.sebaslogen.resacaapp.sample.utils.ComposeTestUtils
 import com.sebaslogen.resacaapp.sample.utils.MainDispatcherRule
-import com.sebaslogen.resacaapp.sample.utils.NumberContainer
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest

@@ -1,4 +1,4 @@
-package com.sebaslogen.resacaapp.sample.utils
+package com.sebaslogen.resacaapp.sample.ui.main.data
 
 
 data class NumberContainer(val number: Int) {

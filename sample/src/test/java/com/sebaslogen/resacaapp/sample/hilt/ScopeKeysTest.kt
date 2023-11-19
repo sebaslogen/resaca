@@ -32,9 +32,9 @@ import com.sebaslogen.resaca.rememberKeysInScope
 import com.sebaslogen.resacaapp.sample.ui.main.ComposeActivity
 import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoComposable
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeInjectedViewModel
+import com.sebaslogen.resacaapp.sample.ui.main.data.NumberContainer
 import com.sebaslogen.resacaapp.sample.utils.ComposeTestUtils
 import com.sebaslogen.resacaapp.sample.utils.MainDispatcherRule
-import com.sebaslogen.resacaapp.sample.utils.NumberContainer
 import com.sebaslogen.resacaapp.sample.viewModelsClearedGloballySharedCounter
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
