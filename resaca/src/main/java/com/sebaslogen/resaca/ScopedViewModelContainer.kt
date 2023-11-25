@@ -261,9 +261,11 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     }
 
     /**
-     * Dispose/Forget the object -if present- in [scopedObjectsContainer] but wait for the next frame when the Activity is resumed if UI is not in foreground
+     * Dispose/Forget the object -if present- in [scopedObjectsContainer] but wait for the next frame when the Activity is resumed if UI is not in foreground.
+     * Additionally, if the object is not in scope anymore but its [ExternalKey] is an [ScopeKeyWithResolver], then we check if the [ExternalKey]
+     * is still in scope before disposing the object. This allows the object to be disposed only when the [ExternalKey]
+     * is not in scope anymore and it was already disposed of the Compose scope.
      * We store the deletion job with the given [key] in the [disposingJobs] to make sure we don't schedule the same work twice.
-     * TODO: explain objectExternalKeyNotInScope
      *
      * @param key Key of the object stored in either [scopedObjectsContainer] to be de-referenced for GC
      *
