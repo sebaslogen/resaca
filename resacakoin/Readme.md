@@ -72,7 +72,7 @@ Examples:
 
 
 <details open>
-  <summary>Scope to a Composable a ViewModel injected by Koin with SavedStateHandle</summary>
+  <summary>Scope a ViewModel injected by Koin with SavedStateHandle to a Composable</summary>
   
 ```kotlin
 @Composable
@@ -86,7 +86,7 @@ class MyViewModel(private val stateSaver: SavedStateHandle) : ViewModel()
 </details>
 
 <details>
-  <summary>Scope to a Composable a ViewModel injected by Koin with SavedStateHandle and a key</summary>
+  <summary>Scope a ViewModel injected by Koin with SavedStateHandle and a key to a Composable</summary>
   
 ```kotlin
 @Composable
@@ -104,7 +104,7 @@ class MyViewModel(private val stateSaver: SavedStateHandle) : ViewModel()
 </details>
 
 <details>
-  <summary>Scope to a Composable a ViewModel injected by Koin with SavedStateHandle and an argument/parameter/id (assisted injection)</summary>
+  <summary>Scope a ViewModel injected by Koin with SavedStateHandle and an argument/parameter/id (assisted injection) to a Composable</summary>
   
 ```kotlin
 @Composable
@@ -119,6 +119,25 @@ fun DemoInjectedViewModelWithId(idOne: String = "myFirstId", idTwo: String = "my
 }
 
 class MyIdViewModel(private val stateSaver: SavedStateHandle, private val id: String) : ViewModel()
+```
+</details>
+
+<details>
+  <summary>Use a different ViewModel injected by Koin for each item in a LazyColumn and scope them to the Composable that contains the LazyColumn</summary>
+  
+```kotlin
+@Composable
+fun DemoManyInjectedViewModelsScopedOutsideTheLazyColumn(listItems: List<Int> = (1..1000).toList()) {
+    val keys = rememberKeysInScope(inputListOfKeys = listItems)
+    LazyColumn() {
+        items(items = listItems, key = { it }) { item ->
+            val myScopedVM: MyViewModel = koinViewModelScoped(key = item, keyInScopeResolver = keys)
+            DemoComposable(inputObject = myScopedVM)
+        }
+    }
+}
+
+class MyViewModel @Inject constructor(private val stateSaver: SavedStateHandle) : ViewModel()
 ```
 </details>
 
@@ -142,12 +161,14 @@ the [Koin ViewModel](https://insert-koin.io/docs/reference/koin-android/viewmode
 
 Here are some sample use cases reported by the users of this library:
 
-- 📃📄 Multiple instances of the same type of ViewModel in a screen with a **view-pager**. This screen will have multiple sub-pages that use the same ViewModel
-  class with different ids. For example, a screen of holiday destinations with multiple pages and each page with its own `HolidayDestinationViewModel`.
 - ❤️ Isolated and stateful UI components like a **favorite button** that are widely used across the screens. This `FavoriteViewModel` can be very small, focused
   and only require an id to work without affecting the rest of the screen's UI and state.
 - 🗪 **Dialog pop-ups** can have their own business-logic with state that is better to isolate in a separate ViewModel but the lifespan of these dialogs might be short, 
 so it's important to clean-up the ViewModel associated to a Dialog after it has been closed.
+- 📃 A LazyColumn with a **ViewModel per list item**. Each item can have its own complex logic in an isolated ViewModel that will be lazily loaded when the item is
+visible for the first time. The ViewModel will cleared and destroyed when the item is not part of the list in the source data or the whole LazyColumn is removed.
+- 📄📄 Multiple instances of the same type of ViewModel in a screen with a **view-pager**. This screen will have multiple sub-pages that use the same ViewModel
+  class with different ids. For example, a screen of holiday destinations with multiple pages and each page with its own `HolidayDestinationViewModel`.
 
 # Assisted Injection
 
