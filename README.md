@@ -145,12 +145,10 @@ fun DemoKoinInjectedViewModelWithDependency() {
   <summary>Use a different ViewModel for each item in a LazyColumn and scope them to the Composable that contains the LazyColumn</summary>
   
 ```kotlin
-private val listItems = (1..1000).toList()
-
 @Composable
-fun DemoManyViewModelsScopedOutsideTheLazyColumn() {
+fun DemoManyViewModelsScopedOutsideTheLazyColumn(listItems: List<Int> = (1..1000).toList()) {
     val keys = rememberKeysInScope(inputListOfKeys = listItems)
-    LazyColumn(modifier = Modifier.fillMaxHeight()) {
+    LazyColumn() {
         items(items = listItems, key = { it }) { item ->
             val myScopedVM: MyViewModel = viewModelScoped(key = item, keyInScopeResolver = keys)
             DemoComposable(inputObject = myScopedVM)
@@ -177,12 +175,14 @@ clean-up method won't be called, that's the reason to use `viewModelScoped` inst
 
 Here are some sample use cases reported by the users of this library:
 
-- 📃📄 Multiple instances of the same type of ViewModel in a screen with a **view-pager**. This screen will have multiple sub-pages that use the same ViewModel
-  class with different ids. For example, a screen of holiday destinations with multiple pages and each page with its own `HolidayDestinationViewModel`.
 - ❤️ Isolated and stateful UI components like a **favorite button** that are widely used across the screens. This `FavoriteViewModel` can be very small, focused
   and only require an id to work without affecting the rest of the screen's UI and state.
 - 🗪 **Dialog pop-ups** can have their own business-logic with state that is better to isolate in a separate ViewModel but the lifespan of these dialogs might be short, 
 so it's important to clean-up the ViewModel associated to a Dialog after it has been closed.
+- 📃 A LazyColumn with a **ViewModel per list item**. Each item can have its own complex logic in an isolated ViewModel that will be lazily loaded when the item is
+visible for the first time. The ViewModel will cleared and destroyed when the item is not part of the list in the source data or the whole LazyColumn is removed.
+- 📄📄 Multiple instances of the same type of ViewModel in a screen with a **view-pager**. This screen will have multiple sub-pages that use the same ViewModel
+  class with different ids. For example, a screen of holiday destinations with multiple pages and each page with its own `HolidayDestinationViewModel`.
 
 # Demo app
 
@@ -203,11 +203,18 @@ This library does not influence how your app provides or creates objects so it's
 Nevertheless, this library supports two of the main **dependency injection frameworks**:
 
 ## Hilt 🗡️
+<details>
+  <summary>Hilt details</summary>
+  
 [HILT](https://dagger.dev/hilt/quick-start) (Dagger) support is available in a small extension of this library: [**resaca-hilt**](https://github.com/sebaslogen/resaca/tree/main/resacahilt/).
 
 [Documentation and installation instructions are available here](https://github.com/sebaslogen/resaca/tree/main/resacahilt/README.md).
-
+</details>
+  
 ## Koin 🪙
+<details>
+  <summary>Koin details</summary>
+  
 [Koin](https://insert-koin.io/) is out of the box supported by simply changing the way you request a dependency.
 
 Instead of using the `getViewModel` or `koinViewModel` functions from Koin, you have to use the standard way of getting a dependency from Koin `getKoin().get()`.
@@ -215,18 +222,42 @@ Instead of using the `getViewModel` or `koinViewModel` functions from Koin, you 
 Usage example: `val viewModel: MyViewModel = viewModelScoped(myId) { getKoin().get { parametersOf(myId) } }`
 
 > **Note**: if you plan to use a ViewModel with a [SavedStateHandle](https://developer.android.com/topic/libraries/architecture/viewmodel/viewmodel-savedstate), then you need to use the `koinViewModelScoped` function from the small extension library [**resaca-koin**](https://github.com/sebaslogen/resaca/blob/main/resacakoin/Readme.md).
+</details>
 
------
+# Scoping in a LazyColumn, LazyRow, etc
+<details>
+  <summary>How to use `rememberKeysInScope` to control the lifecycle of an object in a Lazy* list</summary>
+  
+When using the Lazy* family of Composables it is recommended that -just above the call to the Lazy* Composable- you use `rememberKeysInScope` with a list of 
+keys corresponding to the items used in the Lazy* Composable to obtain a `KeyInScopeResolver` (it's already highly recommended in Compose that items in a Lazy* list have unique keys).
+
+Then in the Lazy* Composable, once you are creating an item and you need an object or ViewModel for that item, 
+all you have to do is include in the call to `rememberScoped`/`viewModelScoped` the key for the current item and the `KeyInScopeResolver` you previously got from `rememberKeysInScope`.
+
+With this setup, when an item of the Lazy* list becomes visible for the first time, its associated `rememberScoped`/`viewModelScoped` object will be created and even if the item is scrolled away, the scoped object will still be alive. Only once the associated key is not present anymore in the list provided to `rememberKeysInScope` and the item is either not part of the Lazy* list or scrolled away, then the associated object will be cleared and destroyed.
+
+<details>
+  <summary>Example of a different ViewModel for each item in a LazyColumn and scope them to the Composable that contains the LazyColumn</summary>
+  
+```kotlin
+@Composable
+fun DemoManyViewModelsScopedOutsideTheLazyColumn(listItems: List<Int> = (1..1000).toList()) {
+    val keys = rememberKeysInScope(inputListOfKeys = listItems)
+    LazyColumn() {
+        items(items = listItems, key = { it }) { item ->
+            val myScopedVM: MyViewModel = viewModelScoped(key = item, keyInScopeResolver = keys)
+            DemoComposable(inputObject = myScopedVM)
+        }
+    }
+}
+```
+</details>
+
+</details>
 
 ### General considerations for State Hoisting
-Here are a few suggestions of how to provide objects in combination with this library in a Compose screen:
-
-- When using the Lazy* family of Composables it is recommended that you use `rememberScoped`/`viewModelScoped` outside the scope of Composables created by Lazy
-  constructors (e.g. LazyColumn) because there is a chance that a lazy initialized Composable will be disposed of when it is not visible anymore (e.g. scrolled
-  away) and that will also dispose of the `rememberScoped`/`viewModelScoped` object immediately, this might not be the intended behavior. For more
-  info see Compose's [State Hoisting](https://developer.android.com/jetpack/compose/state#state-hoisting).
-- When a Composable is used more than once in the same screen with the same input, then the ViewModel (or business logic object) should be provided only once
-  with `viewModelScoped` at a higher level in the tree using Compose's [State Hoisting](https://developer.android.com/jetpack/compose/state#state-hoisting).
+When a Composable is used more than once in the same screen with the same input, then the ViewModel (or business logic object) should be provided only once 
+with `viewModelScoped` at a higher level in the tree using Compose's [State Hoisting](https://developer.android.com/jetpack/compose/state#state-hoisting).
 
 # Why not use remember?
 
