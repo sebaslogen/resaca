@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Text
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -215,4 +217,46 @@ class KeyInScopeResolverTest : ComposeTestUtils {
         }
     }
 
+    @Test
+    fun `Given a ViewModel scoped with a key removed from KeyInScopeResolver but not from Compose, then the ViewModel is not cleared from the container`() = runTest {
+
+        // Given the starting screen with a key scoped ViewModel remembering it with a KeyInScopeResolver
+        var shown by mutableStateOf(true)
+        val textTitle = "Test text"
+        val viewModelKey = "My key"
+        val inputListOfKeys: SnapshotStateList<String> = mutableStateListOf(viewModelKey)
+        composeTestRule.setContent {
+            Column {
+                Text(textTitle)
+                if (shown) {
+                    LaunchedEffect(Unit) {
+                        if (!inputListOfKeys.contains(viewModelKey)) inputListOfKeys.add(viewModelKey)
+                    }
+                } else {
+                    LaunchedEffect(Unit) {
+                        inputListOfKeys.clear()
+                    }
+                }
+                val keys = rememberKeysInScope(inputListOfKeys = inputListOfKeys)
+                val fakeScopedVM: FakeScopedViewModel = viewModelScoped(key = viewModelKey, keyInScopeResolver = keys)
+                DemoComposable(inputObject = fakeScopedVM, objectType = "FakeScopedViewModel $viewModelKey", scoped = true)
+            }
+        }
+        printComposeUiTreeToLog()
+
+        // When the list of keys is emptied
+        val initialAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+        onNodeWithTestTag("FakeScopedViewModel My key Scoped").assertExists() // Required to trigger recomposition
+        shown = false// Trigger recomposition
+        composeTestRule.onNodeWithText(textTitle).assertExists() // Required to trigger recomposition
+        advanceTimeBy(1000) // Advance time to allow clear call on ScopedViewModelContainer to be processed before querying the counter
+        printComposeUiTreeToLog()
+
+        // Then no scoped ViewModel is cleared
+        val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+        assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared) {
+            "The amount of FakeScopedViewModels that were cleared after change ($finalAmountOfViewModelsCleared) " +
+                "was different that the amount before the change ($initialAmountOfViewModelsCleared). 0 was expected."
+        }
+    }
 }
