@@ -5,7 +5,7 @@ public final class com/sebaslogen/resaca/BuildConfig {
 	public fun <init> ()V
 }
 
-public final class com/sebaslogen/resaca/KeyScopeResolverKt {
+public final class com/sebaslogen/resaca/KeyInScopeResolverKt {
 	public static final fun rememberKeysInScope (Ljava/util/Collection;Landroidx/compose/runtime/Composer;I)Lkotlin/jvm/functions/Function1;
 }
 
