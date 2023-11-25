@@ -170,6 +170,35 @@ visible for the first time. The ViewModel will cleared and destroyed when the it
 - 📄📄 Multiple instances of the same type of ViewModel in a screen with a **view-pager**. This screen will have multiple sub-pages that use the same ViewModel
   class with different ids. For example, a screen of holiday destinations with multiple pages and each page with its own `HolidayDestinationViewModel`.
 
+# Scoping in a LazyColumn, LazyRow, etc
+  
+When using the Lazy* family of Composables it is recommended that -just above the call to the Lazy* Composable- you use `rememberKeysInScope` with a list of 
+keys corresponding to the items used in the Lazy* Composable to obtain a `KeyInScopeResolver` (it's already highly recommended in Compose that items in a Lazy* list have unique keys).
+
+Then in the Lazy* Composable, once you are creating an item and you need an object or ViewModel for that item, 
+all you have to do is include in the call to `rememberScoped`/`viewModelScoped` the key for the current item and the `KeyInScopeResolver` you previously got from `rememberKeysInScope`.
+
+With this setup, when an item of the Lazy* list becomes visible for the first time, its associated `rememberScoped`/`viewModelScoped` object will be created and even if the item is scrolled away, the scoped object will still be alive. Only once the associated key is not present anymore in the list provided to `rememberKeysInScope` and the item is either not part of the Lazy* list or scrolled away, then the associated object will be cleared and destroyed.
+
+<details>
+  <summary>Example of a different ViewModel for each item in a LazyColumn and scope them to the Composable that contains the LazyColumn</summary>
+  
+```kotlin
+@Composable
+fun DemoManyInjectedViewModelsScopedOutsideTheLazyColumn(listItems: List<Int> = (1..1000).toList()) {
+    val keys = rememberKeysInScope(inputListOfKeys = listItems)
+    LazyColumn() {
+        items(items = listItems, key = { it }) { item ->
+            val myScopedVM: MyViewModel = koinViewModelScoped(key = item, keyInScopeResolver = keys)
+            DemoComposable(inputObject = myScopedVM)
+        }
+    }
+}
+
+class MyViewModel @Inject constructor(private val stateSaver: SavedStateHandle) : ViewModel()
+```
+</details>
+
 # Assisted Injection
 
 Assisted injection is a dependency injection (DI) pattern that is used to construct an object where some parameters may be provided by the DI framework and
