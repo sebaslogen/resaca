@@ -15,7 +15,7 @@ dependencyResolutionManagement {
         maven { setUrl("https://jitpack.io") }
     }
 }
-rootProject.name = "resaca library"
+rootProject.name = "resaca"
 
 if (System.getenv("JITPACK") == null) // Remove the sample app to reduce Jitpack builds
     include(":sample")
