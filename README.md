@@ -11,7 +11,7 @@ Article about this library: [Every Composable deserves a ViewModel](https://engi
 
 The right scope for objects and View Models in Android [Compose](https://developer.android.com/jetpack/compose).
 
-Resaca provides a simple way to keep a Jetpack ViewModel (or any other object) in memory during the lifecycle of a `@Composable` function and automatically
+Resaca provides a simple way to **keep a Jetpack ViewModel** (or any other object) **in memory during the lifecycle of a** `@Composable` **function** and automatically
 clean it up when not needed anymore. This means, it retains your object or ViewModel across recompositions, during configuration changes, and also when the
 container Fragment or Compose Navigation destination goes into the backstack.
 
@@ -79,7 +79,7 @@ Inside your `@Composable` function create and retrieve an object using `remember
 Examples:
 
 <details open>
-  <summary>Scope to a Composable an object</summary>
+  <summary>Scope an object to a Composable</summary>
   
 ```kotlin
 @Composable
@@ -91,7 +91,7 @@ fun DemoScopedObject() {
 </details>
 
 <details open>
-  <summary>Scope to a Composable a ViewModel</summary>
+  <summary>Scope a ViewModel to a Composable</summary>
   
 ```kotlin
 @Composable
@@ -103,7 +103,7 @@ fun DemoScopedViewModel() {
 </details>
 
 <details>
-  <summary>Scope to a Composable a ViewModel with a dependency</summary>
+  <summary>Scope a ViewModel with a dependency to a Composable</summary>
   
 ```kotlin
 @Composable
@@ -115,7 +115,7 @@ fun DemoScopedViewModelWithDependency() {
 </details>
 
 <details>
-  <summary>Scope to a Composable a ViewModel with a key</summary>
+  <summary>Scope a ViewModel with a key to a Composable</summary>
   
 ```kotlin
 @Composable
@@ -130,13 +130,32 @@ fun DemoViewModelWithKey() {
 </details>
 
 <details>
-  <summary>Scope to a Composable a ViewModel with a dependency injected with Koin</summary>
+  <summary>Scope a ViewModel with a dependency injected with Koin to a Composable</summary>
   
 ```kotlin
 @Composable
 fun DemoKoinInjectedViewModelWithDependency() {
     val myInjectedScopedVM: MyViewModelWithDependencies = viewModelScoped() { getKoin().get { parametersOf(myConstructorDependency) } }
     DemoComposable(inputObject = myInjectedScopedVM)
+}
+```
+</details>
+
+<details>
+  <summary>Use a different ViewModel for each item in a LazyColumn and scope them to the Composable that contains the LazyColumn</summary>
+  
+```kotlin
+private val listItems = (1..1000).toList()
+
+@Composable
+fun DemoManyViewModelsScopedOutsideTheLazyColumn() {
+    val keys = rememberKeysInScope(inputListOfKeys = listItems)
+    LazyColumn(modifier = Modifier.fillMaxHeight()) {
+        items(items = listItems, key = { it }) { item ->
+            val myScopedVM: MyViewModel = viewModelScoped(key = item, keyInScopeResolver = keys)
+            DemoComposable(inputObject = myScopedVM)
+        }
+    }
 }
 ```
 </details>
