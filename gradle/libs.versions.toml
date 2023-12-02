@@ -19,8 +19,9 @@ androidx-activity = '1.8.1'
 # Compose integration with ViewModels
 androidx-lifecycle = '2.6.2'
 # Hilt
-hilt = '2.48.1'
+hilt = '2.49'
 hilt-navigation-compose = '1.1.0'
+ksp = '1.9.21-1.0.15'
 # Koin
 koin = '3.5.0'
 # Test
@@ -86,7 +87,7 @@ androidx-lifecycle-viewmodel = ["androidx-lifecycle-viewmodel-ktx", "androidx-li
 android-application = { id = 'com.android.application', version.ref = 'agp' }
 android-library = { id = 'com.android.library', version.ref = 'agp' }
 kotlin-android = { id = 'org.jetbrains.kotlin.android', version.ref = 'kotlin' }
-kotlin-kapt = { id = 'org.jetbrains.kotlin.kapt', version.ref = 'kotlin' }
+ksp = { id = 'com.google.devtools.ksp', version.ref = 'ksp' }
 dagger-hilt-android = { id = 'com.google.dagger.hilt.android', version.ref = 'hilt' }
 binary-compatibility-validator = { id = 'org.jetbrains.kotlinx.binary-compatibility-validator', version.ref = 'binary-compatibility-validator' }
 kover = { id = 'org.jetbrains.kotlinx.kover', version.ref = 'kover' }

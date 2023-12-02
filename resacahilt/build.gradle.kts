@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.ksp)
     alias(libs.plugins.dagger.hilt.android)
     alias(libs.plugins.kover)
     `maven-publish`
@@ -76,7 +76,7 @@ dependencies {
     // Hilt dependencies
     implementation(libs.dagger.hilt)
     implementation(libs.dagger.hilt.navigation.compose)
-    kapt(libs.dagger.hilt.android.compiler)
+    ksp(libs.dagger.hilt.android.compiler)
 }
 
 // Config for publishing artifacts to JitPack

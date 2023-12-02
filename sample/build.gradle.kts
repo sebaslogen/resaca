@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.ksp)
     alias(libs.plugins.dagger.hilt.android)
     alias(libs.plugins.kover)
 }
@@ -77,7 +77,7 @@ dependencies {
 
     // Hilt dependencies
     implementation(libs.dagger.hilt)
-    kapt(libs.dagger.hilt.compiler)
+    ksp(libs.dagger.hilt.compiler)
 
     implementation(libs.koin.android)
 
@@ -91,7 +91,7 @@ dependencies {
     // Needed for createComposeRule, but not createAndroidComposeRule:
     debugImplementation(libs.compose.ui.test.manifest)
     testImplementation(libs.dagger.hilt.android.testing)
-    kaptTest(libs.dagger.hilt.android.compiler)
+    kspTest(libs.dagger.hilt.android.compiler)
     testImplementation(libs.koin.android.test)
     // Espresso dependencies for Activity recreation tests
     androidTestImplementation(libs.espresso)
