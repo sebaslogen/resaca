@@ -1,6 +1,6 @@
 [versions]
-agp = "8.1.4"
-kotlin = '1.9.20'
+agp = "8.2.0"
+kotlin = '1.9.21'
 compileSdk = '34'
 minSdk = '21'
 targetSdk = '34'
@@ -13,7 +13,7 @@ constraintlayout = '2.1.4'
 binary-compatibility-validator = '0.13.2'
 # Compose
 compose-bom = '2023.10.01' # https://developer.android.com/jetpack/compose/bom/bom-mapping
-compose-compiler = '1.5.4'
+compose-compiler = '1.5.5-dev-k1.9.21-163bb051fe5'
 # Compose integration with Activities
 androidx-activity = '1.8.1'
 # Compose integration with ViewModels
