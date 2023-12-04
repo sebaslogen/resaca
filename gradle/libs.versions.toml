@@ -26,7 +26,7 @@ ksp = '1.9.21-1.0.15'
 koin = '3.5.0'
 # Test
 junit-version = '4.13.2'
-kover = '0.7.4'
+kover = '0.7.5'
 robolectric-version = '4.11.1'
 espresso = "3.5.1"
 testRunner = "1.5.2"
