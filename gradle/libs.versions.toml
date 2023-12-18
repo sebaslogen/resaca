@@ -21,7 +21,7 @@ androidx-lifecycle = '2.6.2'
 # Hilt
 hilt = '2.49'
 hilt-navigation-compose = '1.1.0'
-ksp = '1.9.21-1.0.15'
+ksp = '1.9.21-1.0.16'
 # Koin
 koin = '3.5.0'
 # Test
