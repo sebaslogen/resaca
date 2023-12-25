@@ -23,7 +23,7 @@ hilt = '2.50'
 hilt-navigation-compose = '1.1.0'
 ksp = '1.9.21-1.0.16'
 # Koin
-koin = '3.5.0'
+koin = '3.5.3'
 # Test
 junit-version = '4.13.2'
 kover = '0.7.5'
