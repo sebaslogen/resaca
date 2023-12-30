@@ -1,10 +1,13 @@
 name: Publish release to Maven Central
 
 on:
-  push:
-    branches: [ main ]
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish'
+        required: true
 env:
   PACKAGE_VERSION: ${{ github.event_name == 'release' && github.event.release.tag_name || github.event.inputs.version }}
 jobs:
