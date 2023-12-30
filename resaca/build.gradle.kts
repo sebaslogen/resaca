@@ -8,7 +8,7 @@ plugins {
     alias(libs.plugins.maven)
 }
 
-group = "com.github.sebaslogen"
+group = "io.github.sebaslogen"
 version = System.getenv("PACKAGE_VERSION") ?: "1.0.0"
 
 android {
