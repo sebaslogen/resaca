@@ -22,6 +22,7 @@ android {
     }
     buildFeatures { // Enables Jetpack Compose for this module
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
