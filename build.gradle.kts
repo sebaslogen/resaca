@@ -1,3 +1,5 @@
+import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
+import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 
 plugins {
@@ -8,6 +10,8 @@ plugins {
     alias(libs.plugins.dagger.hilt.android) apply false
     alias(libs.plugins.binary.compatibility.validator)
     alias(libs.plugins.kover) apply false
+    alias(libs.plugins.maven) apply false
+    alias(libs.plugins.dokka)
 }
 
 val sampleModuleName = "sample"
@@ -38,6 +42,23 @@ subprojects {
             if (project.name != sampleModuleName) {
                 explicitApi()
             }
+        }
+    }
+}
+
+tasks.withType<DokkaMultiModuleTask>().configureEach {
+    outputDirectory = layout.projectDirectory.dir("docs/api")
+}
+
+// Must be afterEvaluate or else com.vanniktech.maven.publish will overwrite our
+// dokka and version configuration.
+afterEvaluate {
+    tasks.withType<DokkaTaskPartial>().configureEach {
+        dokkaSourceSets.configureEach {
+            jdkVersion = 17
+            failOnWarning = true
+            skipDeprecated = true
+            suppressInheritedMembers = true
         }
     }
 }
