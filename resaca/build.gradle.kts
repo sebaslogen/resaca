@@ -8,8 +8,19 @@ plugins {
     alias(libs.plugins.maven)
 }
 
-group = "io.github.sebaslogen"
-version = System.getenv("PACKAGE_VERSION") ?: "1.0.0"
+// Maven publishing configuration
+val mavenGroup: String by project
+val defaultVersion: String by project
+val currentVersion = System.getenv("PACKAGE_VERSION") ?: defaultVersion
+val desc: String by project
+val license: String by project
+val inceptionYear: String by project
+val githubRepo: String by project
+val release: String by project
+val snapshot: String by project
+
+group = mavenGroup
+version = currentVersion
 
 android {
     namespace = "com.sebaslogen.resaca"
@@ -65,27 +76,18 @@ dependencies {
     implementation(libs.bundles.androidx.lifecycle.viewmodel)
 }
 
-object Meta {
-    const val desc = "Android library to scope ViewModels to a Composable, surviving configuration changes and navigation"
-    const val license = "MIT license"
-    const val inceptionYear = "2021"
-    const val githubRepo = "sebaslogen/resaca"
-    const val release = "https://s01.oss.sonatype.org/service/local/"
-    const val snapshot = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-}
-
 mavenPublishing {
     publishToMavenCentral(SonatypeHost.S01)
     signAllPublications()
-    coordinates(group.toString(), project.name, version.toString())
+    coordinates(mavenGroup, project.name, currentVersion)
     pom {
         name.set(project.name)
-        description.set(Meta.desc)
-        inceptionYear.set(Meta.inceptionYear)
-        url.set("https://github.com/${Meta.githubRepo}")
+        description.set(desc)
+        inceptionYear.set(inceptionYear)
+        url.set("https://github.com/$githubRepo")
         licenses {
             license {
-                name.set(Meta.license)
+                name.set(license)
                 url.set("https://github.com/sebaslogen/resaca/blob/main/LICENSE")
             }
         }
@@ -98,17 +100,17 @@ mavenPublishing {
         }
         scm {
             url.set(
-                "https://github.com/${Meta.githubRepo}.git"
+                "https://github.com/$githubRepo.git"
             )
             connection.set(
-                "scm:git:git://github.com/${Meta.githubRepo}.git"
+                "scm:git:git://github.com/$githubRepo.git"
             )
             developerConnection.set(
-                "scm:git:git://github.com/${Meta.githubRepo}.git"
+                "scm:git:git://github.com/$githubRepo.git"
             )
         }
         issueManagement {
-            url.set("https://github.com/${Meta.githubRepo}/issues")
+            url.set("https://github.com/$githubRepo/issues")
         }
     }
 }
