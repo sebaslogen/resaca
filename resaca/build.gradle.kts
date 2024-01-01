@@ -8,20 +8,6 @@ plugins {
     alias(libs.plugins.maven)
 }
 
-// Maven publishing configuration
-val mavenGroup: String by project
-val defaultVersion: String by project
-val currentVersion = System.getenv("PACKAGE_VERSION") ?: defaultVersion
-val desc: String by project
-val license: String by project
-val inceptionYear: String by project
-val githubRepo: String by project
-val release: String by project
-val snapshot: String by project
-
-group = mavenGroup
-version = currentVersion
-
 android {
     namespace = "com.sebaslogen.resaca"
     compileSdk = libs.versions.compileSdk.get().toInt()
@@ -76,10 +62,25 @@ dependencies {
     implementation(libs.bundles.androidx.lifecycle.viewmodel)
 }
 
+// Maven publishing configuration
+val artifactId = project.name
+val mavenGroup: String by project
+val defaultVersion: String by project
+val currentVersion = System.getenv("PACKAGE_VERSION") ?: defaultVersion
+val desc: String by project
+val license: String by project
+val inceptionYear: String by project
+val githubRepo: String by project
+val release: String by project
+val snapshot: String by project
+
+group = mavenGroup
+version = currentVersion
+
 mavenPublishing {
     publishToMavenCentral(SonatypeHost.S01)
     signAllPublications()
-    coordinates(mavenGroup, project.name, currentVersion)
+    coordinates(mavenGroup, artifactId, currentVersion)
     pom {
         name.set(project.name)
         description.set(desc)
