@@ -79,7 +79,7 @@ val defaultVersion: String by project
 val currentVersion = System.getenv("PACKAGE_VERSION") ?: defaultVersion
 val desc: String by project
 val license: String by project
-val inceptionYear: String by project
+val creationYear: String by project
 val githubRepo: String by project
 val release: String by project
 val snapshot: String by project
@@ -94,7 +94,7 @@ mavenPublishing {
     pom {
         name.set(project.name)
         description.set(desc)
-        inceptionYear.set(inceptionYear)
+        inceptionYear.set(creationYear)
         url.set("https://github.com/$githubRepo")
         licenses {
             license {
