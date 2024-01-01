@@ -1,0 +1,62 @@
+name-template: '$RESOLVED_VERSION'
+tag-template: '$RESOLVED_VERSION'
+categories:
+  - title: '🛠 Breaking Changes'
+    labels:
+      - 'breaking-change'
+      - 'major'
+      - 'Semver-Major'
+  - title: '🚀 Features'
+    labels:
+      - 'feature'
+      - 'enhancement'
+      - 'Semver-Minor'
+  - title: '🐛 Bug Fixes'
+    labels:
+      - 'fix'
+      - 'bugfix'
+      - 'bug'
+  - title: '🧰 Maintenance'
+    labels: 
+      - 'chore'
+      - 'dependencies'
+      - 'security'
+change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
+change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.
+commitish: 'main'
+version-resolver:
+  major:
+    labels:
+      - 'major'
+  minor:
+    labels:
+      - 'minor'
+  patch:
+    labels:
+      - 'patch'
+  default: patch
+autolabeler:
+  - label: 'chore'
+    files:
+      - '*.md'
+      - '*.yml'
+      - '*.yaml'
+    branch:
+      - '/docs{0,1}\/.+/'
+    title:
+      - "/chore/i"
+      - "/ci/i"
+  - label: 'bug'
+    branch:
+      - '/fix\/.+/'
+    title:
+      - '/fix/i'
+  - label: 'feature'
+    files:
+      - '*.kt'
+    branch:
+      - '/feature\/.+/'
+template: |
+  ## Changes
+
+  $CHANGES
