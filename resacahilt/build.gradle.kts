@@ -10,8 +10,6 @@ plugins {
     alias(libs.plugins.maven)
 }
 
-group = "com.github.sebaslogen"
-
 android {
     namespace = "com.sebaslogen.resaca.hilt"
     compileSdk = libs.versions.compileSdk.get().toInt()
@@ -73,6 +71,9 @@ dependencies {
     implementation(libs.dagger.hilt.navigation.compose)
     ksp(libs.dagger.hilt.android.compiler)
 }
+
+group = "io.github.sebaslogen"
+version = System.getenv("PACKAGE_VERSION") ?: "1.0.0"
 
 object Meta {
     const val desc = "Android library to scope ViewModels to a Composable, surviving configuration changes and navigation"

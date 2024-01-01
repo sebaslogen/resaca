@@ -8,8 +8,6 @@ plugins {
     alias(libs.plugins.maven)
 }
 
-group = "com.github.sebaslogen"
-
 android {
     namespace = "com.sebaslogen.resaca.koin"
     compileSdk = libs.versions.compileSdk.get().toInt()
@@ -67,6 +65,9 @@ dependencies {
     // Integration with ViewModels
     implementation(libs.bundles.androidx.lifecycle.viewmodel)
 }
+
+group = "io.github.sebaslogen"
+version = System.getenv("PACKAGE_VERSION") ?: "1.0.0"
 
 object Meta {
     const val desc = "Android library to scope ViewModels to a Composable, surviving configuration changes and navigation"
