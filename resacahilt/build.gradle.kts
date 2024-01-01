@@ -84,7 +84,7 @@ object Meta {
     const val snapshot = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
 }
 
-val artifactId = "resacakoin"
+val artifactId = "resacahilt"
 mavenPublishing {
     publishToMavenCentral(SonatypeHost.S01)
     signAllPublications()
