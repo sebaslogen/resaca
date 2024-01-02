@@ -1,4 +1,4 @@
-[![Release](https://jitpack.io/v/sebaslogen/resaca.svg)](https://jitpack.io/#sebaslogen/resaca)
+[![Maven Central Release](https://maven-badges.herokuapp.com/maven-central/io.github.sebaslogen/resaca/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.sebaslogen/resaca)
 [![Build Status](https://github.com/sebaslogen/resaca/actions/workflows/build.yml/badge.svg)](https://github.com/sebaslogen/resaca/actions/workflows/build.yml)
 [![API 21+](https://img.shields.io/badge/API-21%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=21)
 [![GitHub license](https://img.shields.io/github/license/sebaslogen/resaca)](https://github.com/sebaslogen/resaca/blob/main/LICENSE)
@@ -49,7 +49,7 @@ dependencyResolutionManagement {
 // In module's build.gradle.kts
 dependencies {
     // The latest version of the lib is available in the badget at the top, replace X.X.X with that version
-    implementation("com.github.sebaslogen.resaca:resaca:X.X.X")
+    implementation("io.github.sebaslogen.resaca:resaca:X.X.X")
 }
 ```
 </details>
@@ -58,15 +58,9 @@ dependencies {
   <summary>Groovy</summary>
   
 ```gradle
-allprojects {
-    repositories {
-        [..]
-        maven { url "https://jitpack.io" }
-    }
-}
 dependencies {
-    // The latest version of the lib is available in the badget at the top, replace X.X.X with that version
-    implementation 'com.github.sebaslogen.resaca:resaca:X.X.X'
+    // The latest version of the lib is available in the badget at the top from Maven Central, replace X.X.X with that version
+    implementation 'io.github.sebaslogen.resaca:resaca:X.X.X'
 }
 ```
 </details>
