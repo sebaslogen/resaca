@@ -1,7 +1,9 @@
+[![Maven Central Release](https://maven-badges.herokuapp.com/maven-central/io.github.sebaslogen/resacakoin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.sebaslogen/resacakoin)
 [![Build Status](https://github.com/sebaslogen/resaca/actions/workflows/build.yml/badge.svg)](https://github.com/sebaslogen/resaca/actions/workflows/build.yml)
-[![Release](https://jitpack.io/v/sebaslogen/resaca.svg)](https://jitpack.io/#sebaslogen/resaca)
 [![API 21+](https://img.shields.io/badge/API-21%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=21)
 [![GitHub license](https://img.shields.io/github/license/sebaslogen/resaca)](https://github.com/sebaslogen/resaca/blob/main/LICENSE)
+[![Kotlin Weekly](https://user-images.githubusercontent.com/1936647/277181222-6aba882e-eafe-4a38-b8ef-631bb66b442f.svg)](https://mailchi.mp/kotlinweekly/kotlin-weekly-285)
+[![Android Weekly](https://github-production-user-asset-6210df.s3.amazonaws.com/1936647/277184200-dbb226b8-9730-49b0-8b7e-23873debea1e.svg)](https://androidweekly.net/issues/issue-593)
 
 # Resaca Koin 🍹🪙
 
@@ -26,23 +28,16 @@ Until now...
 
 # Installation
 
-Add the Jitpack repo and include the library:
+Just include the library:
 
 <details open>
   <summary>Kotlin (KTS)</summary>
   
 ```kotlin
-// In settings.gradle.kts
-dependencyResolutionManagement {
-    repositories {
-         [..]
-         maven { setUrl("https://jitpack.io") }
-    }
-}
 // In module's build.gradle.kts
 dependencies {
-    // The latest version of the lib is available in the badget at the top, replace X.X.X with that version
-    implementation("com.github.sebaslogen.resaca:resacakoin:X.X.X")
+    // The latest version of the lib is available in the badget at the top from Maven Central, replace X.X.X with that version
+    implementation("io.github.sebaslogen.resaca:resacakoin:X.X.X")
 }
 ```
 </details>
@@ -51,15 +46,9 @@ dependencies {
   <summary>Groovy</summary>
   
 ```gradle
-allprojects {
-    repositories {
-        [..]
-        maven { url "https://jitpack.io" }
-    }
-}
 dependencies {
-    // The latest version of the lib is available in the badget at the top, replace X.X.X with that version
-    implementation 'com.github.sebaslogen.resaca:resacakoin:X.X.X'
+    // The latest version of the lib is available in the badget at the top from Maven Central, replace X.X.X with that version
+    implementation 'io.github.sebaslogen.resaca:resacakoin:X.X.X'
 }
 ```
 </details>
