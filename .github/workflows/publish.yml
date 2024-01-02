@@ -25,6 +25,37 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
+      - name: Cache gradle, wrapper and buildSrc
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/buildSrc/**/*.kt') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Cache konan
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.konan/cache
+            ~/.konan/dependencies
+            ~/.konan/kotlin-native-macos*
+            ~/.konan/kotlin-native-mingw*
+            ~/.konan/kotlin-native-windows*
+            ~/.konan/kotlin-native-linux*
+            ~/.konan/kotlin-native-prebuilt-macos*
+            ~/.konan/kotlin-native-prebuilt-mingw*
+            ~/.konan/kotlin-native-prebuilt-windows*
+            ~/.konan/kotlin-native-prebuilt-linux*
+          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-konan-
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+        
       - name: Publish
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.JRELEASER_NEXUS2_USERNAME }}
@@ -32,4 +63,15 @@ jobs:
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_SIGNING_KEY }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.JRELEASER_GPG_PASSPHRASE }}
           PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
-        run: ./gradlew publish --no-daemon --stacktrace --no-build-cache
+        run: ./gradlew publish --stacktrace
+
+      - name: Finish Maven Central Release
+        env:
+          ORG_GRADLE_PROJECT_SONATYPE_NEXUS_USERNAME: ${{ secrets.JRELEASER_NEXUS2_USERNAME }}
+          ORG_GRADLE_PROJECT_SONATYPE_NEXUS_PASSWORD: ${{ secrets.JRELEASER_NEXUS2_PASSWORD }}
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.JRELEASER_NEXUS2_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.JRELEASER_NEXUS2_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.JRELEASER_GPG_PASSPHRASE }}
+          PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
+        run: ./gradlew closeAndReleaseRepository --no-daemon --stacktrace
