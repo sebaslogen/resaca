@@ -18,7 +18,8 @@ dependencyResolutionManagement {
 }
 rootProject.name = "resaca"
 
-if (System.getenv("JITPACK") == null) // Remove the sample app to reduce Jitpack builds
+val ghWorkflow = System.getenv("GITHUB_WORKFLOW")
+if (ghWorkflow == null || !ghWorkflow.contains("Maven")) // Remove the sample app from Maven publication builds
     include(":sample")
 
 include(
