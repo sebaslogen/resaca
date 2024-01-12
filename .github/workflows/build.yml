@@ -22,17 +22,17 @@ jobs:
       - name: Run API Check
         run: ./gradlew apiCheck
         env:
-          GITHUB_WORKFLOW: ${{ env.GITHUB_WORKFLOW }}
+          CI: ${{ github.GITHUB_WORKFLOW }}
 
       - name: Run Lint
         run: ./gradlew lint
         env:
-          GITHUB_WORKFLOW: ${{ env.GITHUB_WORKFLOW }}
+          CI: ${{ github.GITHUB_WORKFLOW }}
 
       - name: Run tests with code coverage
         run: ./gradlew check
         env:
-          GITHUB_WORKFLOW: ${{ env.GITHUB_WORKFLOW }}
+          CI: ${{ github.GITHUB_WORKFLOW }}
         
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
