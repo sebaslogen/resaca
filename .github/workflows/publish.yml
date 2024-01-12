@@ -63,7 +63,7 @@ jobs:
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_SIGNING_KEY }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.JRELEASER_GPG_PASSPHRASE }}
           PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
-          GITHUB_WORKFLOW: ${{ env.GITHUB_WORKFLOW }}
+          CI: ${{ github.GITHUB_WORKFLOW }}
         run: ./gradlew publish --stacktrace
 
       - name: Finish Maven Central Release
@@ -75,5 +75,5 @@ jobs:
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_SIGNING_KEY }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.JRELEASER_GPG_PASSPHRASE }}
           PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
-          GITHUB_WORKFLOW: ${{ env.GITHUB_WORKFLOW }}
+          CI: ${{ github.GITHUB_WORKFLOW }}
         run: ./gradlew closeAndReleaseRepository --no-daemon --stacktrace
