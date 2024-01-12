@@ -19,7 +19,8 @@ plugins {
 val sampleModuleName = "sample"
 
 apiValidation {
-    if (System.getenv("JITPACK") == null) // This block is only applicable outside of Jitpack (local builds)
+    if (System.getenv("JITPACK") == null || System.getenv("GITHUB_WORKFLOW") == null )
+        // This block is only applicable on local builds
         ignoredProjects.addAll(listOf(sampleModuleName))
 }
 
