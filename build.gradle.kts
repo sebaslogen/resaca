@@ -19,9 +19,9 @@ plugins {
 val sampleModuleName = "sample"
 
 apiValidation {
-    if (System.getenv("JITPACK") == null && System.getenv("CI_FLOW") == null ) {
+    val ci = System.getenv("CI_FLOW")
+    if (ci == null || !ci.contains("Maven")) { // This block is only applicable on build that include the sample app
         println("ApiValidation is being ignored for module $sampleModuleName in local builds")
-        // This block is only applicable on local builds
         ignoredProjects.addAll(listOf(sampleModuleName))
     }
 }
