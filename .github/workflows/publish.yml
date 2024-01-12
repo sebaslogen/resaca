@@ -76,4 +76,4 @@ jobs:
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.JRELEASER_GPG_PASSPHRASE }}
           PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
           CI_FLOW: ${{ github.workflow }}
-        run: ./gradlew closeAndReleaseRepository --no-daemon --stacktrace
+        run: ./gradlew releaseRepository --no-daemon --stacktrace
