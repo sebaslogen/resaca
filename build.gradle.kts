@@ -19,9 +19,11 @@ plugins {
 val sampleModuleName = "sample"
 
 apiValidation {
-    if (System.getenv("JITPACK") == null || System.getenv("GITHUB_WORKFLOW") == null )
+    if (System.getenv("JITPACK") == null || System.getenv("GITHUB_WORKFLOW") == null ) {
+        println("ApiValidation is being ignored for module $sampleModuleName in local builds")
         // This block is only applicable on local builds
         ignoredProjects.addAll(listOf(sampleModuleName))
+    }
 }
 
 tasks.register("clean", Delete::class) {
