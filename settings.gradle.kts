@@ -17,7 +17,7 @@ dependencyResolutionManagement {
 }
 rootProject.name = "resaca"
 
-val ci = System.getenv("CI")
+val ci = System.getenv("CI_FLOW")
 println("Running on CI flow: $ci")
 if (ci == null || !ci.contains("Maven")) // Remove the sample app from Maven publication builds
     include(":sample")
