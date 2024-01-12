@@ -1,6 +1,6 @@
 [versions]
 agp = "8.2.1"
-kotlin = '1.9.21'
+kotlin = '1.9.22'
 compileSdk = '34'
 minSdk = '21'
 targetSdk = '34'
@@ -15,7 +15,7 @@ dokka = '1.9.10'
 maven = '0.27.0'
 # Compose
 compose-bom = '2023.10.01' # https://developer.android.com/jetpack/compose/bom/bom-mapping
-compose-compiler = '1.5.7'
+compose-compiler = '1.5.8'
 # Compose integration with Activities
 androidx-activity = '1.8.2'
 # Compose integration with ViewModels
@@ -23,7 +23,7 @@ androidx-lifecycle = '2.6.2'
 # Hilt
 hilt = '2.50'
 hilt-navigation-compose = '1.1.0'
-ksp = '1.9.21-1.0.16'
+ksp = '1.9.22-1.0.16'
 # Koin
 koin = '3.5.3'
 # Test
