@@ -18,6 +18,7 @@ dependencyResolutionManagement {
 rootProject.name = "resaca"
 
 val ghWorkflow = System.getenv("GITHUB_WORKFLOW")
+println("Running on GitHub workflow(GITHUB_WORKFLOW): $ghWorkflow")
 if (ghWorkflow == null || !ghWorkflow.contains("Maven")) // Remove the sample app from Maven publication builds
     include(":sample")
 
