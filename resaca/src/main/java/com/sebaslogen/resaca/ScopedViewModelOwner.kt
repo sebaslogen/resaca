@@ -1,8 +1,12 @@
 package com.sebaslogen.resaca
 
-import android.os.Bundle
 import androidx.compose.runtime.DisallowComposableCalls
-import androidx.lifecycle.*
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion as ViewModelFactory
 
 /**
@@ -18,19 +22,19 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion as
  * @param key Unique [key] required to support [SavedStateHandle] across multiple instances of the same [ViewModel] type. See [ViewModelFactory.DEFAULT_KEY].
  * @param modelClass Class type of the [ViewModel] to instantiate
  * @param factory [ViewModelProvider] factory to create the requested [ViewModel] when required
- * @param defaultArguments [Bundle] of default arguments that will be provided to the [ViewModel] through the [SavedStateHandle]
+ * @param creationExtras [CreationExtras] with default arguments that will be provided to the [ViewModel] through the [SavedStateHandle] and creationCallbacks.
  * @param viewModelStoreOwner Used to extract possible defaultViewModelCreationExtras and defaultViewModelProviderFactory
  */
 public class ScopedViewModelOwner<T : ViewModel>(
     private val key: String,
     private val modelClass: Class<T>,
     private val factory: ViewModelProvider.Factory?,
-    defaultArguments: Bundle,
+    creationExtras: CreationExtras,
     viewModelStoreOwner: ViewModelStoreOwner
 ) {
 
     private val viewModelStore = ViewModelStore()
-    private val scopedViewModelProvider = ScopedViewModelProvider(factory, viewModelStore, defaultArguments, viewModelStoreOwner)
+    private val scopedViewModelProvider = ScopedViewModelProvider(factory, viewModelStore, creationExtras, viewModelStoreOwner)
 
     internal val viewModel: T
         @Suppress("ReplaceGetOrSet")

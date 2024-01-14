@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -201,13 +202,42 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         viewModelStoreOwner: ViewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
             "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
         }
+    ): T {
+        val creationExtras =
+            if (viewModelStoreOwner is HasDefaultViewModelProviderFactory) {
+                viewModelStoreOwner.defaultViewModelCreationExtras
+            } else {
+                CreationExtras.Empty
+            }.addDefaultArguments(defaultArguments)
+
+        return getOrBuildViewModel(
+            modelClass = modelClass,
+            positionalMemoizationKey = positionalMemoizationKey,
+            externalKey = externalKey,
+            factory = factory,
+            creationExtras = creationExtras,
+            viewModelStoreOwner = viewModelStoreOwner
+        )
+    }
+
+    /**
+     * Restore or build a [ViewModel] using a factory provided or the default factory if none is provided
+     */
+    @Composable
+    public fun <T : ViewModel> getOrBuildViewModel(
+        modelClass: Class<T>,
+        positionalMemoizationKey: InternalKey,
+        externalKey: ExternalKey,
+        factory: ViewModelProvider.Factory?,
+        creationExtras: CreationExtras,
+        viewModelStoreOwner: ViewModelStoreOwner
     ): T = ScopedViewModelUtils.getOrBuildViewModel(
         modelClass = modelClass,
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
         factory = factory,
         viewModelStoreOwner = viewModelStoreOwner,
-        defaultArguments = defaultArguments,
+        creationExtras = creationExtras,
         scopedObjectsContainer = scopedObjectsContainer,
         scopedObjectKeys = scopedObjectKeys,
         cancelDisposal = ::cancelDisposal

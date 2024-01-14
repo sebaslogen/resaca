@@ -1,6 +1,5 @@
 package com.sebaslogen.resaca
 
-import android.os.Bundle
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -36,7 +35,7 @@ internal object ScopedViewModelUtils {
         externalKey: ExternalKey,
         factory: ViewModelProvider.Factory?,
         viewModelStoreOwner: ViewModelStoreOwner,
-        defaultArguments: Bundle,
+        creationExtras: CreationExtras,
         scopedObjectsContainer: MutableMap<InternalKey, Any>,
         scopedObjectKeys: MutableMap<InternalKey, ExternalKey>,
         cancelDisposal: ((InternalKey) -> Unit)
@@ -63,7 +62,7 @@ internal object ScopedViewModelUtils {
                     key = positionalMemoizationKey + externalKey, // Both keys needed to handle recreation by ViewModelProvider when any of these keys changes
                     modelClass = modelClass,
                     factory = factory,
-                    defaultArguments = defaultArguments,
+                    creationExtras = creationExtras,
                     viewModelStoreOwner = viewModelStoreOwner
                 )
                 scopedObjectsContainer[positionalMemoizationKey] = newScopedViewModelOwner
