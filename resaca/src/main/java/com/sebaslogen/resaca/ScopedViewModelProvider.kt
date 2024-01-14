@@ -1,7 +1,5 @@
 package com.sebaslogen.resaca
 
-import android.os.Bundle
-import androidx.lifecycle.DEFAULT_ARGS_KEY
 import androidx.lifecycle.HasDefaultViewModelProviderFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -9,7 +7,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.CreationExtras
-import androidx.lifecycle.viewmodel.MutableCreationExtras
 
 /**
  * This class provides a [ViewModelProvider] though its public [viewModelProvider] field.
@@ -22,16 +19,16 @@ import androidx.lifecycle.viewmodel.MutableCreationExtras
  *
  * @param factory [ViewModelProvider] factory to create the requested [ViewModel] when required
  * @param viewModelStore Used to store and clear the [ViewModel]
- * @param defaultArguments [Bundle] of default arguments that will be provided to the [ViewModel] through the [SavedStateHandle]
+ * @param creationExtras [CreationExtras] with default arguments that will be provided to the [ViewModel] through the [SavedStateHandle] and creationCallbacks.
  * @param viewModelStoreOwner Used to extract possible defaultViewModelCreationExtras and defaultViewModelProviderFactory
  */
 internal class ScopedViewModelProvider(
     private val factory: ViewModelProvider.Factory?,
     private val viewModelStore: ViewModelStore,
-    private val defaultArguments: Bundle,
+    private val creationExtras: CreationExtras,
     viewModelStoreOwner: ViewModelStoreOwner
 ) {
-    private var extras: CreationExtras = CreationExtras.Empty.addDefaultArguments()
+    //    private var extras: CreationExtras = CreationExtras.Empty.addDefaultArguments()
     private var viewModelStoreOwnerDefaultViewModelProviderFactory: ViewModelProvider.Factory? = null
     lateinit var viewModelProvider: ViewModelProvider
         private set
@@ -47,17 +44,10 @@ internal class ScopedViewModelProvider(
     }
 
     private fun updateViewModelProviderDependencies(viewModelStoreOwner: ViewModelStoreOwner): Boolean {
-        val newExtras =
-            if (viewModelStoreOwner is HasDefaultViewModelProviderFactory) {
-                viewModelStoreOwner.defaultViewModelCreationExtras
-            } else {
-                CreationExtras.Empty
-            }.addDefaultArguments()
         val newViewModelStoreOwnerDefaultViewModelProviderFactory =
             (viewModelStoreOwner as? HasDefaultViewModelProviderFactory)?.defaultViewModelProviderFactory
 
-        if (extras != newExtras || newViewModelStoreOwnerDefaultViewModelProviderFactory != viewModelStoreOwnerDefaultViewModelProviderFactory) {
-            extras = newExtras
+        if (newViewModelStoreOwnerDefaultViewModelProviderFactory != viewModelStoreOwnerDefaultViewModelProviderFactory) {
             viewModelStoreOwnerDefaultViewModelProviderFactory = newViewModelStoreOwnerDefaultViewModelProviderFactory
             return true
         }
@@ -73,26 +63,12 @@ internal class ScopedViewModelProvider(
     private fun updateViewModelProvider() {
         val defaultFactory = viewModelStoreOwnerDefaultViewModelProviderFactory
         viewModelProvider = when {
-            factory != null -> ViewModelProvider(viewModelStore, factory, extras)
-            defaultFactory != null -> ViewModelProvider(viewModelStore, defaultFactory, extras)
+            factory != null -> ViewModelProvider(viewModelStore, factory, creationExtras)
+            defaultFactory != null -> ViewModelProvider(viewModelStore, defaultFactory, creationExtras)
             else -> ViewModelProvider(owner = object : ViewModelStoreOwner {
                 override val viewModelStore: ViewModelStore
                     get() = this@ScopedViewModelProvider.viewModelStore
             })
         }
     }
-
-    /**
-     * Combine the default arguments present in the receiver's [CreationExtras] under the key [DEFAULT_ARGS_KEY] with the [defaultArguments] of this class.
-     * When the default arguments are not present just add them.
-     */
-    private fun CreationExtras.addDefaultArguments(): CreationExtras =
-        if (defaultArguments.isEmpty) {
-            this
-        } else {
-            MutableCreationExtras(this).apply {
-                val combinedBundle = (get(DEFAULT_ARGS_KEY) ?: Bundle()).apply { putAll(defaultArguments) }
-                set(DEFAULT_ARGS_KEY, combinedBundle)
-            }
-        }
 }

@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.sebaslogen.resacaapp.sample.ui.main.NavigationButtons
 import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoNotScopedObjectComposable
+import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedHiltAssistedInjectionViewModelComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedHiltInjectedViewModelComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedObjectComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedSecondHiltInjectedViewModelComposable
@@ -35,6 +36,7 @@ fun ComposeScreenWithHiltViewModelScoped(navController: NavHostController) {
             DemoScopedHiltInjectedViewModelComposable()
         }
         DemoScopedSecondHiltInjectedViewModelComposable()
+        DemoScopedHiltAssistedInjectionViewModelComposable()
         NavigationButtons(navController)
     }
 }

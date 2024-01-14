@@ -7,10 +7,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.HiltViewModelFactory
+import androidx.lifecycle.HasDefaultViewModelProviderFactory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.NavBackStackEntry
 import com.sebaslogen.resaca.KeyInScopeResolver
@@ -20,8 +22,10 @@ import com.sebaslogen.resaca.ScopedViewModelContainer.ExternalKey
 import com.sebaslogen.resaca.ScopedViewModelContainer.InternalKey
 import com.sebaslogen.resaca.ScopedViewModelOwner
 import com.sebaslogen.resaca.generateKeysAndObserveLifecycle
+import dagger.assisted.Assisted
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.lifecycle.withCreationCallback
 
 
 /**
@@ -89,6 +93,48 @@ public inline fun <reified T : ViewModel> hiltViewModelScoped(key: Any? = null, 
         factory = createHiltViewModelFactory(viewModelStoreOwner),
         viewModelStoreOwner = viewModelStoreOwner,
         defaultArguments = defaultArguments
+    )
+}
+
+/** TODO
+ * Return a [ViewModel] (annotated with [HiltViewModel]) provided by a Hilt [ViewModelProvider.Factory] and a [ViewModelProvider].
+ * The [ViewModel] will keep in memory for as long as needed, and until the requester Composable is permanently gone.
+ * This means, it retains the [ViewModel] across recompositions, during configuration changes, and
+ * also when the container Fragment or Compose Navigation destination goes into the backstack.
+ *
+ * The returned [ViewModel] is provided by the [ViewModelProvider] using a Hilt [ViewModelProvider.Factory] and a [ViewModelStore].
+ * The [ViewModel] will be created and stored by the [ViewModelProvider] in the [ViewModelStore].
+ * The [ScopedViewModelOwner] will be the object stored in the [ScopedViewModelContainer] and
+ * the [ScopedViewModelContainer] will be in charge of keeping the [ScopedViewModelOwner] and its [ViewModel] in memory for as long as needed.
+ *
+ * Internally, a key will be generated for this [ScopedViewModelOwner] in the Compose tree and if a [ScopedViewModelOwner] is present
+ * for this key in the [ScopedViewModelContainer], then it will be used to invoke [ViewModelProvider] to return an existing [ViewModel],
+ * instead of creating a new [ScopedViewModelOwner] that produces a new [ViewModel] instance when the keys don't match.
+ *
+ * @param key Key to track the version of the [ViewModel]. Changing [key] between compositions will produce and store a new [ViewModel].
+ * @param extrasProducer A [CreationExtras] extras producer to add callbacks for [Assisted] injection using [withCreationCallback].
+ */
+@Composable
+public inline fun <reified T : ViewModel> hiltViewModelScoped(key: Any? = null, noinline extrasProducer: (CreationExtras) -> CreationExtras): T {
+    val (scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: InternalKey, externalKey: ExternalKey) =
+        generateKeysAndObserveLifecycle(key = key)
+
+    val viewModelStoreOwner: ViewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
+        "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
+    }
+
+    val defaultCreationExtras =
+        if (viewModelStoreOwner is HasDefaultViewModelProviderFactory) viewModelStoreOwner.defaultViewModelCreationExtras else CreationExtras.Empty
+    val creationExtras = extrasProducer(defaultCreationExtras)
+
+    // The object will be built the first time and retrieved in next calls or recompositions
+    return scopedViewModelContainer.getOrBuildViewModel(
+        modelClass = T::class.java,
+        positionalMemoizationKey = positionalMemoizationKey,
+        externalKey = externalKey,
+        factory = createHiltViewModelFactory(viewModelStoreOwner),
+        viewModelStoreOwner = viewModelStoreOwner,
+        creationExtras = creationExtras
     )
 }
 
