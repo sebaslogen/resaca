@@ -9,12 +9,10 @@ import androidx.lifecycle.ViewModel
 import com.sebaslogen.resaca.hilt.hiltViewModelScoped
 import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoComposable
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeAssistedInjectionViewModel
-import com.sebaslogen.resacaapp.sample.ui.main.data.FakeAssistedInjectionViewModelFactory
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeInjectedRepo
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeInjectedViewModel
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeSecondInjectedViewModel
 import com.sebaslogen.resacaapp.sample.viewModelsClearedGloballySharedCounter
-import dagger.hilt.android.lifecycle.withCreationCallback
 
 /**
  * Create a [ViewModel] with resaca's [hiltViewModelScoped] function to let
