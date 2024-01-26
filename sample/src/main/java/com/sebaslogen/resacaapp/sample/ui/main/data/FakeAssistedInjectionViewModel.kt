@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.CreationExtras
 import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.concurrent.atomic.AtomicInteger
@@ -18,7 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger
  * @param viewModelsClearedCounter Is a counter to inform the providers of this parameter that this ViewModel has been correctly cleared
  * @param viewModelId Is a dependency that will be provided by assisted injection via [CreationExtras] callback.
  */
-@HiltViewModel(assistedFactory = FakeAssistedInjectionViewModelFactory::class)
+@HiltViewModel(assistedFactory = FakeAssistedInjectionViewModel.FakeAssistedInjectionViewModelFactory::class)
 class FakeAssistedInjectionViewModel @AssistedInject constructor(
     private val stateSaver: SavedStateHandle,
     private val repository: FakeInjectedRepo,
@@ -28,5 +29,10 @@ class FakeAssistedInjectionViewModel @AssistedInject constructor(
     override fun onCleared() {
         viewModelsClearedCounter.incrementAndGet()
         super.onCleared()
+    }
+
+    @AssistedFactory
+    interface FakeAssistedInjectionViewModelFactory {
+        fun create(viewModelId: Int): FakeAssistedInjectionViewModel
     }
 }
