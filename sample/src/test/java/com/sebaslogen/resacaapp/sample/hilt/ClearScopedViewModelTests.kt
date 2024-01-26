@@ -76,7 +76,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
         val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
 
         // Then the Hilt scoped ViewModel from the second screen is cleared
-        assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 2) {
+        assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 3) {
             "The amount of FakeInjectedViewModels that were cleared after back navigation ($finalAmountOfViewModelsCleared) " +
                     "was not as high as expected compared to the amount before navigating ($initialAmountOfViewModelsCleared)"
         }
