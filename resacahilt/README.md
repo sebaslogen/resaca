@@ -210,17 +210,53 @@ class MyViewModel @Inject constructor(private val stateSaver: SavedStateHandle) 
 Assisted injection is a dependency injection (DI) pattern that is used to construct an object where some parameters may be provided by the DI framework and
 others must be passed in at creation time (a.k.a “assisted”) by the user, in our case when the `hiltViewModelScoped` is requested.
 
+### Dagger
 If you use Dagger (instead of Hilt), it is possible to use Assisted Injection because it is supported in the
 library. [See the official documentation](https://dagger.dev/dev-guide/assisted-injection.html). To use Dagger in combination with scoped ViewModels you need to
 use the vanilla `viewModelScoped` from [the Resaca library](https://github.com/sebaslogen/resaca) and use one of Dagger providers as parameter
 of `viewModelScoped`.
 
-**Unfortunately, Assisted Injection is not supported by Hilt** at the moment and the feature request is open with no clear
-plans: https://github.com/google/dagger/issues/2287
+### Hilt
+Assisted Injection is supported by Hilt, see the [official documentation](https://dagger.dev/hilt/assisted-injection.html). To use Hilt in combination with
+scoped ViewModels you need to use the `hiltViewModelScoped` with `creationCallback` parameter from this library and do four things:
 
-# Pseudo Assisted Injection support
+- Create a factory interface that has a function to return your ViewModel and annotate it with `@AssistedFactory`
+- Add the `assistedFactory` parameter to the `@HiltViewModel` annotation of your ViewModel and set it to the factory interface you created in the previous step. 
+- Add the `@AssistedInject` annotation the constructor of your ViewModel.
+- Add the `@Assisted` annotation to the parameters of the constructor of your ViewModel that you want to be provided by the `hiltViewModelScoped` function.
 
-The `hiltViewModelScoped` function accepts a `defaultArguments: Bundle` parameter, this Bundle will be provided to your ViewModel as long as the constructor of your ViewModel contains a `SavedStateHandle` parameter. With this Bundle you can provide default arguments to each ViewModel from the Composable call site. This way, you can have multiple ViewModels in the same Composable with different ids.
+<details>
+  <summary>Example of ViewModel with Assisted injection</summary>
+
+```kotlin
+@Composable
+fun DemoAssitedInjectedViewModelScoped(myViewModelId: String) {
+    val myScopedVM: MyViewModel = hiltViewModelScoped(key = myViewModelId) { myViewModelFactory: MyViewModel.Factory ->
+        myViewModelFactory.create(myViewModelId)
+    }
+    DemoComposable(inputObject = myScopedVM)
+}
+
+@HiltViewModel(assistedFactory = MyViewModel.Factory::class)
+class MyViewModel @AssistedInject constructor(
+    @Assisted private val viewModelId: String,
+    private val stateSaver: SavedStateHandle
+) : ViewModel() {
+
+    @AssistedFactory
+    interface Factory {
+        fun create(viewModelId: String): FakeAssistedInjectionViewModel
+    }
+}
+```
+</details>
+
+## Pseudo Assisted Injection support
+
+In addition to the official assisted injection introduced in Hilt in 2023, the `hiltViewModelScoped` function accepts a `defaultArguments: Bundle` parameter, 
+this Bundle will be provided to your ViewModel as long as the constructor of your ViewModel contains a `SavedStateHandle` parameter. 
+With this Bundle you can provide default arguments to each ViewModel from the Composable call site. 
+This way, you can have multiple ViewModels in the same Composable with different ids.
 
 Usage example:
 
