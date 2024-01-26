@@ -23,6 +23,7 @@ import com.sebaslogen.resaca.ScopedViewModelContainer.InternalKey
 import com.sebaslogen.resaca.ScopedViewModelOwner
 import com.sebaslogen.resaca.generateKeysAndObserveLifecycle
 import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.lifecycle.withCreationCallback
@@ -96,8 +97,12 @@ public inline fun <reified T : ViewModel> hiltViewModelScoped(key: Any? = null, 
     )
 }
 
-/** TODO
- * Return a [ViewModel] (annotated with [HiltViewModel]) provided by a Hilt [ViewModelProvider.Factory] and a [ViewModelProvider].
+/**
+ * Return a [ViewModel] (annotated with [HiltViewModel]) provided by a custom factory (see [AssistedFactory]),
+ * a Hilt [ViewModelProvider.Factory] and a [ViewModelProvider].
+ * The [AssistedFactory] will be used to create the [ViewModel] with one or more parameter provided outside of Hilt/dependency injection.
+ * For more documentation about Hilt assisted injection see https://dagger.dev/hilt/view-model#assisted-injection
+ *
  * The [ViewModel] will keep in memory for as long as needed, and until the requester Composable is permanently gone.
  * This means, it retains the [ViewModel] across recompositions, during configuration changes, and
  * also when the container Fragment or Compose Navigation destination goes into the backstack.
@@ -111,11 +116,19 @@ public inline fun <reified T : ViewModel> hiltViewModelScoped(key: Any? = null, 
  * for this key in the [ScopedViewModelContainer], then it will be used to invoke [ViewModelProvider] to return an existing [ViewModel],
  * instead of creating a new [ScopedViewModelOwner] that produces a new [ViewModel] instance when the keys don't match.
  *
+ * Usage example:
+ * val myViewModel: MyViewModel =
+ *             hiltViewModelScoped(key = key) { factory: MyViewModelFactory ->
+ *                 factory.create(
+ *                     myViewModelId = someIdAvailableInMyComposable
+ *                 )
+ *             }
+ *
  * @param key Key to track the version of the [ViewModel]. Changing [key] between compositions will produce and store a new [ViewModel].
- * @param extrasProducer A [CreationExtras] extras producer to add callbacks for [Assisted] injection using [withCreationCallback].
+ * @param creationCallback A callback to pass [ViewModel] creation [Assisted] parameters to Hilt using your [AssistedFactory].
  */
 @Composable
-public inline fun <reified T : ViewModel> hiltViewModelScoped(key: Any? = null, noinline extrasProducer: (CreationExtras) -> CreationExtras): T {
+public inline fun <reified VM : ViewModel, reified VMF> hiltViewModelScoped(key: Any? = null, noinline creationCallback: (VMF) -> VM): VM {
     val (scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: InternalKey, externalKey: ExternalKey) =
         generateKeysAndObserveLifecycle(key = key)
 
@@ -125,11 +138,11 @@ public inline fun <reified T : ViewModel> hiltViewModelScoped(key: Any? = null, 
 
     val defaultCreationExtras =
         if (viewModelStoreOwner is HasDefaultViewModelProviderFactory) viewModelStoreOwner.defaultViewModelCreationExtras else CreationExtras.Empty
-    val creationExtras = extrasProducer(defaultCreationExtras)
+    val creationExtras = defaultCreationExtras.withCreationCallback(creationCallback)
 
     // The object will be built the first time and retrieved in next calls or recompositions
     return scopedViewModelContainer.getOrBuildViewModel(
-        modelClass = T::class.java,
+        modelClass = VM::class.java,
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
         factory = createHiltViewModelFactory(viewModelStoreOwner),
