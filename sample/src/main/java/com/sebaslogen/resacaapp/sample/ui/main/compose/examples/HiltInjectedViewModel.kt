@@ -65,7 +65,7 @@ fun DemoScopedHiltAssistedInjectionViewModelComposable(key: String? = null, fake
                 viewModelId = fakeInjectedViewModelId
             )
         } else {
-            hiltViewModelScoped(key = key) { factory: FakeAssistedInjectionViewModelFactory ->
+            hiltViewModelScoped(key = key) { factory: FakeAssistedInjectionViewModel.FakeAssistedInjectionViewModelFactory ->
                 factory.create(
                     viewModelId = fakeInjectedViewModelId
                 )
