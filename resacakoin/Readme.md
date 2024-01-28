@@ -37,7 +37,7 @@ Just include the library:
 // In module's build.gradle.kts
 dependencies {
     // The latest version of the lib is available in the badget at the top from Maven Central, replace X.X.X with that version
-    implementation("io.github.sebaslogen.resaca:resacakoin:X.X.X")
+    implementation("io.github.sebaslogen:resacakoin:X.X.X")
 }
 ```
 </details>
@@ -48,7 +48,7 @@ dependencies {
 ```gradle
 dependencies {
     // The latest version of the lib is available in the badget at the top from Maven Central, replace X.X.X with that version
-    implementation 'io.github.sebaslogen.resaca:resacakoin:X.X.X'
+    implementation 'io.github.sebaslogen:resacakoin:X.X.X'
 }
 ```
 </details>
