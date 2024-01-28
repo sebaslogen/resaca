@@ -42,7 +42,7 @@ Just include the library (less than 5Kb):
 // In module's build.gradle.kts
 dependencies {
     // The latest version of the lib is available in the badget at the top from Maven Central, replace X.X.X with that version
-    implementation("io.github.sebaslogen.resaca:resaca:X.X.X")
+    implementation("io.github.sebaslogen:resaca:X.X.X")
 }
 ```
 </details>
@@ -53,7 +53,7 @@ dependencies {
 ```gradle
 dependencies {
     // The latest version of the lib is available in the badget at the top from Maven Central, replace X.X.X with that version
-    implementation 'io.github.sebaslogen.resaca:resaca:X.X.X'
+    implementation 'io.github.sebaslogen:resaca:X.X.X'
 }
 ```
 </details>
