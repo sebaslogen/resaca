@@ -22,7 +22,7 @@ androidx-activity = '1.8.2'
 androidx-lifecycle = "2.7.0"
 # Hilt
 hilt = '2.50'
-hilt-navigation-compose = '1.1.0'
+hilt-navigation-compose = '1.2.0'
 ksp = '1.9.22-1.0.17'
 # Koin
 koin = '3.5.3'
