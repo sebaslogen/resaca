@@ -15,7 +15,7 @@ dokka = '1.9.10'
 maven = '0.27.0'
 # Compose
 compose-bom = "2024.02.01" # https://developer.android.com/jetpack/compose/bom/bom-mapping
-compose-compiler = '1.5.9'
+compose-compiler = '1.5.10'
 # Compose integration with Activities
 androidx-activity = '1.8.2'
 # Compose integration with ViewModels
