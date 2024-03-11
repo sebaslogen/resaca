@@ -14,7 +14,7 @@ binary-compatibility-validator = '0.14.0'
 dokka = '1.9.20'
 maven = '0.27.0'
 # Compose
-compose-bom = "2024.02.01" # https://developer.android.com/jetpack/compose/bom/bom-mapping
+compose-bom = "2024.02.02" # https://developer.android.com/jetpack/compose/bom/bom-mapping
 compose-compiler = '1.5.10'
 # Compose integration with Activities
 androidx-activity = '1.8.2'
