@@ -5,9 +5,11 @@ import androidx.lifecycle.SavedStateHandle
 import com.sebaslogen.resacaapp.sample.di.koin.appModule
 import org.junit.Test
 import org.koin.android.test.verify.verify
+import org.koin.core.annotation.KoinExperimentalAPI
 
 class DependencyGraphTest {
 
+    @OptIn(KoinExperimentalAPI::class)
     @Test
     fun checkKoinModule() {
         // Tests that the Koin module is correctly defined and it should not crash at runtime
