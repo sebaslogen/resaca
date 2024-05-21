@@ -20,7 +20,7 @@ compose-compiler = '1.5.14'
 # Compose integration with Activities
 androidx-activity = '1.9.0'
 # Compose integration with ViewModels
-androidx-lifecycle = "2.7.0"
+androidx-lifecycle = "2.8.0"
 # Hilt
 hilt = '2.51.1'
 hilt-navigation-compose = '1.2.0'
