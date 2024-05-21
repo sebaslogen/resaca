@@ -28,7 +28,6 @@ internal class ScopedViewModelProvider(
     private val creationExtras: CreationExtras,
     viewModelStoreOwner: ViewModelStoreOwner
 ) {
-    //    private var extras: CreationExtras = CreationExtras.Empty.addDefaultArguments()
     private var viewModelStoreOwnerDefaultViewModelProviderFactory: ViewModelProvider.Factory? = null
     lateinit var viewModelProvider: ViewModelProvider
         private set
@@ -63,9 +62,9 @@ internal class ScopedViewModelProvider(
     private fun updateViewModelProvider() {
         val defaultFactory = viewModelStoreOwnerDefaultViewModelProviderFactory
         viewModelProvider = when {
-            factory != null -> ViewModelProvider(viewModelStore, factory, creationExtras)
-            defaultFactory != null -> ViewModelProvider(viewModelStore, defaultFactory, creationExtras)
-            else -> ViewModelProvider(owner = object : ViewModelStoreOwner {
+            factory != null -> ViewModelProvider.create(viewModelStore, factory, creationExtras)
+            defaultFactory != null -> ViewModelProvider.create(viewModelStore, defaultFactory, creationExtras)
+            else -> ViewModelProvider.create(owner = object : ViewModelStoreOwner {
                 override val viewModelStore: ViewModelStore
                     get() = this@ScopedViewModelProvider.viewModelStore
             })
