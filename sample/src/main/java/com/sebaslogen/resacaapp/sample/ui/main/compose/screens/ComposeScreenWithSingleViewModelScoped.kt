@@ -39,7 +39,7 @@ fun ComposeScreenWithSingleViewModelScoped(navController: NavHostController) {
             DemoScopedViewModelComposable()
             Text(
                 modifier = Modifier.padding(8.dp),
-                text = "The FakeRepo will survive being disposed of in light mode due to KeysInScope"
+                text = "The FakeRepo (only visible in light mode) will survive being disposed of in dark mode due to KeysInScope"
             )
             val fakeRepo: FakeRepo = rememberScoped(key = key, keyInScopeResolver = keys) { FakeRepo() }
             DemoComposable(inputObject = fakeRepo, objectType = "FakeRepo", scoped = true)
