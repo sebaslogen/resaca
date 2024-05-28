@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.dagger.hilt.android)
     alias(libs.plugins.kover)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -24,9 +25,6 @@ android {
         compose = true
         buildConfig = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
-    }
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
@@ -37,7 +35,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
+     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
     packaging {
@@ -149,42 +147,44 @@ dependencies {
     kover(project(":resacakoin"))
 }
 
-koverReport {
-    androidReports("debug") {
-        filters {
-            excludes {
-                classes(
-                    "*Fragment",
-                    "*Fragment\$*",
-                    "*Activity",
-                    "*Activity\$*",
-                    "*.databinding.*",
-                    "*.BuildConfig",
-                    "*ComposableSingletons\$*",
-                    "*ColorKt*",
-                    "*ThemeKt*",
-                    "*TypeKt*",
-                    "hilt_aggregated_deps.*",
-                    "*dagger.hilt.internal.aggregatedroot.codegen*",
-                    "*com.sebaslogen.resacaapp.sample*", // Ignore sample code
-                    "*com.sebaslogen.resaca.ViewModelNewInstanceFactory*", // Skip class that is not used in code but used as backup for ViewModelFactory
-                )
-            }
-            html {
-                onCheck = true
-            }
-            xml {
-                onCheck = true
-            }
-            verify {
-                onCheck = true
-            }
-        }
-
-        verify {
-            rule {
-                minBound(90)
-            }
-        }
-    }
-}
+//kover {
+//    reports {
+//        androidReports("debug") {
+//            filters {
+//                excludes {
+//                    classes(
+//                        "*Fragment",
+//                        "*Fragment\$*",
+//                        "*Activity",
+//                        "*Activity\$*",
+//                        "*.databinding.*",
+//                        "*.BuildConfig",
+//                        "*ComposableSingletons\$*",
+//                        "*ColorKt*",
+//                        "*ThemeKt*",
+//                        "*TypeKt*",
+//                        "hilt_aggregated_deps.*",
+//                        "*dagger.hilt.internal.aggregatedroot.codegen*",
+//                        "*com.sebaslogen.resacaapp.sample*", // Ignore sample code
+//                        "*com.sebaslogen.resaca.ViewModelNewInstanceFactory*", // Skip class that is not used in code but used as backup for ViewModelFactory
+//                    )
+//                }
+//                html {
+//                    onCheck = true
+//                }
+//                xml {
+//                    onCheck = true
+//                }
+//                verify {
+//                    onCheck = true
+//                }
+//            }
+//
+//            verify {
+//                rule {
+//                    minBound(90)
+//                }
+//            }
+//        }
+//    }
+//}

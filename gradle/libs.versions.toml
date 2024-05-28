@@ -94,3 +94,5 @@ binary-compatibility-validator = { id = 'org.jetbrains.kotlinx.binary-compatibil
 kover = { id = 'org.jetbrains.kotlinx.kover', version.ref = 'kover' }
 dokka = { id = 'org.jetbrains.dokka', version.ref = 'dokka' }
 maven = { id = 'com.vanniktech.maven.publish', version.ref = 'maven' }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+

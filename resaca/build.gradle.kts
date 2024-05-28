@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kover)
     alias(libs.plugins.dokka)
     alias(libs.plugins.maven)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -15,9 +16,6 @@ android {
     }
     buildFeatures { // Enables Jetpack Compose for this module
         compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
     buildTypes {
         getByName("release") {

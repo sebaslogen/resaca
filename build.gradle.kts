@@ -2,7 +2,9 @@ import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
     alias(libs.plugins.android.application) apply false
@@ -14,6 +16,7 @@ plugins {
     alias(libs.plugins.kover) apply false
     alias(libs.plugins.maven) apply false
     alias(libs.plugins.dokka)
+    alias(libs.plugins.compose.compiler) apply false
 }
 
 val sampleModuleName = "sample"
@@ -34,11 +37,11 @@ subprojects {
     /**
      * Enable Strict API to force the library modules to explicitly declare visibility of function and classes in the API
      */
-    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-        kotlinOptions {
-            jvmTarget = JavaVersion.VERSION_17.toString()
+    tasks.withType<KotlinJvmCompile>().configureEach {
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_17
             if (project.name != sampleModuleName) {
-                freeCompilerArgs += "-Xexplicit-api=strict"
+                freeCompilerArgs.add("-Xexplicit-api=strict")
             }
         }
     }
