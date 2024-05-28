@@ -35,7 +35,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-     kotlinOptions {
+    kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
     packaging {
@@ -147,44 +147,51 @@ dependencies {
     kover(project(":resacakoin"))
 }
 
-//kover {
-//    reports {
-//        androidReports("debug") {
-//            filters {
-//                excludes {
-//                    classes(
-//                        "*Fragment",
-//                        "*Fragment\$*",
-//                        "*Activity",
-//                        "*Activity\$*",
-//                        "*.databinding.*",
-//                        "*.BuildConfig",
-//                        "*ComposableSingletons\$*",
-//                        "*ColorKt*",
-//                        "*ThemeKt*",
-//                        "*TypeKt*",
-//                        "hilt_aggregated_deps.*",
-//                        "*dagger.hilt.internal.aggregatedroot.codegen*",
-//                        "*com.sebaslogen.resacaapp.sample*", // Ignore sample code
-//                        "*com.sebaslogen.resaca.ViewModelNewInstanceFactory*", // Skip class that is not used in code but used as backup for ViewModelFactory
-//                    )
-//                }
-//                html {
-//                    onCheck = true
-//                }
-//                xml {
-//                    onCheck = true
-//                }
-//                verify {
-//                    onCheck = true
-//                }
-//            }
-//
-//            verify {
-//                rule {
-//                    minBound(90)
-//                }
-//            }
-//        }
-//    }
-//}
+kover {
+    currentProject {
+        createVariant("custom") {
+            /**
+             * Tests, sources, classes, and compilation tasks of the 'debug' build variant will be included in the report variant `custom`.
+             * Thus, information from the 'debug' variant will be included in the `custom` report for this project and any project that specifies this project as a dependency.
+             */
+            addWithDependencies("debug")
+        }
+    }
+    reports {
+        // filters for all report types of all build variants
+        filters {
+            excludes {
+                androidGeneratedClasses()
+            }
+        }
+        variant("custom") {
+            filters {
+                excludes {
+                    androidGeneratedClasses()
+                    classes(
+                        "*Fragment",
+                        "*Fragment\$*",
+                        "*Activity",
+                        "*Activity\$*",
+                        "*.databinding.*",
+                        "*.BuildConfig",
+                        "*ComposableSingletons\$*",
+                        "*ColorKt*",
+                        "*ThemeKt*",
+                        "*TypeKt*",
+                        "hilt_aggregated_deps.*",
+                        "*dagger.hilt.internal.aggregatedroot.codegen*",
+                        "*com.sebaslogen.resacaapp.sample*", // Ignore sample code
+                        "*com.sebaslogen.resaca.ViewModelNewInstanceFactory*", // Skip class that is not used in code but used as backup for ViewModelFactory
+                    )
+                }
+            }
+
+            verify {
+                rule {
+                    minBound(90)
+                }
+            }
+        }
+    }
+}

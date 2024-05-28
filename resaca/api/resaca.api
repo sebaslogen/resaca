@@ -85,6 +85,5 @@ public final class com/sebaslogen/resaca/ScopedViewModelOwner {
 
 public final class com/sebaslogen/resaca/ViewModelCreationExtrasKt {
 	public static final fun addDefaultArguments (Landroidx/lifecycle/viewmodel/CreationExtras;Landroid/os/Bundle;)Landroidx/lifecycle/viewmodel/CreationExtras;
-	public static final fun toCreateCreationExtras (Landroid/os/Bundle;)Landroidx/lifecycle/viewmodel/CreationExtras;
 }
 

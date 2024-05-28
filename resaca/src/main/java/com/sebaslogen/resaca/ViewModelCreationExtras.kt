@@ -19,8 +19,3 @@ public fun CreationExtras.addDefaultArguments(defaultArguments: Bundle): Creatio
             set(DEFAULT_ARGS_KEY, combinedBundle)
         }
     }
-
-/**
- * Convert the receiver [Bundle] to a [CreationExtras] object containing the same key-value pairs.
- */
-public fun Bundle.toCreateCreationExtras(): CreationExtras = MutableCreationExtras().apply { putAll(this@toCreateCreationExtras) }
