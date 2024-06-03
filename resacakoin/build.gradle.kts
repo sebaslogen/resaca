@@ -56,8 +56,6 @@ dependencies {
 
     implementation(libs.koin.android)
 
-    // Compose dependencies
-    implementation(libs.compose.compiler)
     // Integration with ViewModels
     implementation(libs.bundles.androidx.lifecycle.viewmodel)
 }

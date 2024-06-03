@@ -110,7 +110,6 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
 
     // Compose dependencies
-    implementation(libs.compose.compiler)
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.runtime)
     implementation(libs.compose.ui)
