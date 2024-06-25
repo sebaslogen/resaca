@@ -31,7 +31,7 @@ kover = '0.8.1'
 robolectric-version = '4.12.2'
 espresso = "3.6.0"
 testRunner = "1.6.0"
-testRules = "1.5.0"
+testRules = "1.6.0"
 junitKtx = "1.2.0"
 
 
