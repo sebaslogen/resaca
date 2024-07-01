@@ -32,7 +32,7 @@ robolectric-version = '4.12.2'
 espresso = "3.6.1"
 testRunner = "1.6.0"
 testRules = "1.6.0"
-junitKtx = "1.2.0"
+junitKtx = "1.2.1"
 
 
 [libraries]
