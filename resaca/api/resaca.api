@@ -78,7 +78,6 @@ public final class com/sebaslogen/resaca/ScopedViewModelContainerKt {
 }
 
 public final class com/sebaslogen/resaca/ScopedViewModelOwner {
-	public static final field $stable I
 	public fun <init> (Ljava/lang/String;Ljava/lang/Class;Landroidx/lifecycle/ViewModelProvider$Factory;Landroidx/lifecycle/viewmodel/CreationExtras;Landroidx/lifecycle/ViewModelStoreOwner;)V
 	public final fun updateViewModelProvider (Landroidx/lifecycle/ViewModelStoreOwner;)V
 }
