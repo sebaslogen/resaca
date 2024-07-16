@@ -1,5 +1,6 @@
 [![Maven Central Release](https://maven-badges.herokuapp.com/maven-central/io.github.sebaslogen/resaca/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.sebaslogen/resaca)
 [![Build Status](https://github.com/sebaslogen/resaca/actions/workflows/build.yml/badge.svg)](https://github.com/sebaslogen/resaca/actions/workflows/build.yml)
+[![javadoc](https://javadoc.io/badge2/io.github.sebaslogen/resaca/javadoc.svg)](https://javadoc.io/doc/io.github.sebaslogen/resaca)
 [![API 21+](https://img.shields.io/badge/API-21%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=21)
 [![GitHub license](https://img.shields.io/github/license/sebaslogen/resaca)](https://github.com/sebaslogen/resaca/blob/main/LICENSE)
 [![Kotlin Weekly](https://user-images.githubusercontent.com/1936647/277181222-6aba882e-eafe-4a38-b8ef-631bb66b442f.svg)](https://mailchi.mp/kotlinweekly/kotlin-weekly-285)
