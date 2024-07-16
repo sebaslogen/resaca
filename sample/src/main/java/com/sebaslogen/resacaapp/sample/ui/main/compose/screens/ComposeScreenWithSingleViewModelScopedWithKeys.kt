@@ -10,6 +10,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.sebaslogen.resaca.rememberKeysInScope
@@ -34,7 +35,7 @@ fun ComposeScreenWithSingleViewModelScopedWithKeys(navController: NavHostControl
             text = "The list below contains one ViewModel per row that will stay in memory due to KeysInScope as long as the list and screen are displayed"
         )
         val keys = rememberKeysInScope(inputListOfKeys = listItems)
-        LazyColumn(modifier = Modifier.fillMaxHeight()) {
+        LazyColumn(modifier = Modifier.fillMaxHeight().testTag("LazyList")) {
             items(items = listItems, key = { it.number }) { item ->
                 val fakeScopedVM: FakeScopedViewModel = viewModelScoped(key = item, keyInScopeResolver = keys)
                 DemoComposable(inputObject = fakeScopedVM, objectType = "FakeScopedViewModel $item", scoped = true)

@@ -28,6 +28,7 @@ class ComposeActivityRecreationTests : ComposeTestUtils {
 
     @Before
     fun setUp() {
+        showSingleScopedViewModel = null
         scenario = ActivityScenario.launch(
             Intent(ApplicationProvider.getApplicationContext(), ComposeActivity::class.java).apply {
                 putExtra(ComposeActivity.START_DESTINATION, viewModelScopedDestination)
@@ -35,7 +36,7 @@ class ComposeActivityRecreationTests : ComposeTestUtils {
     }
 
     @Test
-    fun whenISwitchFromLightModeToNightMode_thenTheOneAndOnlyScopedViewModelThatSOnlyUsedInLightModeIsGone() {
+    fun whenActivityRecreates_thenTheOneAndOnlyScopedViewModelThatSOnlyUsedInLightModeIsGone() {
         // Given the starting screen with ViewModel scoped that is ONLY shown in light mode
         composeTestRule.waitForIdle()
         // Find the scoped text fields and grab their texts
@@ -54,7 +55,7 @@ class ComposeActivityRecreationTests : ComposeTestUtils {
         onNodeWithTestTag("FakeInjectedViewModel Scoped", assertDisplayed = false).assertDoesNotExist()
         assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 1) {
             "The amount of FakeInjectedViewModel that were cleared after key change ($finalAmountOfViewModelsCleared) " +
-                    "was not higher that the amount before the key change ($initialAmountOfViewModelsCleared)"
+                "was not higher that the amount before the key change ($initialAmountOfViewModelsCleared)"
         }
     }
 }
