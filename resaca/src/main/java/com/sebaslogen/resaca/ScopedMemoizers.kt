@@ -69,7 +69,6 @@ public fun <T : Any> rememberScoped(key: Any? = null, builder: @DisallowComposab
 }
 
 
-
 /**
  * Return a [ViewModel] provided by the default [ViewModelProvider.Factory] and a [ViewModelProvider].
  * The [ViewModel] will be kept in memory for as long as needed, and until the requester Composable is permanently gone
@@ -208,7 +207,20 @@ public fun generateKeysAndObserveLifecycle(key: Any?): Triple<ScopedViewModelCon
 
     // This key will be used to identify, retrieve and remove the stored object in the ScopedViewModelContainer
     // across recompositions and configuration changes
-    val positionalMemoizationKey = InternalKey(rememberSaveable { UUID.randomUUID().toString() })
+    val internalKey =
+        if (key is ScopeKeyWithResolver<*>) {
+            // If the key is a ScopeKeyWithResolver, then use the key's key as the internal key because:
+            // - it's a unique identifier
+            // - it works even on lazy lists where the rememberSaveable will be reset/lost on Activity recreation (among others)
+            // - the same object will be returned when using the same key in more than one place in the composition
+            key.key.toString()
+        } else {
+            // If there is no better key, then use a random UUID as the internal key in combination with rememberSaveable, in this case:
+            // - the object will be recreated when used in lazy lists and the Activity is recreated
+            // - different objects will be returned when requesting the object on different places in the composition (e.g. when no key is provided)
+            UUID.randomUUID().toString()
+        }
+    val positionalMemoizationKey = InternalKey(rememberSaveable { internalKey })
     // The external key will be used to track and store new versions of the object, based on [key] input parameter
     val externalKey = ExternalKey(key)
 
