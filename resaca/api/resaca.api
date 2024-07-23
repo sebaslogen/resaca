@@ -36,10 +36,10 @@ public final class com/sebaslogen/resaca/ScopedMemoizersKt {
 public final class com/sebaslogen/resaca/ScopedViewModelContainer : androidx/lifecycle/ViewModel, androidx/lifecycle/LifecycleEventObserver {
 	public static final field $stable I
 	public fun <init> ()V
-	public final fun getOrBuildViewModel-MDlMyRQ (Ljava/lang/Class;Ljava/lang/String;Ljava/lang/Object;Landroid/os/Bundle;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;I)Landroidx/lifecycle/ViewModel;
-	public final fun getOrBuildViewModel-_xopjis (Ljava/lang/Class;Ljava/lang/String;Ljava/lang/Object;Landroidx/lifecycle/ViewModelProvider$Factory;Landroidx/lifecycle/viewmodel/CreationExtras;Landroidx/lifecycle/ViewModelStoreOwner;Landroidx/compose/runtime/Composer;I)Landroidx/lifecycle/ViewModel;
-	public final fun getOrBuildViewModel-gTdrD7A (Ljava/lang/Class;Ljava/lang/String;Ljava/lang/Object;Landroid/os/Bundle;Landroidx/compose/runtime/Composer;I)Landroidx/lifecycle/ViewModel;
-	public final fun getOrBuildViewModel-z5wVCKk (Ljava/lang/Class;Ljava/lang/String;Ljava/lang/Object;Landroidx/lifecycle/ViewModelProvider$Factory;Landroid/os/Bundle;Landroidx/lifecycle/ViewModelStoreOwner;Landroidx/compose/runtime/Composer;II)Landroidx/lifecycle/ViewModel;
+	public final fun getOrBuildViewModel-MDlMyRQ (Lkotlin/reflect/KClass;Ljava/lang/String;Ljava/lang/Object;Landroid/os/Bundle;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;I)Landroidx/lifecycle/ViewModel;
+	public final fun getOrBuildViewModel-_xopjis (Lkotlin/reflect/KClass;Ljava/lang/String;Ljava/lang/Object;Landroidx/lifecycle/ViewModelProvider$Factory;Landroidx/lifecycle/viewmodel/CreationExtras;Landroidx/lifecycle/ViewModelStoreOwner;Landroidx/compose/runtime/Composer;I)Landroidx/lifecycle/ViewModel;
+	public final fun getOrBuildViewModel-gTdrD7A (Lkotlin/reflect/KClass;Ljava/lang/String;Ljava/lang/Object;Landroid/os/Bundle;Landroidx/compose/runtime/Composer;I)Landroidx/lifecycle/ViewModel;
+	public final fun getOrBuildViewModel-z5wVCKk (Lkotlin/reflect/KClass;Ljava/lang/String;Ljava/lang/Object;Landroidx/lifecycle/ViewModelProvider$Factory;Landroid/os/Bundle;Landroidx/lifecycle/ViewModelStoreOwner;Landroidx/compose/runtime/Composer;II)Landroidx/lifecycle/ViewModel;
 	public fun onStateChanged (Landroidx/lifecycle/LifecycleOwner;Landroidx/lifecycle/Lifecycle$Event;)V
 }
 
@@ -79,7 +79,7 @@ public final class com/sebaslogen/resaca/ScopedViewModelContainerKt {
 
 public final class com/sebaslogen/resaca/ScopedViewModelOwner {
 	public static final field $stable I
-	public fun <init> (Ljava/lang/String;Ljava/lang/Class;Landroidx/lifecycle/ViewModelProvider$Factory;Landroidx/lifecycle/viewmodel/CreationExtras;Landroidx/lifecycle/ViewModelStoreOwner;)V
+	public fun <init> (Ljava/lang/String;Lkotlin/reflect/KClass;Landroidx/lifecycle/ViewModelProvider$Factory;Landroidx/lifecycle/viewmodel/CreationExtras;Landroidx/lifecycle/ViewModelStoreOwner;)V
 	public final fun updateViewModelProvider (Landroidx/lifecycle/ViewModelStoreOwner;)V
 }
 
