@@ -12,6 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
 import java.io.Closeable
 import kotlin.coroutines.CoroutineContext
+import kotlin.reflect.KClass
 
 
 /**
@@ -30,7 +31,7 @@ internal object ScopedViewModelUtils {
      */
     @Composable
     public inline fun <T : ViewModel> getOrBuildViewModel(
-        modelClass: Class<T>,
+        modelClass: KClass<T>,
         positionalMemoizationKey: InternalKey,
         externalKey: ExternalKey,
         factory: ViewModelProvider.Factory?,

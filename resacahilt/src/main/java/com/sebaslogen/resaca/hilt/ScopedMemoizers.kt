@@ -88,7 +88,7 @@ public inline fun <reified T : ViewModel> hiltViewModelScoped(key: Any? = null, 
 
     // The object will be built the first time and retrieved in next calls or recompositions
     return scopedViewModelContainer.getOrBuildViewModel(
-        modelClass = T::class.java,
+        modelClass = T::class,
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
         factory = createHiltViewModelFactory(viewModelStoreOwner),
@@ -142,7 +142,7 @@ public inline fun <reified VM : ViewModel, reified VMF> hiltViewModelScoped(key:
 
     // The object will be built the first time and retrieved in next calls or recompositions
     return scopedViewModelContainer.getOrBuildViewModel(
-        modelClass = VM::class.java,
+        modelClass = VM::class,
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
         factory = createHiltViewModelFactory(viewModelStoreOwner),
