@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.CreationExtras
 import kotlin.reflect.KClass
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion as ViewModelFactory
 
 /**
  * Stores a [ViewModel] created with the provided [factory] constructor parameter.
@@ -20,7 +19,7 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion as
  *
  * The creation of the [ViewModel] will be done by a [ViewModelProvider] and stored inside a [ViewModelStore].
  *
- * @param key Unique [key] required to support [SavedStateHandle] across multiple instances of the same [ViewModel] type. See [ViewModelFactory.DEFAULT_KEY].
+ * @param key Unique [key] required to support [SavedStateHandle] across multiple instances of the same [ViewModel] type.
  * @param modelClass Class type of the [ViewModel] to instantiate
  * @param factory [ViewModelProvider] factory to create the requested [ViewModel] when required
  * @param creationExtras [CreationExtras] with default arguments that will be provided to the [ViewModel] through the [SavedStateHandle] and creationCallbacks.
