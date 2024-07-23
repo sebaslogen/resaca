@@ -6,5 +6,5 @@ import androidx.lifecycle.ViewModelProvider
  * Singleton to mimic [ViewModelProvider.NewInstanceFactory] instance in that library.
  */
 internal object ViewModelNewInstanceFactory {
-    val instance: ViewModelProvider.NewInstanceFactory = ViewModelProvider.NewInstanceFactory()
+    val instance: ViewModelProvider.Factory = ViewModelProvider.NewInstanceFactory()
 }
