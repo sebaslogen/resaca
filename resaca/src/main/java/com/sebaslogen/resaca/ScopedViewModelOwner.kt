@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.CreationExtras
+import kotlin.reflect.KClass
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion as ViewModelFactory
 
 /**
@@ -27,7 +28,7 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion as
  */
 public class ScopedViewModelOwner<T : ViewModel>(
     private val key: String,
-    private val modelClass: Class<T>,
+    private val modelClass: KClass<T>,
     private val factory: ViewModelProvider.Factory?,
     creationExtras: CreationExtras,
     viewModelStoreOwner: ViewModelStoreOwner
@@ -39,7 +40,7 @@ public class ScopedViewModelOwner<T : ViewModel>(
     internal val viewModel: T
         @Suppress("ReplaceGetOrSet")
         get() {
-            val canonicalName = modelClass.canonicalName ?: throw IllegalArgumentException("Local and anonymous classes can not be ViewModels")
+            val canonicalName = modelClass.qualifiedName ?: throw IllegalArgumentException("Local and anonymous classes can not be ViewModels")
             return scopedViewModelProvider.viewModelProvider.get("$canonicalName:$key", modelClass)
         }
 
@@ -59,7 +60,7 @@ public class ScopedViewModelOwner<T : ViewModel>(
         @Suppress("UNCHECKED_CAST")
         inline fun <T : ViewModel> viewModelFactoryFor(crossinline builder: @DisallowComposableCalls () -> T): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
-                override fun <VM : ViewModel> create(modelClass: Class<VM>): VM = builder() as VM
+                override fun <VM : ViewModel> create(modelClass: KClass<VM>, extras: CreationExtras): VM = builder() as VM
             }
     }
 }

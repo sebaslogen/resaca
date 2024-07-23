@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.collections.set
 import kotlin.coroutines.coroutineContext
 import kotlin.coroutines.resume
+import kotlin.reflect.KClass
 
 public const val COMPOSITION_RESUMED_TIMEOUT_IN_SECONDS: Long = 1
 
@@ -154,7 +155,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      */
     @Composable
     public fun <T : ViewModel> getOrBuildViewModel(
-        modelClass: Class<T>,
+        modelClass: KClass<T>,
         positionalMemoizationKey: InternalKey,
         externalKey: ExternalKey,
         defaultArguments: Bundle
@@ -176,7 +177,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      */
     @Composable
     public fun <T : ViewModel> getOrBuildViewModel(
-        modelClass: Class<T>,
+        modelClass: KClass<T>,
         positionalMemoizationKey: InternalKey,
         externalKey: ExternalKey,
         defaultArguments: Bundle,
@@ -194,7 +195,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      */
     @Composable
     public fun <T : ViewModel> getOrBuildViewModel(
-        modelClass: Class<T>,
+        modelClass: KClass<T>,
         positionalMemoizationKey: InternalKey,
         externalKey: ExternalKey,
         factory: ViewModelProvider.Factory?,
@@ -225,7 +226,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      */
     @Composable
     public fun <T : ViewModel> getOrBuildViewModel(
-        modelClass: Class<T>,
+        modelClass: KClass<T>,
         positionalMemoizationKey: InternalKey,
         externalKey: ExternalKey,
         factory: ViewModelProvider.Factory?,

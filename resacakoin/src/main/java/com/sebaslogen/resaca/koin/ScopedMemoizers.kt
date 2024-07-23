@@ -100,7 +100,7 @@ public inline fun <reified T : ViewModel> koinViewModelScoped(
 
     // The object will be built the first time and retrieved in next calls or recompositions
     return scopedViewModelContainer.getOrBuildViewModel(
-        modelClass = T::class.java,
+        modelClass = T::class,
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
         factory = KoinViewModelFactory(

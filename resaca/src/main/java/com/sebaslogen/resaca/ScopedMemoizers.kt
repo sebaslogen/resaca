@@ -124,7 +124,7 @@ public inline fun <reified T : ViewModel> viewModelScoped(key: Any? = null, defa
 
     // The object will be built the first time and retrieved in next calls or recompositions
     return scopedViewModelContainer.getOrBuildViewModel(
-        modelClass = T::class.java,
+        modelClass = T::class,
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
         defaultArguments = defaultArguments
@@ -193,7 +193,7 @@ public inline fun <reified T : ViewModel> viewModelScoped(
 
     // The object will be built the first time and retrieved in next calls or recompositions
     return scopedViewModelContainer.getOrBuildViewModel(
-        modelClass = T::class.java,
+        modelClass = T::class,
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
         defaultArguments = defaultArguments,
