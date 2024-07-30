@@ -25,6 +25,8 @@ hilt = '2.52'
 hilt-navigation-compose = '1.2.0'
 # Koin
 koin = '3.5.6'
+# Compose Multiplatform
+compose-plugin = "1.7.0-alpha02"
 # Test
 junit-version = '4.13.2'
 kover = '0.8.3'
@@ -93,4 +95,8 @@ kover = { id = 'org.jetbrains.kotlinx.kover', version.ref = 'kover' }
 dokka = { id = 'org.jetbrains.dokka', version.ref = 'dokka' }
 maven = { id = 'com.vanniktech.maven.publish', version.ref = 'maven' }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+# Compose Multiplatform plugins
+jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+
 
