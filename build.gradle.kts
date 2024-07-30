@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.kotlin.multiplatform) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.dagger.hilt.android) apply false
     alias(libs.plugins.binary.compatibility.validator)
@@ -40,14 +41,14 @@ subprojects {
     tasks.withType<KotlinJvmCompile>().configureEach {
         compilerOptions {
             jvmTarget = JvmTarget.JVM_17
-            if (project.name != sampleModuleName) {
+            if (!project.name.contains(sampleModuleName)) {
                 freeCompilerArgs.add("-Xexplicit-api=strict")
             }
         }
     }
     pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
         configure<KotlinProjectExtension> {
-            if (project.name != sampleModuleName) {
+            if (!project.name.contains(sampleModuleName)) {
                 explicitApi()
             }
         }
@@ -84,7 +85,7 @@ group = mavenGroup
 version = currentVersion
 
 subprojects {
-    if (project.name != sampleModuleName) {
+    if (!project.name.contains(sampleModuleName)) {
         plugins.withId("com.vanniktech.maven.publish.base") {
             configure<MavenPublishBaseExtension> {
                 publishToMavenCentral(SonatypeHost.S01)
