@@ -30,7 +30,6 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
-            implementation("io.github.sebaslogen:resaca:3.3.7")
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -39,8 +38,9 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+            implementation(project(":resacacmp")) // Depend on local resaca multiplatform library
 
-            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
+            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0") // Add kotlinx-datetime dependency just for testign purposes
         }
     }
 }
