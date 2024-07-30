@@ -1,6 +1,8 @@
+package com.sebaslogen.resaca.cmp
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisallowComposableCalls
-import com.sebaslogen.resaca.rememberScoped
+import com.sebaslogen.resaca.rememberScoped as rememberScopedResaca
 
 @Composable
 public actual fun <T : Any, K : Any> rememberScopedMP(key: K): T {
@@ -9,4 +11,4 @@ public actual fun <T : Any, K : Any> rememberScopedMP(key: K): T {
 
 @Composable
 public actual fun <T : Any> rememberScoped(key: Any?, builder: @DisallowComposableCalls () -> T): T =
-    rememberScoped(key, builder) // TODO: use resaca library
+    rememberScopedResaca(key, builder)
