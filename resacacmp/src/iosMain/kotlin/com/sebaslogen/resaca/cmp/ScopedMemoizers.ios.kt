@@ -161,6 +161,7 @@ public actual inline fun <reified T : ViewModel> viewModelScoped(
         "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
     }
     val extras = defaultArguments.toCreationExtras(viewModelStoreOwner)
+    // TODO: this is ---NOT--- the same as the Android implementation, we need to find a way to store ---AND FORGET--- the ViewModel, like in the real resaca
     return viewModel(key = key?.toString(), extras = extras, factory =  object : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: KClass<T>, extras: CreationExtras): T {
             @Suppress("UNCHECKED_CAST")
