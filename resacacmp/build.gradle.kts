@@ -4,7 +4,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
-//    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.jetbrains.compose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kover)
@@ -42,12 +41,12 @@ kotlin {
 
             implementation(compose.runtime)
             implementation(compose.foundation)
-            implementation(compose.material)
-            implementation(compose.ui)
+//            implementation(compose.material)
+//            implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
 
-            implementation(libs.androidx.navigation.compose)
+//            implementation(libs.androidx.navigation.compose)
             implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
         }
     }
