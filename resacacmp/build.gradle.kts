@@ -36,9 +36,10 @@ kotlin {
             implementation(libs.androidx.activity.compose)
 
             implementation(project(":resaca"))
-//            implementation("io.github.sebaslogen:resaca:3.3.7")
         }
         commonMain.dependencies {
+            implementation(project(":resacacore"))
+
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material)
@@ -46,6 +47,7 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
 
+            implementation(libs.androidx.navigation.compose)
             implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
         }
     }

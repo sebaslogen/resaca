@@ -6,12 +6,12 @@ import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
-import com.sebaslogen.resaca.KeyInScopeResolver
-import com.sebaslogen.resaca.ScopeKeyWithResolver
 import com.sebaslogen.resaca.ScopedViewModelContainer
 import com.sebaslogen.resaca.ScopedViewModelContainer.ExternalKey
 import com.sebaslogen.resaca.ScopedViewModelContainer.InternalKey
 import com.sebaslogen.resaca.ScopedViewModelOwner
+import com.sebaslogen.resaca.core.KeyInScopeResolver
+import com.sebaslogen.resaca.core.ScopeKeyWithResolver
 import com.sebaslogen.resaca.generateKeysAndObserveLifecycle
 import org.koin.androidx.viewmodel.factory.KoinViewModelFactory
 import org.koin.core.annotation.KoinInternalApi

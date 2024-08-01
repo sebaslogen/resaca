@@ -1,7 +1,9 @@
-package com.sebaslogen.resaca
+package com.sebaslogen.resaca.core
 
-import android.os.Bundle
+import androidx.core.bundle.Bundle
 import androidx.lifecycle.DEFAULT_ARGS_KEY
+import androidx.lifecycle.HasDefaultViewModelProviderFactory
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.MutableCreationExtras
 
@@ -11,7 +13,7 @@ import androidx.lifecycle.viewmodel.MutableCreationExtras
  * When the no arguments are present just add them.
  */
 public fun CreationExtras.addDefaultArguments(defaultArguments: Bundle): CreationExtras =
-    if (defaultArguments.isEmpty) {
+    if (defaultArguments.isEmpty()) {
         this
     } else {
         MutableCreationExtras(this).apply {
@@ -19,3 +21,12 @@ public fun CreationExtras.addDefaultArguments(defaultArguments: Bundle): Creatio
             set(DEFAULT_ARGS_KEY, combinedBundle)
         }
     }
+
+public fun Bundle.toCreationExtras(
+    viewModelStoreOwner: ViewModelStoreOwner
+): CreationExtras =
+    if (viewModelStoreOwner is HasDefaultViewModelProviderFactory) {
+        viewModelStoreOwner.defaultViewModelCreationExtras
+    } else {
+        CreationExtras.Empty
+    }.addDefaultArguments(this)
