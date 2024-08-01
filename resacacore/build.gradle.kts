@@ -32,7 +32,7 @@ kotlin {
         commonMain.dependencies {
             implementation(compose.runtime)
             api(libs.androidx.lifecycle.viewmodel.compose)
-            api("org.jetbrains.androidx.core:core-bundle:1.0.0")
+            api(libs.androidx.core.bundle)
         }
     }
 }
