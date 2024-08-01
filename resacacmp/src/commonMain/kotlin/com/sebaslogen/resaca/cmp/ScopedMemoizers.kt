@@ -9,10 +9,9 @@ import androidx.lifecycle.ViewModelStore
 import com.sebaslogen.resaca.core.KeyInScopeResolver
 
 
-// TODO: What to do with keyInScopeResolver?
-//  - Move to common module
-//  - Remove from iOS (and also from CMP
-//  - Implement new version in CMP
+// TODO: How to implement keyInScopeResolver in iOS?
+//  - Remove from iOS (and also from CMP?)
+//  - Implement new version in CMP somehow???
 
 /**
  * Return an object created with the provided [builder] function and store this object
