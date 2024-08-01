@@ -12,6 +12,7 @@ import com.sebaslogen.resaca.core.KeyInScopeResolver
 // TODO: How to implement keyInScopeResolver in iOS?
 //  - Remove from iOS (and also from CMP?)
 //  - Implement new version in CMP somehow???
+//  - Move all resaca to code/KMP and just re-use the same code in iOS and CMP
 
 /**
  * Return an object created with the provided [builder] function and store this object
