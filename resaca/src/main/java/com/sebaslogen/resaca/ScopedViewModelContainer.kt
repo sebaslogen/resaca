@@ -1,13 +1,13 @@
 package com.sebaslogen.resaca
 
 import android.app.Activity
-import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.Choreographer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisallowComposableCalls
 import androidx.compose.runtime.Immutable
+import androidx.core.bundle.Bundle
 import androidx.lifecycle.HasDefaultViewModelProviderFactory
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -18,6 +18,9 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import com.sebaslogen.resaca.core.KeyInScopeResolver
+import com.sebaslogen.resaca.core.ScopeKeyWithResolver
+import com.sebaslogen.resaca.core.toCreationExtras
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -204,12 +207,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
             "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
         }
     ): T {
-        val creationExtras =
-            if (viewModelStoreOwner is HasDefaultViewModelProviderFactory) {
-                viewModelStoreOwner.defaultViewModelCreationExtras
-            } else {
-                CreationExtras.Empty
-            }.addDefaultArguments(defaultArguments)
+        val creationExtras = defaultArguments.toCreationExtras(viewModelStoreOwner)
 
         return getOrBuildViewModel(
             modelClass = modelClass,
