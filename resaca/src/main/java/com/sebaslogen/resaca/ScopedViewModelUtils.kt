@@ -10,7 +10,6 @@ import com.sebaslogen.resaca.ScopedViewModelContainer.ExternalKey
 import com.sebaslogen.resaca.ScopedViewModelContainer.InternalKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
-import java.io.Closeable
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
 
@@ -100,7 +99,7 @@ internal object ScopedViewModelUtils {
                 is ViewModelStore -> disposedObject.clear()
                 is CoroutineScope -> disposedObject.cancel()
                 is CoroutineContext -> disposedObject.cancel()
-                is Closeable -> disposedObject.close()
+                is AutoCloseable -> disposedObject.close()
             }
         }
     }
