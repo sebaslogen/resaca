@@ -272,6 +272,8 @@ internal inline fun ObserveComposableDisposal(
 @Composable
 @PublishedApi
 internal fun ObserveLifecycleWithScopedViewModelContainer(scopedViewModelContainer: ScopedViewModelContainer) {
+
+    // TODO: Move this to CMP together with the findActivity function
     // Observe state of configuration changes when disposing
     val context = LocalContext.current
     DisposableEffect(context) {
@@ -291,6 +293,7 @@ internal fun ObserveLifecycleWithScopedViewModelContainer(scopedViewModelContain
     }
 }
 
+// TODO: Move this to CMP
 internal fun Context.findActivity(): Activity {
     var ctx = this
     while (ctx is ContextWrapper) {
