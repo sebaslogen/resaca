@@ -59,10 +59,6 @@ public final class com/sebaslogen/resaca/ScopedViewModelContainer$InternalKey : 
 	public final synthetic fun unbox-impl ()Ljava/lang/String;
 }
 
-public final class com/sebaslogen/resaca/ScopedViewModelContainerKt {
-	public static final field COMPOSITION_RESUMED_TIMEOUT_IN_SECONDS J
-}
-
 public final class com/sebaslogen/resaca/ScopedViewModelOwner {
 	public static final field $stable I
 	public fun <init> (Ljava/lang/String;Lkotlin/reflect/KClass;Landroidx/lifecycle/ViewModelProvider$Factory;Landroidx/lifecycle/viewmodel/CreationExtras;Landroidx/lifecycle/ViewModelStoreOwner;)V
