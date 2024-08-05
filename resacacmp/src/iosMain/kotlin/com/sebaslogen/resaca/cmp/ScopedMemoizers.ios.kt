@@ -157,6 +157,8 @@ public actual inline fun <reified T : ViewModel> viewModelScoped(
     defaultArguments: Bundle,
     noinline builder: @DisallowComposableCalls () -> T
 ): T {
+    // TODO: Implementation idea, construct a ViewModel (not trivial), remember it, dispose of it on DisposeEffect and return it
+
     val viewModelStoreOwner: ViewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
         "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
     }
