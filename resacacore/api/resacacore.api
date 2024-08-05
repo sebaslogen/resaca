@@ -1,3 +1,15 @@
+public final class com/sebaslogen/resaca/core/PlatformLifecycleHandler {
+	public static final field $stable I
+	public fun <init> ()V
+	public final fun awaitBeforeDisposing (ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun onDestroyed ()V
+	public final fun onResumed ()V
+}
+
+public final class com/sebaslogen/resaca/core/PlatformLifecycleHandlerKt {
+	public static final field COMPOSITION_RESUMED_TIMEOUT_IN_SECONDS J
+}
+
 public final class com/sebaslogen/resaca/core/ScopeKeyWithResolver {
 	public static final field $stable I
 	public fun <init> (Ljava/lang/Object;Lkotlin/jvm/functions/Function1;)V
