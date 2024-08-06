@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import com.sebaslogen.resaca.core.viewmodel.DefaultViewModelProviderFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
@@ -157,7 +158,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         defaultArguments: Bundle
     ): T {
         val owner = checkNotNull(LocalViewModelStoreOwner.current) { "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner" }
-        val factory = if (owner is HasDefaultViewModelProviderFactory) owner.defaultViewModelProviderFactory else ViewModelNewInstanceFactory.instance
+        val factory = if (owner is HasDefaultViewModelProviderFactory) owner.defaultViewModelProviderFactory else DefaultViewModelProviderFactory
         return getOrBuildViewModel(
             modelClass = modelClass,
             positionalMemoizationKey = positionalMemoizationKey,
