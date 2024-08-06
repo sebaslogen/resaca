@@ -1,7 +1,7 @@
 package com.sebaslogen.resacaapp.sample.ui.main.compose.examples
 
 import androidx.compose.runtime.Composable
-import com.sebaslogen.resaca.rememberScoped
+import com.sebaslogen.resaca.core.rememberScoped
 import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoComposable
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeRepo
 

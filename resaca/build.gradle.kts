@@ -50,6 +50,8 @@ android {
 
 dependencies {
 
+    api(project(":resacacore"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.coroutines.android)
 

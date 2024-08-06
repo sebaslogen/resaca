@@ -21,8 +21,8 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.sebaslogen.resaca.rememberKeysInScope
-import com.sebaslogen.resaca.viewModelScoped
+import com.sebaslogen.resaca.core.rememberKeysInScope
+import com.sebaslogen.resaca.core.viewModelScoped
 import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoComposable
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeInjectedRepo
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeScopedViewModel

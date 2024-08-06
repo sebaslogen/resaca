@@ -3,7 +3,7 @@ package com.sebaslogen.resacaapp.sample
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.core.os.bundleOf
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.sebaslogen.resaca.viewModelScoped
+import com.sebaslogen.resaca.core.viewModelScoped
 import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoComposable
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeScopedViewModel
 import com.sebaslogen.resacaapp.sample.utils.ComposeTestUtils

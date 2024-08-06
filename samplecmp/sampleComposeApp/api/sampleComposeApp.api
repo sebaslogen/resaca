@@ -1,0 +1,31 @@
+public final class AppKt {
+	public static final fun App (Landroidx/compose/runtime/Composer;I)V
+}
+
+public final class ComposableSingletons$AppKt {
+	public static final field INSTANCE LComposableSingletons$AppKt;
+	public static field lambda-1 Lkotlin/jvm/functions/Function3;
+	public static field lambda-2 Lkotlin/jvm/functions/Function3;
+	public static field lambda-3 Lkotlin/jvm/functions/Function2;
+	public fun <init> ()V
+	public final fun getLambda-1$sampleComposeApp_release ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda-2$sampleComposeApp_release ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda-3$sampleComposeApp_release ()Lkotlin/jvm/functions/Function2;
+}
+
+public final class com/sebaslogen/resacaapp/samplecmp/ComposableSingletons$MainActivityKt {
+	public static final field INSTANCE Lcom/sebaslogen/resacaapp/samplecmp/ComposableSingletons$MainActivityKt;
+	public static field lambda-1 Lkotlin/jvm/functions/Function2;
+	public fun <init> ()V
+	public final fun getLambda-1$sampleComposeApp_release ()Lkotlin/jvm/functions/Function2;
+}
+
+public final class com/sebaslogen/resacaapp/samplecmp/MainActivity : androidx/activity/ComponentActivity {
+	public static final field $stable I
+	public fun <init> ()V
+}
+
+public final class com/sebaslogen/resacaapp/samplecmp/MainActivityKt {
+	public static final fun AppAndroidPreview (Landroidx/compose/runtime/Composer;I)V
+}
+
