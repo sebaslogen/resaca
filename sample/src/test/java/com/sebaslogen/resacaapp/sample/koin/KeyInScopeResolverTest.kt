@@ -21,7 +21,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sebaslogen.resaca.koin.koinViewModelScoped
-import com.sebaslogen.resaca.rememberKeysInScope
+import com.sebaslogen.resaca.core.rememberKeysInScope
 import com.sebaslogen.resacaapp.sample.ui.main.ComposeActivity
 import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoComposable
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeInjectedViewModel

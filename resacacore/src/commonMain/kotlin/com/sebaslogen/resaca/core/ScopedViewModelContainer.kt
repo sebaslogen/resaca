@@ -1,4 +1,4 @@
-package com.sebaslogen.resaca
+package com.sebaslogen.resaca.core
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisallowComposableCalls
@@ -14,10 +14,6 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
-import com.sebaslogen.resaca.core.KeyInScopeResolver
-import com.sebaslogen.resaca.core.PlatformLifecycleHandler
-import com.sebaslogen.resaca.core.ScopeKeyWithResolver
-import com.sebaslogen.resaca.core.toCreationExtras
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
@@ -27,6 +23,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlin.collections.set
+import kotlin.jvm.JvmInline
 import kotlin.reflect.KClass
 
 /**

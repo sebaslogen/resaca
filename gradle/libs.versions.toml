@@ -36,6 +36,7 @@ espresso = "3.6.1"
 testRunner = "1.6.1"
 testRules = "1.6.1"
 junitKtx = "1.2.1"
+uuid = "0.8.4"
 
 
 [libraries]
@@ -72,6 +73,8 @@ dagger-hilt-navigation-compose = { module = 'androidx.hilt:hilt-navigation-compo
 
 koin-android = { module = 'io.insert-koin:koin-android', version.ref = 'koin' }
 koin-android-test = { module = 'io.insert-koin:koin-android-test', version.ref = 'koin' }
+
+uuid = { module = "com.benasher44:uuid", version.ref = "uuid" }
 
 # Test libraries
 junit = { module = 'junit:junit', version.ref = 'junit-version' }

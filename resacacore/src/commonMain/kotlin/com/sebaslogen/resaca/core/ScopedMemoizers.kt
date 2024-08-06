@@ -1,24 +1,16 @@
-@file:Suppress("NOTHING_TO_INLINE")
+package com.sebaslogen.resaca.core
 
-package com.sebaslogen.resaca
-
-import android.app.Activity
-import android.content.Context
-import android.content.ContextWrapper
-import android.os.Bundle
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.core.bundle.Bundle
 import androidx.lifecycle.*
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.sebaslogen.resaca.ScopedViewModelContainer.ExternalKey
-import com.sebaslogen.resaca.ScopedViewModelContainer.InternalKey
-import com.sebaslogen.resaca.core.KeyInScopeResolver
-import com.sebaslogen.resaca.core.ScopeKeyWithResolver
+import com.benasher44.uuid.uuid4
+import com.sebaslogen.resaca.core.ScopedViewModelContainer.ExternalKey
+import com.sebaslogen.resaca.core.ScopedViewModelContainer.InternalKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.util.*
 
 
 /**
@@ -94,7 +86,7 @@ public fun <T : Any> rememberScoped(key: Any? = null, builder: @DisallowComposab
 public inline fun <reified T : ViewModel, K : Any> viewModelScoped(
     key: K,
     noinline keyInScopeResolver: KeyInScopeResolver<K>,
-    defaultArguments: Bundle = Bundle.EMPTY
+    defaultArguments: Bundle = Bundle()
 ): T {
     val scopeKeyWithResolver: ScopeKeyWithResolver<K> = remember(key, keyInScopeResolver) { ScopeKeyWithResolver(key, keyInScopeResolver) }
     return viewModelScoped(key = scopeKeyWithResolver, defaultArguments = defaultArguments)
@@ -118,7 +110,7 @@ public inline fun <reified T : ViewModel, K : Any> viewModelScoped(
  * @param defaultArguments A [Bundle] containing all the default arguments that will be provided to the [ViewModel].
  */
 @Composable
-public inline fun <reified T : ViewModel> viewModelScoped(key: Any? = null, defaultArguments: Bundle = Bundle.EMPTY): T {
+public inline fun <reified T : ViewModel> viewModelScoped(key: Any? = null, defaultArguments: Bundle = Bundle()): T {
     require(key !is Function0<*>) { "The Key for viewModelScoped should not be a lambda" }
 
     val (scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: InternalKey, externalKey: ExternalKey) =
@@ -157,7 +149,7 @@ public inline fun <reified T : ViewModel> viewModelScoped(key: Any? = null, defa
 public inline fun <reified T : ViewModel, K : Any> viewModelScoped(
     key: K,
     noinline keyInScopeResolver: KeyInScopeResolver<K>,
-    defaultArguments: Bundle = Bundle.EMPTY,
+    defaultArguments: Bundle = Bundle(),
     noinline builder: @DisallowComposableCalls () -> T
 ): T {
     val scopeKeyWithResolver: ScopeKeyWithResolver<K> = remember(key, keyInScopeResolver) { ScopeKeyWithResolver(key, keyInScopeResolver) }
@@ -185,7 +177,7 @@ public inline fun <reified T : ViewModel, K : Any> viewModelScoped(
 @Composable
 public inline fun <reified T : ViewModel> viewModelScoped(
     key: Any? = null,
-    defaultArguments: Bundle = Bundle.EMPTY,
+    defaultArguments: Bundle = Bundle(),
     noinline builder: @DisallowComposableCalls () -> T
 ): T {
     require(key !is Function0<*>) { "The Key for viewModelScoped should not be a lambda" }
@@ -220,7 +212,7 @@ public fun generateKeysAndObserveLifecycle(key: Any?): Triple<ScopedViewModelCon
             // If there is no better key, then use a random UUID as the internal key in combination with rememberSaveable, in this case:
             // - the object will be recreated when used in lazy lists and the Activity is recreated
             // - different objects will be returned when requesting the object on different places in the composition (e.g. when no key is provided)
-            UUID.randomUUID().toString()
+            uuid4().toString()
         }
     val positionalMemoizationKey = InternalKey(rememberSaveable { internalKey })
     // The external key will be used to track and store new versions of the object, based on [key] input parameter
@@ -273,14 +265,7 @@ internal inline fun ObserveComposableDisposal(
 @PublishedApi
 internal fun ObserveLifecycleWithScopedViewModelContainer(scopedViewModelContainer: ScopedViewModelContainer) {
 
-    // TODO: Move this to CMP together with the findActivity function
-    // Observe state of configuration changes when disposing
-    val context = LocalContext.current
-    DisposableEffect(context) {
-        onDispose {
-            scopedViewModelContainer.setIsChangingConfiguration(context.findActivity().isChangingConfigurations)
-        }
-    }
+    ObserveComposableContainerLifecycle(scopedViewModelContainer)
 
     // Observe general lifecycle events (resume, pause, destroy, etc.)
     val lifecycle = LocalLifecycleOwner.current.lifecycle
@@ -293,16 +278,3 @@ internal fun ObserveLifecycleWithScopedViewModelContainer(scopedViewModelContain
     }
 }
 
-// TODO: Move this to CMP
-internal fun Context.findActivity(): Activity {
-    var ctx = this
-    while (ctx is ContextWrapper) {
-        if (ctx is Activity) {
-            return ctx
-        }
-        ctx = ctx.baseContext
-    }
-    throw IllegalStateException(
-        "Expected an activity context for detecting configuration changes for a NavBackStackEntry but instead found: $ctx"
-    )
-}

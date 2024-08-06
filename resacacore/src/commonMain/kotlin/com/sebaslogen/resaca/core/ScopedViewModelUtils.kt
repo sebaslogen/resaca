@@ -1,4 +1,4 @@
-package com.sebaslogen.resaca
+package com.sebaslogen.resaca.core
 
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.CreationExtras
-import com.sebaslogen.resaca.ScopedViewModelContainer.ExternalKey
-import com.sebaslogen.resaca.ScopedViewModelContainer.InternalKey
+import com.sebaslogen.resaca.core.ScopedViewModelContainer.ExternalKey
+import com.sebaslogen.resaca.core.ScopedViewModelContainer.InternalKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
 import kotlin.coroutines.CoroutineContext

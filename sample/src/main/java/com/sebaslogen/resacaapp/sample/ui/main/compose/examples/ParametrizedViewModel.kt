@@ -3,7 +3,7 @@ package com.sebaslogen.resacaapp.sample.ui.main.compose.examples
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.sebaslogen.resaca.viewModelScoped
+import com.sebaslogen.resaca.core.viewModelScoped
 import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoComposable
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeInjectedViewModel
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeScopedViewModel

@@ -1,9 +1,8 @@
-package com.sebaslogen.resaca
+package com.sebaslogen.resaca.core
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.sebaslogen.resaca.core.KeyInScopeResolver
 
 /**
  * Remember a collection of keys in the current composition scope to be used in the returned [KeyInScopeResolver].
