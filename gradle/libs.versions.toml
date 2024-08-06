@@ -11,7 +11,7 @@ core-ktx = '1.13.1'
 navigation = '2.7.7'
 appcompat = '1.7.0'
 constraintlayout = '2.1.4'
-binary-compatibility-validator = '0.16.2'
+binary-compatibility-validator = '0.16.3'
 dokka = '1.9.20'
 maven = '0.29.0'
 # Compose
