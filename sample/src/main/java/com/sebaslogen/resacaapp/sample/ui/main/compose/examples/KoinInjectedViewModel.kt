@@ -6,8 +6,8 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.sebaslogen.resaca.koin.koinViewModelScoped
-import com.sebaslogen.resaca.rememberScoped
-import com.sebaslogen.resaca.viewModelScoped
+import com.sebaslogen.resaca.core.rememberScoped
+import com.sebaslogen.resaca.core.viewModelScoped
 import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoComposable
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeInjectedRepo
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeInjectedViewModel

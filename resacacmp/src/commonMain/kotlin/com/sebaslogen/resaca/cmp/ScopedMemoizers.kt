@@ -2,6 +2,7 @@ package com.sebaslogen.resaca.cmp
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisallowComposableCalls
+import androidx.compose.runtime.DisposableEffect
 import androidx.core.bundle.Bundle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -146,3 +147,9 @@ public expect inline fun <reified T : ViewModel> viewModelScoped(
     defaultArguments: Bundle = Bundle(),
     noinline builder: @DisallowComposableCalls () -> T
 ): T
+
+
+
+
+//@Composable
+//public expect fun ObserveComposableContainerLifecycle(scopedViewModelContainer: ScopedViewModelContainer)

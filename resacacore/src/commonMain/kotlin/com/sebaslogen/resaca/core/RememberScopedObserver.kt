@@ -1,7 +1,7 @@
-package com.sebaslogen.resaca
+package com.sebaslogen.resaca.core
 
 import androidx.compose.runtime.RememberObserver
-import com.sebaslogen.resaca.ScopedViewModelContainer.*
+import com.sebaslogen.resaca.core.ScopedViewModelContainer.*
 
 /**
  * When an object of this class is remembered in a composition (i.e. as part of a Composable function's body),

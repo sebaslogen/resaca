@@ -1,4 +1,4 @@
-package com.sebaslogen.resaca
+package com.sebaslogen.resaca.core
 
 import androidx.compose.runtime.DisallowComposableCalls
 import androidx.lifecycle.SavedStateHandle

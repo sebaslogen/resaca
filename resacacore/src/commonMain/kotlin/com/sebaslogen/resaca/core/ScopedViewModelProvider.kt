@@ -1,4 +1,4 @@
-package com.sebaslogen.resaca
+package com.sebaslogen.resaca.core
 
 import androidx.lifecycle.HasDefaultViewModelProviderFactory
 import androidx.lifecycle.SavedStateHandle
