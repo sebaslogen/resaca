@@ -6,10 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.core.bundle.Bundle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
-import com.sebaslogen.resaca.ScopedViewModelContainer
+import com.sebaslogen.resaca.core.ScopedViewModelContainer
 import com.sebaslogen.resaca.core.KeyInScopeResolver
-import com.sebaslogen.resaca.rememberScoped as rememberScopedResaca
-import com.sebaslogen.resaca.viewModelScoped as viewModelScopedResaca
+import com.sebaslogen.resaca.core.rememberScoped as rememberScopedResaca
+import com.sebaslogen.resaca.core.viewModelScoped as viewModelScopedResaca
 
 
 /**
@@ -152,3 +152,4 @@ public actual inline fun <reified T : ViewModel> viewModelScoped(
     noinline builder: @DisallowComposableCalls () -> T
 ): T =
     viewModelScopedResaca(key, defaultArguments, builder)
+

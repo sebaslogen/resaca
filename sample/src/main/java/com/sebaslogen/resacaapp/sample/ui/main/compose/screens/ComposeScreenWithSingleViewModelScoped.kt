@@ -11,8 +11,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.sebaslogen.resaca.rememberKeysInScope
-import com.sebaslogen.resaca.rememberScoped
+import com.sebaslogen.resaca.core.rememberKeysInScope
+import com.sebaslogen.resaca.core.rememberScoped
 import com.sebaslogen.resacaapp.sample.ui.main.NavigationButtons
 import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedViewModelComposable

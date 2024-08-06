@@ -13,8 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.sebaslogen.resaca.rememberKeysInScope
-import com.sebaslogen.resaca.viewModelScoped
+import com.sebaslogen.resaca.core.rememberKeysInScope
+import com.sebaslogen.resaca.core.viewModelScoped
 import com.sebaslogen.resacaapp.sample.ui.main.NavigationButtons
 import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoComposable
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeScopedViewModel
