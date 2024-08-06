@@ -8,6 +8,8 @@
 
 Article about this library: [Every Composable deserves a ViewModel](https://engineering.q42.nl/compose/)
 
+// TODO: Multiplatform, KeysInScope, separate in multiple readmes or website
+
 # Resaca 🍹
 
 The right scope for objects and View Models in Android [Compose](https://developer.android.com/jetpack/compose).
