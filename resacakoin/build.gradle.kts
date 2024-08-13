@@ -57,7 +57,7 @@ dependencies {
     implementation(libs.koin.android)
 
     // Integration with ViewModels
-    implementation(libs.bundles.androidx.lifecycle.viewmodel)
+    implementation(libs.androidx.lifecycle.viewmodel)
 }
 
 // Maven publishing configuration

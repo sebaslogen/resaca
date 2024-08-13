@@ -1,15 +1,51 @@
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
+    alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.jetbrains.compose)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kover)
     alias(libs.plugins.dokka)
     alias(libs.plugins.maven)
-    alias(libs.plugins.compose.compiler)
+}
+
+kotlin {
+    androidTarget {
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_17)
+        }
+    }
+
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            baseName = "resaca"
+            isStatic = true
+        }
+    }
+    sourceSets {
+        commonMain.dependencies {
+            implementation(libs.uuid)
+            implementation(compose.runtime)
+            api(libs.androidx.lifecycle.viewmodel)
+            api(libs.androidx.lifecycle.viewmodel.compose)
+            api(libs.androidx.core.bundle)
+        }
+    }
 }
 
 android {
     namespace = "com.sebaslogen.resaca"
     compileSdk = libs.versions.compileSdk.get().toInt()
+    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
+    sourceSets["main"].res.srcDirs("src/androidMain/res")
+    sourceSets["main"].resources.srcDirs("src/commonMain/resources")
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -28,9 +64,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
-    }
     packaging {
         resources {
             excludes += setOf(
@@ -46,17 +79,6 @@ android {
             )
         }
     }
-}
-
-dependencies {
-
-    api(project(":resacacore"))
-
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.coroutines.android)
-
-    // Integration with ViewModels
-    implementation(libs.bundles.androidx.lifecycle.viewmodel)
 }
 
 // Maven publishing configuration

@@ -58,7 +58,7 @@ dependencies {
     implementation(libs.coroutines.android)
 
     // Integration with ViewModels
-    implementation(libs.bundles.androidx.lifecycle.viewmodel)
+    implementation(libs.androidx.lifecycle.viewmodel)
 
     // Hilt dependencies
     implementation(libs.dagger.hilt)

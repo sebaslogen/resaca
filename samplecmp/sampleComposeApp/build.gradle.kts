@@ -38,7 +38,7 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
-            implementation(project(":resacacmp")) // Depend on local resaca multiplatform library
+            implementation(project(":resaca")) // Depend on local resaca multiplatform library
 
             implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0") // Add kotlinx-datetime dependency just for testign purposes
         }

@@ -106,7 +106,7 @@ dependencies {
 
     implementation(libs.androidx.activity.compose)
     // Compose integration with ViewModels
-    implementation(libs.bundles.androidx.lifecycle.viewmodel)
+    implementation(libs.androidx.lifecycle.viewmodel)
     implementation(libs.androidx.navigation.compose)
 
     // Compose dependencies
