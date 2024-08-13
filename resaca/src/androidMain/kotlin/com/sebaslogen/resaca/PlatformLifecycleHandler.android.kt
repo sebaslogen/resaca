@@ -13,6 +13,10 @@ import java.util.concurrent.TimeUnit
 import kotlin.coroutines.coroutineContext
 import kotlin.coroutines.resume
 
+/**
+ * This class allows a specific platform to handle the lifecycle of objects stored in [ScopedViewModelContainer].
+ * In Android, this class is used to wait for the first frame after Activity resumes and properly handle changes after configuration changes.
+ */
 public actual class PlatformLifecycleHandler {
     public actual fun onResumed() {
         compositionResumedTimeout.countDown() // Signal that the first composition after resume is happening
