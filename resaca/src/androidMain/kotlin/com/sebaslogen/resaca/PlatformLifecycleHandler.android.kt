@@ -18,15 +18,20 @@ import kotlin.coroutines.resume
  * In Android, this class is used to wait for the first frame after Activity resumes and properly handle changes after configuration changes.
  */
 public actual class PlatformLifecycleHandler {
+    /**
+     * Signal that the Activity has been resumed.
+     */
     public actual fun onResumed() {
         compositionResumedTimeout.countDown() // Signal that the first composition after resume is happening
     }
 
+    /**
+     * Signal that the Activity has been destroyed.
+     */
     public actual fun onDestroyed() {
         compositionResumedTimeout.countDown() // Clear any pending waiting latch
         compositionResumedTimeout = CountDownLatch(1) // Start a new latch for the next time this ViewModel is used after resume
     }
-
 
     /**
      * Handler to post work to the main thread and used to wait for the first frame after Activity resumes,
@@ -40,9 +45,6 @@ public actual class PlatformLifecycleHandler {
      * This is apparently only required in automated tests.
      */
     private var compositionResumedTimeout = CountDownLatch(1)
-
-
-
 
     /**
      * Await for the next frame when the Activity is resumed.
@@ -81,6 +83,9 @@ public actual class PlatformLifecycleHandler {
         }
     }
 
+    /**
+     * When in background, wait for the first frame after the Activity is resumed.
+     */
     public actual suspend fun awaitBeforeDisposing(inForeground: Boolean) {
         if (!inForeground) awaitChoreographerFramePostFrontOfQueue() // When in background, wait for the next frame when the Activity is resumed
     }
