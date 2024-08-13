@@ -9,7 +9,7 @@ targetSdk = '34'
 coroutines = '1.8.1'
 material = '1.12.0'
 core-ktx = '1.13.1'
-navigation = '2.7.0-alpha07'
+navigation = '2.7.7'
 appcompat = '1.7.0'
 constraintlayout = '2.1.4'
 binary-compatibility-validator = '0.16.3'
@@ -49,7 +49,7 @@ androidx-constraintlayout = { module = 'androidx.constraintlayout:constraintlayo
 androidx-lifecycle-viewmodel = { module = 'androidx.lifecycle:lifecycle-viewmodel', version.ref = 'androidx-lifecycle' }
 androidx-lifecycle-viewmodel-compose = { module = 'org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose', version.ref = 'jetbrains-lifecycle' }
 androidx-activity-compose = { module = 'androidx.activity:activity-compose', version.ref = 'androidx-activity' }
-androidx-navigation-compose = { module = 'org.jetbrains.androidx.navigation:navigation-compose', version.ref = 'navigation' }
+androidx-navigation-compose = { module = 'androidx.navigation:navigation-compose', version.ref = 'navigation' }
 androidx-core-bundle = { module = "org.jetbrains.androidx.core:core-bundle", version.ref = "core-bundle" }
 
 compose-bom = { module = 'androidx.compose:compose-bom', version.ref = 'compose-bom' }
