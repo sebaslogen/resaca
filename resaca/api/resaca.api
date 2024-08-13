@@ -1,0 +1,103 @@
+public final class com/sebaslogen/resaca/ComposeLifecycleObservers_androidKt {
+	public static final fun ObserveComposableContainerLifecycle (Lcom/sebaslogen/resaca/ScopedViewModelContainer;Landroidx/compose/runtime/Composer;I)V
+}
+
+public final class com/sebaslogen/resaca/PlatformLifecycleHandler {
+	public static final field $stable I
+	public fun <init> ()V
+	public final fun awaitBeforeDisposing (ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun onDestroyed ()V
+	public final fun onResumed ()V
+}
+
+public final class com/sebaslogen/resaca/PlatformLifecycleHandlerKt {
+	public static final field COMPOSITION_RESUMED_TIMEOUT_IN_SECONDS J
+}
+
+public final class com/sebaslogen/resaca/RememberScopedObserver : androidx/compose/runtime/RememberObserver {
+	public static final field $stable I
+	public synthetic fun <init> (Lcom/sebaslogen/resaca/ScopedViewModelContainer;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun onAbandoned ()V
+	public fun onForgotten ()V
+	public fun onRemembered ()V
+}
+
+public final class com/sebaslogen/resaca/ScopeKeyWithResolver {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/Object;Lkotlin/jvm/functions/Function1;)V
+	public final fun component1 ()Ljava/lang/Object;
+	public final fun component2 ()Lkotlin/jvm/functions/Function1;
+	public final fun copy (Ljava/lang/Object;Lkotlin/jvm/functions/Function1;)Lcom/sebaslogen/resaca/ScopeKeyWithResolver;
+	public static synthetic fun copy$default (Lcom/sebaslogen/resaca/ScopeKeyWithResolver;Ljava/lang/Object;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/sebaslogen/resaca/ScopeKeyWithResolver;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getKey ()Ljava/lang/Object;
+	public final fun getKeyInScopeResolver ()Lkotlin/jvm/functions/Function1;
+	public fun hashCode ()I
+	public final fun isKeyInScope ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/sebaslogen/resaca/ScopedKeyInScopeResolverKt {
+	public static final fun rememberKeysInScope (Ljava/util/Collection;Landroidx/compose/runtime/Composer;I)Lkotlin/jvm/functions/Function1;
+}
+
+public final class com/sebaslogen/resaca/ScopedMemoizersKt {
+	public static final fun ObserveComposableDisposal-ITkcjrk (Ljava/lang/String;Lcom/sebaslogen/resaca/ScopedViewModelContainer;Landroidx/compose/runtime/Composer;I)V
+	public static final fun ObserveLifecycleWithScopedViewModelContainer (Lcom/sebaslogen/resaca/ScopedViewModelContainer;Landroidx/compose/runtime/Composer;I)V
+	public static final fun ObserveLifecycles-4iTggeE (Lcom/sebaslogen/resaca/ScopedViewModelContainer;Ljava/lang/String;Landroidx/compose/runtime/Composer;I)V
+	public static final fun generateKeysAndObserveLifecycle (Ljava/lang/Object;Landroidx/compose/runtime/Composer;I)Lkotlin/Triple;
+	public static final fun rememberScoped (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;II)Ljava/lang/Object;
+	public static final fun rememberScoped (Ljava/lang/Object;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;I)Ljava/lang/Object;
+}
+
+public final class com/sebaslogen/resaca/ScopedViewModelContainer : androidx/lifecycle/ViewModel, androidx/lifecycle/LifecycleEventObserver {
+	public static final field $stable I
+	public fun <init> ()V
+	public final fun getOrBuildViewModel-MDlMyRQ (Lkotlin/reflect/KClass;Ljava/lang/String;Ljava/lang/Object;Landroid/os/Bundle;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;I)Landroidx/lifecycle/ViewModel;
+	public final fun getOrBuildViewModel-_xopjis (Lkotlin/reflect/KClass;Ljava/lang/String;Ljava/lang/Object;Landroidx/lifecycle/ViewModelProvider$Factory;Landroidx/lifecycle/viewmodel/CreationExtras;Landroidx/lifecycle/ViewModelStoreOwner;Landroidx/compose/runtime/Composer;I)Landroidx/lifecycle/ViewModel;
+	public final fun getOrBuildViewModel-gTdrD7A (Lkotlin/reflect/KClass;Ljava/lang/String;Ljava/lang/Object;Landroid/os/Bundle;Landroidx/compose/runtime/Composer;I)Landroidx/lifecycle/ViewModel;
+	public final fun getOrBuildViewModel-z5wVCKk (Lkotlin/reflect/KClass;Ljava/lang/String;Ljava/lang/Object;Landroidx/lifecycle/ViewModelProvider$Factory;Landroid/os/Bundle;Landroidx/lifecycle/ViewModelStoreOwner;Landroidx/compose/runtime/Composer;II)Landroidx/lifecycle/ViewModel;
+	public fun onStateChanged (Landroidx/lifecycle/LifecycleOwner;Landroidx/lifecycle/Lifecycle$Event;)V
+}
+
+public final class com/sebaslogen/resaca/ScopedViewModelContainer$ExternalKey {
+	public static final synthetic fun box-impl (Ljava/lang/Object;)Lcom/sebaslogen/resaca/ScopedViewModelContainer$ExternalKey;
+	public static fun constructor-impl (Ljava/lang/Object;)Ljava/lang/Object;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/Object;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/Object;Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/Object;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/Object;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/Object;
+}
+
+public final class com/sebaslogen/resaca/ScopedViewModelContainer$InternalKey : java/lang/Comparable {
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lcom/sebaslogen/resaca/ScopedViewModelContainer$InternalKey;
+	public synthetic fun compareTo (Ljava/lang/Object;)I
+	public fun compareTo-Wpq-6A8 (Ljava/lang/String;)I
+	public static fun compareTo-Wpq-6A8 (Ljava/lang/String;Ljava/lang/String;)I
+	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getValue ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final class com/sebaslogen/resaca/ScopedViewModelOwner {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/String;Lkotlin/reflect/KClass;Landroidx/lifecycle/ViewModelProvider$Factory;Landroidx/lifecycle/viewmodel/CreationExtras;Landroidx/lifecycle/ViewModelStoreOwner;)V
+	public final fun updateViewModelProvider (Landroidx/lifecycle/ViewModelStoreOwner;)V
+}
+
+public final class com/sebaslogen/resaca/ViewModelCreationExtrasKt {
+	public static final fun addDefaultArguments (Landroidx/lifecycle/viewmodel/CreationExtras;Landroid/os/Bundle;)Landroidx/lifecycle/viewmodel/CreationExtras;
+	public static final fun toCreationExtras (Landroid/os/Bundle;Landroidx/lifecycle/ViewModelStoreOwner;)Landroidx/lifecycle/viewmodel/CreationExtras;
+}
+

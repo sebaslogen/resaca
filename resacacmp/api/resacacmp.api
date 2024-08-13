@@ -1,5 +1,0 @@
-public final class com/sebaslogen/resaca/cmp/ScopedMemoizers_androidKt {
-	public static final fun rememberScoped (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;II)Ljava/lang/Object;
-	public static final fun rememberScoped (Ljava/lang/Object;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;I)Ljava/lang/Object;
-}
-
