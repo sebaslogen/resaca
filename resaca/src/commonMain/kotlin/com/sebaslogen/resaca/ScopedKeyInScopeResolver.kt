@@ -16,7 +16,7 @@ public typealias KeyInScopeResolver<K> = (key: K) -> Boolean
  * at any point in time, be able to determine if the [key] is still in scope with the help of the [keyInScopeResolver].
  */
 public data class ScopeKeyWithResolver<K : Any>(val key: K, val keyInScopeResolver: KeyInScopeResolver<K>) {
-    public fun isKeyInScope(): Boolean = keyInScopeResolver(key)
+    internal fun isKeyInScope(): Boolean = keyInScopeResolver(key)
 }
 
 /**
