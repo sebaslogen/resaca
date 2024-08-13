@@ -33,7 +33,6 @@ public final class com/sebaslogen/resaca/ScopeKeyWithResolver {
 	public final fun getKey ()Ljava/lang/Object;
 	public final fun getKeyInScopeResolver ()Lkotlin/jvm/functions/Function1;
 	public fun hashCode ()I
-	public final fun isKeyInScope ()Z
 	public fun toString ()Ljava/lang/String;
 }
 
