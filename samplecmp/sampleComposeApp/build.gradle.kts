@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -26,6 +27,10 @@ kotlin {
             isStatic = true
         }
     }
+    androidTarget {
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
+    }
     sourceSets {
         androidMain.dependencies {
             implementation(compose.preview)
@@ -41,6 +46,12 @@ kotlin {
             implementation(project(":resaca")) // Depend on local resaca multiplatform library
 
             implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0") // Add kotlinx-datetime dependency just for testign purposes
+        }
+
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+            implementation(compose.uiTest)
         }
     }
 }
@@ -59,6 +70,7 @@ android {
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     packaging {
         resources {
@@ -88,6 +100,9 @@ android {
         compose = true
     }
     dependencies {
+        androidTestImplementation(libs.compose.ui.test.junit)
+        debugImplementation(libs.androidx.tracing)
+        debugImplementation(libs.compose.ui.test.manifest)
         debugImplementation(compose.uiTooling)
     }
 }

@@ -37,6 +37,7 @@ espresso = "3.6.1"
 testRunner = "1.6.1"
 testRules = "1.6.1"
 junitKtx = "1.2.1"
+tracing = "1.2.0"
 uuid = "0.8.4"
 
 
@@ -61,6 +62,7 @@ compose-ui-tooling = { module = 'androidx.compose.ui:ui-tooling' }
 compose-ui-toolingPreview = { module = 'androidx.compose.ui:ui-tooling-preview' }
 compose-ui-test-junit = { module = 'androidx.compose.ui:ui-test-junit4' }
 compose-ui-test-manifest = { module = 'androidx.compose.ui:ui-test-manifest' }
+androidx-tracing = { module = "androidx.tracing:tracing", version.ref = "tracing" }
 
 coroutines-android = { module = 'org.jetbrains.kotlinx:kotlinx-coroutines-android', version.ref = 'coroutines' }
 kotlin-coroutines-test = { module = 'org.jetbrains.kotlinx:kotlinx-coroutines-test', version.ref = 'coroutines' }
