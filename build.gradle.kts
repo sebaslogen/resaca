@@ -26,7 +26,7 @@ apiValidation {
     val ci = System.getenv("CI_FLOW")
     if (ci == null || !ci.contains("Maven")) { // This block is only applicable on build that include the sample app
         println("ApiValidation is being ignored for module $sampleModuleName in local builds")
-        ignoredProjects.addAll(listOf(sampleModuleName))
+        ignoredProjects.addAll(listOf(sampleModuleName, "sampleComposeApp"))
     }
 }
 

@@ -16,7 +16,7 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_17)
         }
     }
-    
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -108,3 +108,9 @@ android {
     }
 }
 
+tasks.whenTaskAdded {
+    // We need to disable this test task because the CMP tests can't run as unit tests, they run as connectedAndroidTest and iosSimulatorArm64Test
+    if (name == "testDebugUnitTest" || name == "testReleaseUnitTest") {
+        enabled = false
+    }
+}
