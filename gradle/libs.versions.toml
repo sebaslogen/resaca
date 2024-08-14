@@ -49,6 +49,7 @@ androidx-appcompat = { module = 'androidx.appcompat:appcompat', version.ref = 'a
 androidx-constraintlayout = { module = 'androidx.constraintlayout:constraintlayout', version.ref = 'constraintlayout' }
 androidx-lifecycle-viewmodel = { module = 'androidx.lifecycle:lifecycle-viewmodel', version.ref = 'androidx-lifecycle' }
 androidx-lifecycle-viewmodel-compose = { module = 'org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose', version.ref = 'jetbrains-lifecycle' }
+androidx-lifecycle-runtime-compose = { module = 'org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose', version.ref = 'jetbrains-lifecycle' }
 androidx-activity-compose = { module = 'androidx.activity:activity-compose', version.ref = 'androidx-activity' }
 androidx-navigation-compose = { module = 'androidx.navigation:navigation-compose', version.ref = 'navigation' }
 androidx-core-bundle = { module = "org.jetbrains.androidx.core:core-bundle", version.ref = "core-bundle" }

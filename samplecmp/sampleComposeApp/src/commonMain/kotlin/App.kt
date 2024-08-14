@@ -21,23 +21,28 @@ import resaca.samplecmp.samplecomposeapp.generated.resources.compose_multiplatfo
 @Preview
 fun App() {
     MaterialTheme {
-        var showContent by rememberSaveable { mutableStateOf(false) }
-        Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-            Button(onClick = { showContent = !showContent }) {
-                Text("Click me!")
+        Content()
+    }
+}
+
+@Composable
+fun Content() {
+    var showContent by rememberSaveable { mutableStateOf(false) }
+    Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+        Button(onClick = { showContent = !showContent }) {
+            Text("Click me!")
+        }
+        val g: String = rememberScoped {
+            "Hello! ${Clock.System.now().epochSeconds}"
+        }
+        Text("Compose: $g")
+        AnimatedVisibility(showContent) {
+            val greeting: String = rememberScoped {
+                "Hello, Compose Multiplatform! ${Clock.System.now().epochSeconds}"
             }
-            val g: String = rememberScoped {
-                "Hello! ${Clock.System.now().epochSeconds}"
-            }
-            Text("Compose: $g")
-            AnimatedVisibility(showContent) {
-                val greeting: String = rememberScoped {
-                    "Hello, Compose Multiplatform! ${Clock.System.now().epochSeconds}"
-                }
-                Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Image(painterResource(Res.drawable.compose_multiplatform), null)
-                    Text("Compose: $greeting")
-                }
+            Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                Image(painterResource(Res.drawable.compose_multiplatform), null)
+                Text("Compose: $greeting")
             }
         }
     }
