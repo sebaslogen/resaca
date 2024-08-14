@@ -36,8 +36,8 @@ jobs:
 
       - name: Prepare and open Simulator
         run: |
-          xcrun simctl create iphone-12-pro "iPhone 12 Pro"
-          xcrun simctl boot iphone-12-pro
+          xcrun simctl create iphone-15-pro "iPhone 15 Pro"
+          xcrun simctl boot iphone-15-pro
           open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app
 
       - name: Run tests with code coverage
