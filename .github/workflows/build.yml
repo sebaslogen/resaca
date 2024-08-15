@@ -49,8 +49,9 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 34
-          target: default
-          arch: x86
+          target: google_apis
+          arch: x86_64
+          force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -noaudio -no-boot-anim -camera-back none
           script: ./gradlew connectedCheck --stacktrace
         env:
