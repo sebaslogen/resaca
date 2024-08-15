@@ -7,7 +7,7 @@ on:
 jobs:
   test:
     name: Run Unit Tests
-    runs-on: macos-14
+    runs-on: macos-14-arm64
 
     steps:
       - name: Checkout
@@ -51,6 +51,7 @@ jobs:
           api-level: 34
           target: google_apis
           arch: x86_64
+          force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -noaudio -no-boot-anim -camera-back none
           script: ./gradlew connectedCheck --stacktrace
         env:
