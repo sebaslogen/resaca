@@ -7,7 +7,7 @@ on:
 jobs:
   test:
     name: Run Unit Tests
-    runs-on: macos-14-arm64
+    runs-on: macos-14
 
     steps:
       - name: Checkout
