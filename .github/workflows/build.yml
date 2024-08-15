@@ -7,7 +7,7 @@ on:
 jobs:
   test:
     name: Run Unit Tests
-    runs-on: macos-13
+    runs-on: macos-14
 
     steps:
       - name: Checkout
@@ -45,17 +45,18 @@ jobs:
         env:
           CI_FLOW: ${{ github.workflow }}
 
-      - name: Run Android instrumentation tests
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 34
-          target: google_apis
-          arch: x86_64
-          force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          script: ./gradlew connectedCheck --stacktrace
-        env:
-          CI_FLOW: ${{ github.workflow }}
+#      DISABLED: Android instrumentation tests don't run yet on M1 see https://github.com/ReactiveCircus/android-emulator-runner/issues/392
+#      - name: Run Android instrumentation tests
+#        uses: reactivecircus/android-emulator-runner@v2
+#        with:
+#          api-level: 34
+#          target: google_apis
+#          arch: arm64-v8a
+#          force-avd-creation: false
+#          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+#          script: ./gradlew connectedCheck --stacktrace
+#        env:
+#          CI_FLOW: ${{ github.workflow }}
         
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
