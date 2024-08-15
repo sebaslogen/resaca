@@ -6,6 +6,7 @@ import androidx.compose.ui.text.AnnotatedString
 import com.sebaslogen.resacaapp.sample.ui.main.ComposeActivity
 import com.sebaslogen.resacaapp.sample.ui.main.emptyDestination
 import com.sebaslogen.resacaapp.sample.ui.main.showSingleScopedViewModel
+import com.sebaslogen.resacaapp.sample.viewModelsClearedGloballySharedCounter
 import org.junit.After
 import org.junit.Before
 import org.koin.core.context.stopKoin
@@ -39,6 +40,7 @@ interface ComposeTestUtils {
     fun tearDown() {
         stopKoin()
         showSingleScopedViewModel = null
+        viewModelsClearedGloballySharedCounter.setPlain(0)
     }
 
     // Helper functions //
