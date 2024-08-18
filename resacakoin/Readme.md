@@ -126,7 +126,7 @@ fun DemoManyInjectedViewModelsScopedOutsideTheLazyColumn(listItems: List<Int> = 
     }
 }
 
-class MyViewModel @Inject constructor(private val stateSaver: SavedStateHandle) : ViewModel()
+class MyViewModel(private val stateSaver: SavedStateHandle) : ViewModel()
 ```
 </details>
 
@@ -160,7 +160,10 @@ visible for the first time. The ViewModel will cleared and destroyed when the it
   class with different ids. For example, a screen of holiday destinations with multiple pages and each page with its own `HolidayDestinationViewModel`.
 
 # Scoping in a LazyColumn, LazyRow, etc
-  
+This is handy for the typical case where you have a lazy list of items and you want to have a separate ViewModel for each item in the list, using the `viewModelScoped` function.
+<details>
+  <summary>How to use `rememberKeysInScope` to control the lifecycle of a scoped object in a Lazy* list</summary>
+
 When using the Lazy* family of Composables it is recommended that -just above the call to the Lazy* Composable- you use `rememberKeysInScope` with a list of 
 keys corresponding to the items used in the Lazy* Composable to obtain a `KeyInScopeResolver` (it's already highly recommended in Compose that items in a Lazy* list have unique keys).
 
@@ -169,8 +172,7 @@ all you have to do is include in the call to `koinViewModelScoped` the key for t
 
 With this setup, when an item of the Lazy* list becomes visible for the first time, its associated `koinViewModelScoped` ViewModel will be created and even if the item is scrolled away, the scoped ViewModel will still be alive. Only once the associated key is not present anymore in the list provided to `rememberKeysInScope` and the item is either not part of the Lazy* list or scrolled away, then the associated ViewModel will be cleared and destroyed.
 
-<details>
-  <summary>Example of a different ViewModel for each item in a LazyColumn and scope them to the Composable that contains the LazyColumn</summary>
+🏷️ Example of a different ViewModel for each item in a LazyColumn and scope them to the Composable that contains the LazyColumn
   
 ```kotlin
 @Composable
@@ -184,7 +186,7 @@ fun DemoManyInjectedViewModelsScopedOutsideTheLazyColumn(listItems: List<Int> = 
     }
 }
 
-class MyViewModel @Inject constructor(private val stateSaver: SavedStateHandle) : ViewModel()
+class MyViewModel(private val stateSaver: SavedStateHandle) : ViewModel()
 ```
 </details>
 
@@ -195,6 +197,6 @@ others must be passed in at creation time (a.k.a “assisted”) by the user, in
 
 Assisted injection is supported by Koin out of the box with the `parametersOf()` syntax. 
 
-When you declare the ViewModel factory in your Koin Module using the `viewModel {}` syntax, then 
+When you declare the ViewModel factory in your Koin Module using the `viewModel {}` or the `factory {}` syntax, then 
 you can [declare arguments in the factory](https://github.com/sebaslogen/resaca/blob/main/sample/src/main/java/com/sebaslogen/resacaapp/sample/di/koin/AppModule.kt#L25).
 Finally, those arguments can be [passed as parameters at call time](https://github.com/sebaslogen/resaca/blob/aedb3de32b052668d21d1d6662d631b54da7636f/sample/src/main/java/com/sebaslogen/resacaapp/sample/ui/main/compose/examples/KoinInjectedViewModel.kt#L78) from your Composable when calling `koinViewModelScoped`.
