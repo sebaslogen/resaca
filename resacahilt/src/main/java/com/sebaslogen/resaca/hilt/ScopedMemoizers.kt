@@ -15,12 +15,12 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.NavBackStackEntry
+import com.sebaslogen.resaca.KeyInScopeResolver
+import com.sebaslogen.resaca.ScopeKeyWithResolver
 import com.sebaslogen.resaca.ScopedViewModelContainer
 import com.sebaslogen.resaca.ScopedViewModelContainer.ExternalKey
 import com.sebaslogen.resaca.ScopedViewModelContainer.InternalKey
 import com.sebaslogen.resaca.ScopedViewModelOwner
-import com.sebaslogen.resaca.KeyInScopeResolver
-import com.sebaslogen.resaca.ScopeKeyWithResolver
 import com.sebaslogen.resaca.generateKeysAndObserveLifecycle
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory

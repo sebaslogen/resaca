@@ -5,6 +5,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
 import kotlin.reflect.KClass
 
+/**
+ * Default implementation of [ViewModelProvider.Factory] in iOS will always fail with an exception because we can't use reflection.
+ */
 internal actual object DefaultViewModelProviderFactory : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: KClass<T>, extras: CreationExtras): T =
         throw UnsupportedOperationException(

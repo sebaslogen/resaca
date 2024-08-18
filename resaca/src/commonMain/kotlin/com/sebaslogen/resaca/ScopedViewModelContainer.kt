@@ -66,6 +66,10 @@ import kotlin.reflect.KClass
  */
 public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
 
+    /**
+     * Handler to manage the lifecycle of the container of this class (usually a screen like an Activity, a Fragment or a Compose destination)
+     * Since the container of this class is different per platform, this handler abstracts the platform-specific lifecycle handling
+     */
     private val platformLifecycleHandler: PlatformLifecycleHandler = PlatformLifecycleHandler()
 
     /**

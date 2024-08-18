@@ -12,7 +12,7 @@ import androidx.lifecycle.viewmodel.MutableCreationExtras
  * Combine the existing arguments present in the receiver's [CreationExtras] under the key [DEFAULT_ARGS_KEY] with the [defaultArguments] parameter.
  * When the no arguments are present just add them.
  */
-public fun CreationExtras.addDefaultArguments(defaultArguments: Bundle): CreationExtras =
+private fun CreationExtras.addDefaultArguments(defaultArguments: Bundle): CreationExtras =
     if (defaultArguments.isEmpty()) {
         this
     } else {
@@ -22,7 +22,7 @@ public fun CreationExtras.addDefaultArguments(defaultArguments: Bundle): Creatio
         }
     }
 
-public fun Bundle.toCreationExtras(
+internal fun Bundle.toCreationExtras(
     viewModelStoreOwner: ViewModelStoreOwner
 ): CreationExtras =
     if (viewModelStoreOwner is HasDefaultViewModelProviderFactory) {
