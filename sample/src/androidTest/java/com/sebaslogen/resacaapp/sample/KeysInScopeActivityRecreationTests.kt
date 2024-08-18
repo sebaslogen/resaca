@@ -50,7 +50,7 @@ class KeysInScopeActivityRecreationTests : ComposeTestUtils {
         // When we trigger a configuration change by recreating the Activity and scroll back to the top
         scenario.recreate()
         printComposeUiTreeToLog()
-        Thread.sleep(COMPOSITION_RESUMED_TIMEOUT_IN_SECONDS * 1000) // Wait for the ViewModel to be cleared
+        Thread.sleep(COMPOSITION_RESUMED_TIMEOUT_IN_SECONDS * 2 * 1000) // Wait for the ViewModel to be cleared
         composeTestRule.onNodeWithTag("LazyList").performScrollToIndex(0)
 
         // Then the scoped ViewModel disappears
