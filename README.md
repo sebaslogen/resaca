@@ -8,8 +8,6 @@
 
 Article about this library: [Every Composable deserves a ViewModel](https://engineering.q42.nl/compose/)
 
-// TODO: Multiplatform, KeysInScope, separate in multiple readmes or website
-
 # Resaca 🍹
 
 The right scope for objects and View Models in Android [Compose](https://developer.android.com/jetpack/compose).
@@ -152,14 +150,14 @@ Once you use the `rememberScoped` or `viewModelScoped` functions, the same objec
 it _temporarily_ leaves composition on configuration change (e.g. screen rotation, change to dark mode, etc.) or while being in the backstack.
 
 For ViewModels, in addition to being forgotten when they're really not needed anymore, their _coroutineScope_ will also be automatically canceled because
-ViewModel's `onCleared` method will be automatically called by this library.
+ViewModel's `onCleared` method will be automatically called.
 
 > 💡 _Optional key_: a key can be provided to the call, `rememberScoped(key) { ... }` or `viewModelScoped(key) { ... }`. This makes possible to forget an old
 object when there is new input data during a recomposition (e.g. a new input id for your ViewModel).
 
 > ⚠️ Note that ViewModels remembered with `viewModelScoped` **should not be created** using any of the Compose `viewModel()` or `ViewModelProviders` factories,
-otherwise they will be retained in the scope of the screen regardless of `viewModelScoped`. Also, if a ViewModel is remembered with `rememberScoped` its
-clean-up method won't be called, that's the reason to use `viewModelScoped` instead.
+otherwise they will be retained in the scope of the screen regardless of `viewModelScoped`. Also, if a ViewModel is remembered with `rememberScoped`, instead of `viewModelScoped`, then its
+clean-up method won't be called, here use `viewModelScoped` instead.
 
 # Sample use cases
 
@@ -185,6 +183,20 @@ Demo app [documentation can be found here](https://github.com/sebaslogen/resaca/
 Before                     |  After backstack navigation & configuration change
 :-------------------------:|:-------------------------:
 <img width="429" alt="Before" src="https://user-images.githubusercontent.com/1936647/146558764-42333455-2dd8-43a9-932b-3249d42b7a7d.png">  |  <img width="430" alt="After" src="https://user-images.githubusercontent.com/1936647/146558775-8c77231c-ed0f-4f52-b9b8-cdf9029e106c.png">
+
+# Multiplatform support
+<details>
+  <summary>Resaca works in Kotlin Multiplaform and also in Compose Multiplatform for Android and iOS targets:</summary>
+
+## Compose Multiplatform
+Since version 4.0, Resaca supports Compose Multiplatform for Android and iOS targets.
+To see an example of usage and configuration check the [Sample Compose Multiplatform project](https://github.com/sebaslogen/resaca/blob/main/samplecmp/sampleComposeApp/src/commonMain/kotlin/App.kt) in the `samplecmp` module.
+
+## Kotlin Multiplatform
+Resaca is a Kotlin Multiplatform library and can be used in any Kotlin Multiplatform project that targets Android or iOS. Nevertheless, 
+Resaca does not make sense in a SwiftUI project because it's a Compose only library, instead, if you want to scope ViewModels to SwiftUI views, 
+you can look at the solutions provided in the first comments of this ticket https://github.com/sebaslogen/resaca/issues/91.
+</details>
 
 # Dependency injection support
 
@@ -215,19 +227,19 @@ Usage example: `val viewModel: MyViewModel = viewModelScoped(myId) { getKoin().g
 </details>
 
 # Scoping in a LazyColumn, LazyRow, etc
+This is handy for the typical case where you have a lazy list of items and you want to have a separate ViewModel for each item in the list, using the `viewModelScoped` function.
 <details>
-  <summary>How to use `rememberKeysInScope` to control the lifecycle of an object in a Lazy* list</summary>
+  <summary>How to use `rememberKeysInScope` to control the lifecycle of a scoped object in a Lazy* list</summary>
   
 When using the Lazy* family of Composables it is recommended that -just above the call to the Lazy* Composable- you use `rememberKeysInScope` with a list of 
 keys corresponding to the items used in the Lazy* Composable to obtain a `KeyInScopeResolver` (it's already highly recommended in Compose that items in a Lazy* list have unique keys).
 
-Then in the Lazy* Composable, once you are creating an item and you need an object or ViewModel for that item, 
+Then, in the Lazy* Composable, once you are creating an item and you need an object or ViewModel for that item, 
 all you have to do is include in the call to `rememberScoped`/`viewModelScoped` the key for the current item and the `KeyInScopeResolver` you previously got from `rememberKeysInScope`.
 
-With this setup, when an item of the Lazy* list becomes visible for the first time, its associated `rememberScoped`/`viewModelScoped` object will be created and even if the item is scrolled away, the scoped object will still be alive. Only once the associated key is not present anymore in the list provided to `rememberKeysInScope` and the item is either not part of the Lazy* list or scrolled away, then the associated object will be cleared and destroyed.
+With this setup, when an item of the Lazy* list becomes visible for the first time, its associated `rememberScoped`/`viewModelScoped` object will be created and even if the item is scrolled away, the scoped object will still be alive. Only once the associated key is not present anymore in the list provided to `rememberKeysInScope` and the item is either not part of the Lazy* list anymore or scrolled away, then the associated object will be cleared and destroyed.
 
-<details>
-  <summary>Example of a different ViewModel for each item in a LazyColumn and scope them to the Composable that contains the LazyColumn</summary>
+🏷️ Example of a separate ViewModel for each item in a LazyColumn and scope them to the Composable that contains the LazyColumn
   
 ```kotlin
 @Composable
@@ -243,14 +255,13 @@ fun DemoManyViewModelsScopedOutsideTheLazyColumn(listItems: List<Int> = (1..1000
 ```
 </details>
 
-</details>
-
 ### General considerations for State Hoisting
 When a Composable is used more than once in the same screen with the same input, then the ViewModel (or business logic object) should be provided only once 
-with `viewModelScoped` at a higher level in the tree using Compose's [State Hoisting](https://developer.android.com/jetpack/compose/state#state-hoisting).
+with `viewModelScoped` at a higher level in the composition tree using Compose's [State Hoisting](https://developer.android.com/jetpack/compose/state#state-hoisting).
 
 # Why not use remember?
-
+<details>
+  <summary>Pros, cons and alternatives to remember:</summary>
 **[Remember](https://developer.android.com/reference/kotlin/androidx/compose/runtime/package-summary#remember(kotlin.Function0))** will keep our object alive as
 long as the Composable is not disposed of. Unfortunately, there are a few cases where our Composable will be disposed of and then added again, breaking the
 lifecycle parity with the remember function. 😢
@@ -287,7 +298,7 @@ Implementing these interfaces might not trivial.
   or [Saver](https://developer.android.com/reference/kotlin/androidx/compose/runtime/saveable/Saver)
 </details>
   
-### The new RememberScoped 🪄✨
+### Resaca's RememberScoped 🪄✨
 
 **[RememberScoped](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/ScopedMemoizers.kt#L33)** function keeps
 objects in memory during the lifecycle of the Composable, even in a few cases where the Composable is disposed of, and then added again. Therefore, it will
@@ -305,8 +316,12 @@ retain objects longer than the `remember` function but shorter than `rememberSav
 
 - rememberScoped/viewModelScoped value will **NOT** survive a process death
 </details>
+</details>
 
-# Lifecycle
+# Lifecycle explained
+
+<details>
+  <summary>How does the lifecycle of the resaca scoped objects works and some lifecycle illustrated examples:</summary>
 
 **[RememberScoped](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/ScopedMemoizers.kt#L33)** function keeps
 objects in memory during the lifecycle of the Composable, even in a few cases where the Composable is disposed of, and then added again.
@@ -355,3 +370,4 @@ The existing alternatives to replicate the lifecycle of the objects in the diagr
 - Object A lifecycle could only be achieved using the Compose `viewModel()` or `ViewModelProviders` factories.
 - Object B lifecycle could only be achieved using the Compose `remember()` function.
 - Object C lifecycle could not be achieved neither by using ViewModel provider functions nor Compose `remember` functions.
+</details>
