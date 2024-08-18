@@ -1,14 +1,20 @@
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material.Text
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.test.*
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertTextContains
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.runComposeUiTest
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import com.sebaslogen.resaca.rememberScoped
+import kotlinx.datetime.Clock
 import kotlin.test.Test
 
 class AppStartTests {
@@ -16,9 +22,8 @@ class AppStartTests {
     @OptIn(ExperimentalTestApi::class)
     @Test
     fun myTest() = runComposeUiTest {
-        // Declares a mock UI to demonstrate API calls
-        //
-        // Replace with your own declarations to test the code of your project
+
+        // Setup test infrastructure a ViewModelStoreOwner and a LifecycleOwner
         val storeOwner = object : ViewModelStoreOwner {
             override val viewModelStore: ViewModelStore
                 get() = ViewModelStore()
@@ -27,31 +32,31 @@ class AppStartTests {
             override val lifecycle: Lifecycle = LifecycleRegistry(this)
         }
 
+        // Given the starting screen with a scoped object
+        val textTitle = "Test text"
         setContent {
             CompositionLocalProvider(
                 LocalViewModelStoreOwner provides storeOwner,
                 LocalLifecycleOwner provides lifecycleOwner,
-    //            LocalSavedStateRegistryOwner provides this
+                //            LocalSavedStateRegistryOwner provides this
             ) {
-                Content()
-    //            var text by remember { mutableStateOf("Hello") }
-    //            Text(
-    //                text = text,
-    //                modifier = Modifier.testTag("text")
-    //            )
-    //            Button(
-    //                onClick = { text = "Compose" },
-    //                modifier = Modifier.testTag("button")
-    //            ) {
-    //                Text("Click me")
-    //            }
+                Column {
+                    Text(textTitle)
+                    val g: String = rememberScoped {
+                        "Hello! ${Clock.System.now().epochSeconds}"
+                    }
+                    Text(
+                        text = "Compose: $g",
+                        modifier = Modifier.testTag("text")
+                    )
+                }
             }
         }
 
-//        // Tests the declared UI with assertions and actions of the Compose Multiplatform testing API
-//        onNodeWithTag("text").assertTextEquals("Hello")
-//        onNodeWithTag("button").performClick()
-//        onNodeWithTag("text").assertTextEquals("Compose")
-        // TODO: Build some tests for the Compose UI on iOS
+        // Then check that the text is displayed
+        onNodeWithTag("text").assertTextContains("1", substring = true)
+        val readText = (onNodeWithTag("text").fetchSemanticsNode().config.first { it.key.name == "Text" }
+            .value as List<*>).first().toString()
+        println("readText: $readText")
     }
 }
