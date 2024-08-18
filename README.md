@@ -263,6 +263,7 @@ with `viewModelScoped` at a higher level in the composition tree using Compose's
 # Why not use remember?
 <details>
   <summary>Pros, cons and alternatives to remember:</summary>
+
 **[Remember](https://developer.android.com/reference/kotlin/androidx/compose/runtime/package-summary#remember(kotlin.Function0))** will keep our object alive as
 long as the Composable is not disposed of. Unfortunately, there are a few cases where our Composable will be disposed of and then added again, breaking the
 lifecycle parity with the remember function. 😢
@@ -322,7 +323,7 @@ retain objects longer than the `remember` function but shorter than `rememberSav
 # Lifecycle explained
 
 <details>
-  <summary>How does the lifecycle of the resaca scoped objects works and some lifecycle illustrated examples:</summary>
+  <summary>How does the lifecycle of the Resaca scoped objects work and some lifecycle illustrated examples:</summary>
 
 **[RememberScoped](https://github.com/sebaslogen/resaca/blob/main/resaca/src/main/java/com/sebaslogen/resaca/ScopedMemoizers.kt#L33)** function keeps
 objects in memory during the lifecycle of the Composable, even in a few cases where the Composable is disposed of, and then added again.
