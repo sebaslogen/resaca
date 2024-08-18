@@ -2,6 +2,7 @@
 [![Build Status](https://github.com/sebaslogen/resaca/actions/workflows/build.yml/badge.svg)](https://github.com/sebaslogen/resaca/actions/workflows/build.yml)
 [![API 21+](https://img.shields.io/badge/API-21%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=21)
 [![GitHub license](https://img.shields.io/github/license/sebaslogen/resaca)](https://github.com/sebaslogen/resaca/blob/main/LICENSE)
+[![Supported Compose Platforms](https://img.shields.io/badge/Platform-Android_|_iOS-blue)](https://img.shields.io/badge/Platform-Android_|_iOS-blue)
 [![Kotlin Weekly](https://user-images.githubusercontent.com/1936647/277181222-6aba882e-eafe-4a38-b8ef-631bb66b442f.svg)](https://mailchi.mp/kotlinweekly/kotlin-weekly-285)
 [![Android Weekly](https://github-production-user-asset-6210df.s3.amazonaws.com/1936647/277184200-dbb226b8-9730-49b0-8b7e-23873debea1e.svg)](https://androidweekly.net/issues/issue-593)
 
