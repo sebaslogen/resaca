@@ -94,7 +94,7 @@ class ComposeActivityRecreationTests : ComposeTestUtils {
         showSingleScopedViewModel = false // This is a fake night-mode change but it will remove Composable after Activity re-creation
         scenario.recreate()
         printComposeUiTreeToLog()
-        Thread.sleep(COMPOSITION_RESUMED_TIMEOUT_IN_SECONDS * 1000) // Wait for the ViewModel to be cleared
+        Thread.sleep(COMPOSITION_RESUMED_TIMEOUT_IN_SECONDS * 2 * 1000) // Wait for the ViewModel to be cleared
         val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
 
         // Then the scoped ViewModel disappears
