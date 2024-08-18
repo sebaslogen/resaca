@@ -71,25 +71,7 @@ dependencies {
     ksp(libs.dagger.hilt.android.compiler)
 
     // Test dependencies
-
-    testImplementation(libs.junit)
-    testImplementation(libs.robolectric)
-    testImplementation(libs.kotlin.coroutines.test)
-    // Test rules and transitive dependencies:
-    testImplementation(libs.compose.ui.test.junit)
-    // Needed for createComposeRule, but not createAndroidComposeRule:
-    debugImplementation(libs.compose.ui.test.manifest)
-    testImplementation(libs.dagger.hilt.android.testing)
-    kspTest(libs.dagger.hilt.android.compiler)
-    testImplementation(libs.koin.android.test)
-    // Espresso dependencies for Activity recreation tests
-    androidTestImplementation(libs.espresso)
-    androidTestImplementation(libs.test.runner)
-    androidTestImplementation(libs.test.rules)
-    androidTestImplementation(libs.androidx.junit.ktx)
-    androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.compose.ui.test.junit)
-    androidTestImplementation(libs.koin.android.test)
 }
 
 // Maven publishing configuration
