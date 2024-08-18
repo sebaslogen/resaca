@@ -158,7 +158,7 @@ object when there is new input data during a recomposition (e.g. a new input id 
 
 > ⚠️ Note that ViewModels remembered with `viewModelScoped` **should not be created** using any of the Compose `viewModel()` or `ViewModelProviders` factories,
 otherwise they will be retained in the scope of the screen regardless of `viewModelScoped`. Also, if a ViewModel is remembered with `rememberScoped`, instead of `viewModelScoped`, then its
-clean-up method won't be called, here use `viewModelScoped` instead.
+clean-up method won't be called, so it's always better to use `viewModelScoped` for ViewModels.
 
 # Sample use cases
 
