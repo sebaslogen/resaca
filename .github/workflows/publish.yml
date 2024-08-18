@@ -13,7 +13,7 @@ env:
 jobs:
   publish:
     name: Run and publish release to Maven Central
-    runs-on: ubuntu-latest
+    runs-on: macos-14
 
     steps:
       - name: Checkout
@@ -52,6 +52,11 @@ jobs:
           key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle*') }}
           restore-keys: |
             ${{ runner.os }}-konan-
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1.6.0
+        with:
+          xcode-version: 'latest-stable'
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
