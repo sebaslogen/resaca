@@ -28,6 +28,10 @@ apiValidation {
         println("ApiValidation is being ignored for module $sampleModuleName in local builds")
         ignoredProjects.addAll(listOf(sampleModuleName, "sampleComposeApp"))
     }
+    @OptIn(kotlinx.validation.ExperimentalBCVApi::class)
+    klib {
+        enabled = true
+    }
 }
 
 tasks.register("clean", Delete::class) {
