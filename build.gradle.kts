@@ -91,36 +91,30 @@ subprojects {
                 publishToMavenCentral(SonatypeHost.S01)
                 signAllPublications()
                 pom {
-                    name.set(project.name)
-                    description.set(desc)
-                    inceptionYear.set(creationYear)
-                    url.set("https://github.com/$githubRepo")
+                    name = project.name
+                    description = desc
+                    inceptionYear = creationYear
+                    url = "https://github.com/$githubRepo"
                     licenses {
                         license {
-                            name.set(license)
-                            url.set("https://github.com/sebaslogen/resaca/blob/main/LICENSE")
+                            name = license
+                            url = "https://github.com/sebaslogen/resaca/blob/main/LICENSE"
                         }
                     }
                     developers {
                         developer {
-                            id.set("sebaslogen")
-                            name.set("Sebastian Lobato Genco")
-                            url.set("https://github.com/sebaslogen/")
+                            id = "sebaslogen"
+                            name = "Sebastian Lobato Genco"
+                            url = "https://github.com/sebaslogen/"
                         }
                     }
                     scm {
-                        url.set(
-                            "https://github.com/$githubRepo.git"
-                        )
-                        connection.set(
-                            "scm:git:git://github.com/$githubRepo.git"
-                        )
-                        developerConnection.set(
-                            "scm:git:git://github.com/$githubRepo.git"
-                        )
+                        url = "https://github.com/$githubRepo.git"
+                        connection = "scm:git:git://github.com/$githubRepo.git"
+                        developerConnection = "scm:git:git://github.com/$githubRepo.git"
                     }
                     issueManagement {
-                        url.set("https://github.com/$githubRepo/issues")
+                        url = "https://github.com/$githubRepo/issues"
                     }
                 }
             }
