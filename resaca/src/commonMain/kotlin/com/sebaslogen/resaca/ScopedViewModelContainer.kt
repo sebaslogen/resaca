@@ -358,6 +358,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
             val lastObject = objectsToClear.removeLast()
             clearLastDisposedObject(lastObject, objectsToClear)
         }
+        scopedObjectKeys.clear() // Clear all keys
         scopedObjectsContainer.clear() // Clear just in case this VM is leaked
         super.onCleared()
     }

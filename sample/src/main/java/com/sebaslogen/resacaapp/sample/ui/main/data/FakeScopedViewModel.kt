@@ -3,6 +3,7 @@ package com.sebaslogen.resacaapp.sample.ui.main.data
 import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import com.sebaslogen.resacaapp.sample.ui.main.compose.objectToShortStringWithoutPackageName
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeScopedViewModel.Companion.MY_ARGS_KEY
 import com.sebaslogen.resacaapp.sample.viewModelsClearedGloballySharedCounter
 import java.util.concurrent.atomic.AtomicInteger
@@ -25,6 +26,11 @@ class FakeScopedViewModel(private val stateSaver: SavedStateHandle) : ViewModel(
      * Counter to track that this ViewModel has been correctly cleared
      */
     private val viewModelsClearedCounter: AtomicInteger = viewModelsClearedGloballySharedCounter
+
+    /**
+     * Memory address of the ViewModel instance to debug name on the screen
+     */
+    val memoryAddress: String = objectToShortStringWithoutPackageName(this).replaceBeforeLast("@", "")
 
     override fun onCleared() {
         viewModelsClearedCounter.incrementAndGet()
