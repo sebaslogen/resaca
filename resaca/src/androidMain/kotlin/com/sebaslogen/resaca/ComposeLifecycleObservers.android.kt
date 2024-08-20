@@ -8,7 +8,8 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalContext
 
 @Composable
-public actual fun ObserveComposableContainerLifecycle(scopedViewModelContainer: ScopedViewModelContainer) {
+@PublishedApi
+internal actual fun ObserveComposableContainerLifecycle(scopedViewModelContainer: ScopedViewModelContainer) {
     // Observe state of configuration changes when disposing
     val context = LocalContext.current
     DisposableEffect(context) {

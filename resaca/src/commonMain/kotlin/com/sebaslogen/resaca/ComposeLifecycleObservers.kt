@@ -3,4 +3,5 @@ package com.sebaslogen.resaca
 import androidx.compose.runtime.Composable
 
 @Composable
-public expect fun ObserveComposableContainerLifecycle(scopedViewModelContainer: ScopedViewModelContainer)
+@PublishedApi
+internal expect fun ObserveComposableContainerLifecycle(scopedViewModelContainer: ScopedViewModelContainer)

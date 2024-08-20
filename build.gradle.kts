@@ -32,6 +32,7 @@ apiValidation {
     klib {
         enabled = true
     }
+    nonPublicMarkers.add("kotlin.PublishedApi")
 }
 
 tasks.register("clean", Delete::class) {

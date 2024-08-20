@@ -1,7 +1,3 @@
-public final class com/sebaslogen/resaca/ComposeLifecycleObservers_androidKt {
-	public static final fun ObserveComposableContainerLifecycle (Lcom/sebaslogen/resaca/ScopedViewModelContainer;Landroidx/compose/runtime/Composer;I)V
-}
-
 public final class com/sebaslogen/resaca/PlatformLifecycleHandler {
 	public static final field $stable I
 	public fun <init> ()V
@@ -41,9 +37,6 @@ public final class com/sebaslogen/resaca/ScopedKeyInScopeResolverKt {
 }
 
 public final class com/sebaslogen/resaca/ScopedMemoizersKt {
-	public static final fun ObserveComposableDisposal-ITkcjrk (Ljava/lang/String;Lcom/sebaslogen/resaca/ScopedViewModelContainer;Landroidx/compose/runtime/Composer;I)V
-	public static final fun ObserveLifecycleWithScopedViewModelContainer (Lcom/sebaslogen/resaca/ScopedViewModelContainer;Landroidx/compose/runtime/Composer;I)V
-	public static final fun ObserveLifecycles-4iTggeE (Lcom/sebaslogen/resaca/ScopedViewModelContainer;Ljava/lang/String;Landroidx/compose/runtime/Composer;I)V
 	public static final fun generateKeysAndObserveLifecycle (Ljava/lang/Object;Landroidx/compose/runtime/Composer;I)Lkotlin/Triple;
 	public static final fun rememberScoped (Ljava/lang/Object;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;II)Ljava/lang/Object;
 	public static final fun rememberScoped (Ljava/lang/Object;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;I)Ljava/lang/Object;
@@ -92,6 +85,5 @@ public final class com/sebaslogen/resaca/ScopedViewModelContainer$InternalKey : 
 public final class com/sebaslogen/resaca/ScopedViewModelOwner {
 	public static final field $stable I
 	public fun <init> (Ljava/lang/String;Lkotlin/reflect/KClass;Landroidx/lifecycle/ViewModelProvider$Factory;Landroidx/lifecycle/viewmodel/CreationExtras;Landroidx/lifecycle/ViewModelStoreOwner;)V
-	public final fun updateViewModelProvider (Landroidx/lifecycle/ViewModelStoreOwner;)V
 }
 
