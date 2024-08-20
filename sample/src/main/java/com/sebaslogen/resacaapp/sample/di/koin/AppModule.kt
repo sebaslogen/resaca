@@ -6,8 +6,8 @@ import com.sebaslogen.resacaapp.sample.ui.main.data.FakeScopedViewModel
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeSecondInjectedViewModel
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeSimpleInjectedViewModel
 import com.sebaslogen.resacaapp.sample.viewModelsClearedGloballySharedCounter
-import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.androidx.viewmodel.dsl.viewModelOf
+import org.koin.core.module.dsl.viewModel
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 import java.util.concurrent.atomic.AtomicInteger
 

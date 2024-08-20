@@ -40,7 +40,7 @@ interface ComposeTestUtils {
     fun tearDown() {
         stopKoin()
         showSingleScopedViewModel = null
-        viewModelsClearedGloballySharedCounter.setPlain(0)
+        viewModelsClearedGloballySharedCounter.plain = 0
     }
 
     // Helper functions //

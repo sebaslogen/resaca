@@ -14,6 +14,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.compose.KoinContext
 import org.koin.core.parameter.parametersOf
 
 
@@ -38,10 +39,12 @@ class AssistedInjectionTest : ComposeTestUtils {
         val fakeInjectedViewModelId = 555
         var fakeInjectedViewModel: FakeInjectedViewModel? = null
         composeTestRule.activity.setContent {
-            fakeInjectedViewModel = koinViewModelScoped(
-                defaultArguments = bundleOf(FakeInjectedViewModel.MY_ARGS_KEY to fakeInjectedViewModelId),
-                parameters = { parametersOf(viewModelsClearedGloballySharedCounter) })
-            DemoComposable(inputObject = fakeInjectedViewModel!!, objectType = "FakeInjectedViewModel", scoped = true)
+            KoinContext {
+                fakeInjectedViewModel = koinViewModelScoped(
+                    defaultArguments = bundleOf(FakeInjectedViewModel.MY_ARGS_KEY to fakeInjectedViewModelId),
+                    parameters = { parametersOf(viewModelsClearedGloballySharedCounter) })
+                DemoComposable(inputObject = fakeInjectedViewModel!!, objectType = "FakeInjectedViewModel", scoped = true)
+            }
         }
         printComposeUiTreeToLog()
 

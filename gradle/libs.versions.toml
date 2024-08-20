@@ -26,7 +26,7 @@ jetbrains-lifecycle = "2.8.0"
 hilt = '2.52'
 hilt-navigation-compose = '1.2.0'
 # Koin
-koin = '3.5.6'
+koin = '4.0.0-RC1'
 # Compose Multiplatform
 compose-plugin = "1.7.0-alpha02"
 # Test
@@ -75,6 +75,8 @@ dagger-hilt-android-compiler = { module = 'com.google.dagger:hilt-android-compil
 dagger-hilt-android-testing = { module = 'com.google.dagger:hilt-android-testing', version.ref = 'hilt' }
 dagger-hilt-navigation-compose = { module = 'androidx.hilt:hilt-navigation-compose', version.ref = 'hilt-navigation-compose' }
 
+koin-core = { module = 'io.insert-koin:koin-core', version.ref = 'koin' }
+koin-compose = { module = 'io.insert-koin:koin-compose', version.ref = 'koin' }
 koin-android = { module = 'io.insert-koin:koin-android', version.ref = 'koin' }
 koin-android-test = { module = 'io.insert-koin:koin-android-test', version.ref = 'koin' }
 

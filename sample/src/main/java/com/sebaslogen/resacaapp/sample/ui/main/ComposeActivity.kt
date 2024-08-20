@@ -34,6 +34,7 @@ import com.sebaslogen.resacaapp.sample.ui.main.compose.screens.ComposeScreenWith
 import com.sebaslogen.resacaapp.sample.ui.main.compose.screens.ComposeScreenWithSingleViewModelScopedWithKeys
 import com.sebaslogen.resacaapp.sample.ui.main.ui.theme.ResacaAppTheme
 import dagger.hilt.android.AndroidEntryPoint
+import org.koin.compose.KoinContext
 
 const val emptyDestination = "emptyDestination"
 const val rememberScopedDestination = "rememberScopedDestination"
@@ -103,7 +104,9 @@ fun ScreensWithNavigation(navController: NavHostController = rememberNavControll
             ComposeScreenWithHiltViewModelScoped(navController)
         }
         composable(koinViewModelScopedDestination) {
-            ComposeScreenWithKoinViewModelScoped(navController)
+            KoinContext { // This is required to use Koin in ActivityScenario Robolectric tests, see ComposeActivityRecreationTests.kt
+                ComposeScreenWithKoinViewModelScoped(navController)
+            }
         }
         composable(hiltSingleViewModelScopedDestination) { // This destination is only used in automated tests
             ComposeScreenWithSingleHiltViewModelScoped(navController)

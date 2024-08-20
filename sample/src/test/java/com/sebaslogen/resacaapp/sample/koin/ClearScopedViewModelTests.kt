@@ -25,6 +25,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.compose.KoinContext
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
@@ -53,8 +54,10 @@ class ClearScopedViewModelTests : ComposeTestUtils {
     fun `when I navigate to nested screen and back, then the Koin scoped ViewModels of the second screen are cleared`() {
         // Given the starting screen with Koin injected ViewModel scoped
         composeTestRule.activity.setContent {
-            navController = rememberNavController()
-            ScreensWithNavigation(navController = navController, startDestination = koinViewModelScopedDestination)
+            KoinContext {
+                navController = rememberNavController()
+                ScreensWithNavigation(navController = navController, startDestination = koinViewModelScopedDestination)
+            }
         }
         printComposeUiTreeToLog()
         val initialAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
@@ -84,10 +87,12 @@ class ClearScopedViewModelTests : ComposeTestUtils {
         var composablesShown by mutableStateOf(true)
         val textTitle = "Test text"
         composeTestRule.activity.setContent {
-            Column {
-                Text(textTitle)
-                if (composablesShown) {
-                    DemoScopedKoinInjectedViewModelComposable()
+            KoinContext {
+                Column {
+                    Text(textTitle)
+                    if (composablesShown) {
+                        DemoScopedKoinInjectedViewModelComposable()
+                    }
                 }
             }
         }
@@ -117,11 +122,13 @@ class ClearScopedViewModelTests : ComposeTestUtils {
             var composablesShown by mutableStateOf(true)
             val textTitle = "Test text"
             composeTestRule.activity.setContent {
-                Column {
-                    Text(textTitle)
-                    DemoScopedKoinInjectedViewModelComposable()
-                    if (composablesShown) {
+                KoinContext {
+                    Column {
+                        Text(textTitle)
                         DemoScopedKoinInjectedViewModelComposable()
+                        if (composablesShown) {
+                            DemoScopedKoinInjectedViewModelComposable()
+                        }
                     }
                 }
             }
@@ -150,11 +157,13 @@ class ClearScopedViewModelTests : ComposeTestUtils {
             var composablesShown by mutableStateOf(true)
             val textTitle = "Test text"
             composeTestRule.activity.setContent {
-                Column {
-                    Text(textTitle)
-                    DemoScopedKoinInjectedViewModelComposable()
-                    if (composablesShown) {
-                        DemoScopedSecondKoinInjectedViewModelComposable()
+                KoinContext {
+                    Column {
+                        Text(textTitle)
+                        DemoScopedKoinInjectedViewModelComposable()
+                        if (composablesShown) {
+                            DemoScopedSecondKoinInjectedViewModelComposable()
+                        }
                     }
                 }
             }
@@ -186,9 +195,11 @@ class ClearScopedViewModelTests : ComposeTestUtils {
         var viewModelKey by mutableStateOf("initial key")
         val textTitle = "Test text"
         composeTestRule.activity.setContent {
-            Column {
-                Text(textTitle)
-                DemoScopedKoinInjectedViewModelComposable(viewModelKey)
+            KoinContext {
+                Column {
+                    Text(textTitle)
+                    DemoScopedKoinInjectedViewModelComposable(viewModelKey)
+                }
             }
         }
         printComposeUiTreeToLog()

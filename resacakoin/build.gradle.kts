@@ -1,10 +1,42 @@
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
+    alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.jetbrains.compose)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kover)
     alias(libs.plugins.dokka)
     alias(libs.plugins.maven)
-    alias(libs.plugins.compose.compiler)
+}
+
+kotlin {
+    androidTarget {
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_17)
+        }
+    }
+
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            baseName = "resacakoin"
+            isStatic = true
+        }
+    }
+    sourceSets {
+        commonMain.dependencies {
+            api(project(":resaca"))
+
+            api(libs.koin.core)
+            api(libs.koin.compose)
+        }
+    }
 }
 
 android {
@@ -28,9 +60,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
-    }
     packaging {
         resources {
             excludes += setOf(
@@ -46,18 +75,6 @@ android {
             )
         }
     }
-}
-
-dependencies {
-
-    api(project(":resaca"))
-
-    implementation(libs.androidx.core.ktx)
-
-    implementation(libs.koin.android)
-
-    // Integration with ViewModels
-    implementation(libs.androidx.lifecycle.viewmodel)
 }
 
 // Maven publishing configuration

@@ -35,6 +35,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.compose.KoinContext
 import org.koin.core.parameter.parametersOf
 
 
@@ -61,18 +62,20 @@ class KeyInScopeResolverTest : ComposeTestUtils {
         val listItems = (1..1000).toList().map { NumberContainer(it) }
         var height by mutableStateOf(1000.dp)
         composeTestRule.activity.setContent {
-            Box(modifier = Modifier.size(width = 200.dp, height = height)) {
-                val keys = rememberKeysInScope(inputListOfKeys = listItems)
-                LazyColumn(modifier = Modifier.fillMaxHeight()) {
-                    items(items = listItems, key = { it.number }) { item ->
-                        Box(modifier = Modifier.size(width = 200.dp, height = 100.dp)) {
-                            val fakeScopedVM: FakeInjectedViewModel =
-                                koinViewModelScoped(
-                                    key = item,
-                                    keyInScopeResolver = keys,
-                                    parameters = { parametersOf(viewModelsClearedGloballySharedCounter) }
-                                )
-                            DemoComposable(inputObject = fakeScopedVM, objectType = "FakeInjectedViewModel $item", scoped = true)
+            KoinContext {
+                Box(modifier = Modifier.size(width = 200.dp, height = height)) {
+                    val keys = rememberKeysInScope(inputListOfKeys = listItems)
+                    LazyColumn(modifier = Modifier.fillMaxHeight()) {
+                        items(items = listItems, key = { it.number }) { item ->
+                            Box(modifier = Modifier.size(width = 200.dp, height = 100.dp)) {
+                                val fakeScopedVM: FakeInjectedViewModel =
+                                    koinViewModelScoped(
+                                        key = item,
+                                        keyInScopeResolver = keys,
+                                        parameters = { parametersOf(viewModelsClearedGloballySharedCounter) }
+                                    )
+                                DemoComposable(inputObject = fakeScopedVM, objectType = "FakeInjectedViewModel $item", scoped = true)
+                            }
                         }
                     }
                 }
@@ -103,19 +106,21 @@ class KeyInScopeResolverTest : ComposeTestUtils {
         // Given the starting screen with long lazy list of scoped objects remembering their keys
         val items: SnapshotStateList<NumberContainer> = (1..1000).toList().map { NumberContainer(it) }.toMutableStateList()
         composeTestRule.activity.setContent {
-            Box(modifier = Modifier.size(width = 200.dp, height = 1000.dp)) {
-                val listItems: SnapshotStateList<NumberContainer> = remember { items }
-                val keys = rememberKeysInScope(inputListOfKeys = listItems)
-                LazyColumn(modifier = Modifier.fillMaxHeight()) {
-                    items(items = listItems, key = { it.number }) { item ->
-                        Box(modifier = Modifier.size(width = 200.dp, height = 100.dp)) {
-                            val fakeScopedVM: FakeInjectedViewModel =
-                                koinViewModelScoped(
-                                    key = item,
-                                    keyInScopeResolver = keys,
-                                    parameters = { parametersOf(viewModelsClearedGloballySharedCounter) }
-                                )
-                            DemoComposable(inputObject = fakeScopedVM, objectType = "FakeInjectedViewModel $item", scoped = true)
+            KoinContext {
+                Box(modifier = Modifier.size(width = 200.dp, height = 1000.dp)) {
+                    val listItems: SnapshotStateList<NumberContainer> = remember { items }
+                    val keys = rememberKeysInScope(inputListOfKeys = listItems)
+                    LazyColumn(modifier = Modifier.fillMaxHeight()) {
+                        items(items = listItems, key = { it.number }) { item ->
+                            Box(modifier = Modifier.size(width = 200.dp, height = 100.dp)) {
+                                val fakeScopedVM: FakeInjectedViewModel =
+                                    koinViewModelScoped(
+                                        key = item,
+                                        keyInScopeResolver = keys,
+                                        parameters = { parametersOf(viewModelsClearedGloballySharedCounter) }
+                                    )
+                                DemoComposable(inputObject = fakeScopedVM, objectType = "FakeInjectedViewModel $item", scoped = true)
+                            }
                         }
                     }
                 }
@@ -149,21 +154,23 @@ class KeyInScopeResolverTest : ComposeTestUtils {
         var shown by mutableStateOf(true)
         val textTitle = "Test text"
         composeTestRule.activity.setContent {
-            Column {
-                Text(textTitle)
-                Box(modifier = Modifier.size(width = 200.dp, height = 1000.dp)) {
-                    if (shown) {
-                        val keys = rememberKeysInScope(inputListOfKeys = listItems)
-                        LazyColumn(modifier = Modifier.fillMaxHeight()) {
-                            items(items = listItems, key = { it.number }) { item ->
-                                Box(modifier = Modifier.size(width = 200.dp, height = 100.dp)) {
-                                    val fakeScopedVM: FakeInjectedViewModel =
-                                        koinViewModelScoped(
-                                            key = item,
-                                            keyInScopeResolver = keys,
-                                            parameters = { parametersOf(viewModelsClearedGloballySharedCounter) }
-                                        )
-                                    DemoComposable(inputObject = fakeScopedVM, objectType = "FakeInjectedViewModel $item", scoped = true)
+            KoinContext {
+                Column {
+                    Text(textTitle)
+                    Box(modifier = Modifier.size(width = 200.dp, height = 1000.dp)) {
+                        if (shown) {
+                            val keys = rememberKeysInScope(inputListOfKeys = listItems)
+                            LazyColumn(modifier = Modifier.fillMaxHeight()) {
+                                items(items = listItems, key = { it.number }) { item ->
+                                    Box(modifier = Modifier.size(width = 200.dp, height = 100.dp)) {
+                                        val fakeScopedVM: FakeInjectedViewModel =
+                                            koinViewModelScoped(
+                                                key = item,
+                                                keyInScopeResolver = keys,
+                                                parameters = { parametersOf(viewModelsClearedGloballySharedCounter) }
+                                            )
+                                        DemoComposable(inputObject = fakeScopedVM, objectType = "FakeInjectedViewModel $item", scoped = true)
+                                    }
                                 }
                             }
                         }

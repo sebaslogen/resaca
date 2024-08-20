@@ -26,6 +26,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.compose.KoinContext
 import org.koin.core.parameter.parametersOf
 
 
@@ -48,17 +49,19 @@ class ScopeKeysTest : ComposeTestUtils {
 
         // Given the starting screen with scoped object that uses a key
         composeTestRule.activity.setContent {
-            var myKey by remember { mutableStateOf(false) }
-            val fakeInjectedViewModel: FakeInjectedViewModel =
-                koinViewModelScoped(
-                    key = myKey,
-                    defaultArguments = bundleOf(FakeInjectedViewModel.MY_ARGS_KEY to 123),
-                    parameters = { parametersOf(viewModelsClearedGloballySharedCounter) }
-                )
-            DemoComposable(inputObject = fakeInjectedViewModel, objectType = "FakeInjectedViewModel", scoped = true)
-            Button(modifier = Modifier.testTag("Button"),
-                onClick = { myKey = !myKey }) {
-                Text("Click to change")
+            KoinContext {
+                var myKey by remember { mutableStateOf(false) }
+                val fakeInjectedViewModel: FakeInjectedViewModel =
+                    koinViewModelScoped(
+                        key = myKey,
+                        defaultArguments = bundleOf(FakeInjectedViewModel.MY_ARGS_KEY to 123),
+                        parameters = { parametersOf(viewModelsClearedGloballySharedCounter) }
+                    )
+                DemoComposable(inputObject = fakeInjectedViewModel, objectType = "FakeInjectedViewModel", scoped = true)
+                Button(modifier = Modifier.testTag("Button"),
+                    onClick = { myKey = !myKey }) {
+                    Text("Click to change")
+                }
             }
         }
         printComposeUiTreeToLog()

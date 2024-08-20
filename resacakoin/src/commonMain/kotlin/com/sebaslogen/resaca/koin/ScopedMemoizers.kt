@@ -1,11 +1,14 @@
 package com.sebaslogen.resaca.koin
 
-import android.os.Bundle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.core.bundle.Bundle
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.viewmodel.CreationExtras
 import com.sebaslogen.resaca.KeyInScopeResolver
 import com.sebaslogen.resaca.ScopeKeyWithResolver
 import com.sebaslogen.resaca.ScopedViewModelContainer
@@ -13,12 +16,13 @@ import com.sebaslogen.resaca.ScopedViewModelContainer.ExternalKey
 import com.sebaslogen.resaca.ScopedViewModelContainer.InternalKey
 import com.sebaslogen.resaca.ScopedViewModelOwner
 import com.sebaslogen.resaca.generateKeysAndObserveLifecycle
-import org.koin.androidx.viewmodel.factory.KoinViewModelFactory
+import org.koin.compose.getKoin
 import org.koin.core.annotation.KoinInternalApi
-import org.koin.core.context.GlobalContext
 import org.koin.core.parameter.ParametersDefinition
+import org.koin.core.parameter.ParametersHolder
 import org.koin.core.qualifier.Qualifier
 import org.koin.core.scope.Scope
+import kotlin.reflect.KClass
 
 
 /**
@@ -50,9 +54,9 @@ public inline fun <reified T : ViewModel, K : Any> koinViewModelScoped(
     key: K,
     noinline keyInScopeResolver: KeyInScopeResolver<K>,
     qualifier: Qualifier? = null,
-    scope: Scope = GlobalContext.get().scopeRegistry.rootScope,
+    scope: Scope = getKoin().scopeRegistry.rootScope,
     noinline parameters: ParametersDefinition? = null,
-    defaultArguments: Bundle = Bundle.EMPTY
+    defaultArguments: Bundle = Bundle()
 ): T {
     val scopeKeyWithResolver: ScopeKeyWithResolver<K> = remember(key, keyInScopeResolver) { ScopeKeyWithResolver(key, keyInScopeResolver) }
     return koinViewModelScoped(
@@ -90,9 +94,9 @@ public inline fun <reified T : ViewModel, K : Any> koinViewModelScoped(
 public inline fun <reified T : ViewModel> koinViewModelScoped(
     key: Any? = null,
     qualifier: Qualifier? = null,
-    scope: Scope = GlobalContext.get().scopeRegistry.rootScope,
+    scope: Scope = getKoin().scopeRegistry.rootScope,
     noinline parameters: ParametersDefinition? = null,
-    defaultArguments: Bundle = Bundle.EMPTY
+    defaultArguments: Bundle = Bundle()
 ): T {
 
     val (scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: InternalKey, externalKey: ExternalKey) =
@@ -111,4 +115,50 @@ public inline fun <reified T : ViewModel> koinViewModelScoped(
         ),
         defaultArguments = defaultArguments
     )
+}
+
+/**
+ * Note: The two classes below are not yet KMP compatible in Koin 4.0.0-RC1,
+ * once Koin uses the KMP version of the AndroidX libraries, these classes will be removed.
+ * TODO: Remove these classes once Koin uses AndroidX KMP compatible libs
+ */
+
+/**
+ * ViewModelProvider.Factory for Koin instances resolution
+ * @see ViewModelProvider.Factory
+ */
+@PublishedApi
+internal class KoinViewModelFactory(
+    private val kClass: KClass<out ViewModel>,
+    private val scope: Scope,
+    private val qualifier: Qualifier? = null,
+    private val params: ParametersDefinition? = null
+) : ViewModelProvider.Factory {
+
+    override fun <T : ViewModel> create(modelClass: KClass<T>, extras: CreationExtras): T {
+        val koinParams = KoinParametersHolder(params, extras)
+        return scope.get(kClass, qualifier) { koinParams }
+    }
+}
+
+@Suppress("UNCHECKED_CAST")
+@PublishedApi
+internal class KoinParametersHolder(
+    initialValues: ParametersDefinition? = null,
+    private val extras: CreationExtras,
+) : ParametersHolder(initialValues?.invoke()?.values?.toMutableList() ?: mutableListOf()) {
+
+    override fun <T> elementAt(i: Int, clazz: KClass<*>): T {
+        return createSavedStateHandleOrElse(clazz) { super.elementAt(i, clazz) }
+    }
+
+    override fun <T> getOrNull(clazz: KClass<*>): T? {
+        return createSavedStateHandleOrElse(clazz) { super.getOrNull(clazz) }
+    }
+
+    private fun <T> createSavedStateHandleOrElse(clazz: KClass<*>, block: () -> T): T {
+        return if (clazz == SavedStateHandle::class) {
+            extras.createSavedStateHandle() as T
+        } else block()
+    }
 }
