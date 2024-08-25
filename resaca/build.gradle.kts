@@ -31,7 +31,6 @@ kotlin {
     }
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.uuid)
             implementation(compose.runtime)
             api(libs.androidx.lifecycle.viewmodel)
             api(libs.androidx.lifecycle.viewmodel.compose)

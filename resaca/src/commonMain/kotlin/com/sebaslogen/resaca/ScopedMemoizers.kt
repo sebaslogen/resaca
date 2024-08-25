@@ -6,11 +6,12 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.core.bundle.Bundle
 import androidx.lifecycle.*
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.benasher44.uuid.uuid4
 import com.sebaslogen.resaca.ScopedViewModelContainer.ExternalKey
 import com.sebaslogen.resaca.ScopedViewModelContainer.InternalKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 
 /**
@@ -195,6 +196,7 @@ public inline fun <reified T : ViewModel> viewModelScoped(
     )
 }
 
+@OptIn(ExperimentalUuidApi::class)
 @Composable
 public fun generateKeysAndObserveLifecycle(key: Any?): Triple<ScopedViewModelContainer, InternalKey, ExternalKey> {
     val scopedViewModelContainer: ScopedViewModelContainer = viewModel { ScopedViewModelContainer() }
@@ -212,7 +214,7 @@ public fun generateKeysAndObserveLifecycle(key: Any?): Triple<ScopedViewModelCon
             // If there is no better key, then use a random UUID as the internal key in combination with rememberSaveable, in this case:
             // - the object will be recreated when used in lazy lists and the Activity is recreated
             // - different objects will be returned when requesting the object on different places in the composition (e.g. when no key is provided)
-            uuid4().toString()
+            Uuid.random().toString()
         }
     val positionalMemoizationKey = InternalKey(rememberSaveable { internalKey })
     // The external key will be used to track and store new versions of the object, based on [key] input parameter

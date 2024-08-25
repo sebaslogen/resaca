@@ -1,7 +1,7 @@
 [versions]
 agp = "8.5.2"
-kotlin = '2.0.10'
-ksp = '2.0.10-1.0.24'
+kotlin = '2.0.20'
+ksp = '2.0.20-1.0.24'
 core-bundle = "1.0.0"
 compileSdk = '34'
 minSdk = '21'
@@ -16,7 +16,7 @@ binary-compatibility-validator = '0.16.3'
 dokka = '1.9.20'
 maven = '0.29.0'
 # Compose
-compose-bom = "2024.06.00" # https://developer.android.com/jetpack/compose/bom/bom-mapping
+compose-bom = "2024.08.00" # https://developer.android.com/jetpack/compose/bom/bom-mapping
 # Compose integration with Activities
 androidx-activity = '1.9.1'
 # Compose integration with ViewModels
@@ -38,7 +38,6 @@ testRunner = "1.6.2"
 testRules = "1.6.1"
 junitKtx = "1.2.1"
 tracing = "1.2.0"
-uuid = "0.8.4"
 
 
 [libraries]
@@ -79,8 +78,6 @@ koin-core = { module = 'io.insert-koin:koin-core', version.ref = 'koin' }
 koin-compose = { module = 'io.insert-koin:koin-compose', version.ref = 'koin' }
 koin-android = { module = 'io.insert-koin:koin-android', version.ref = 'koin' }
 koin-android-test = { module = 'io.insert-koin:koin-android-test', version.ref = 'koin' }
-
-uuid = { module = "com.benasher44:uuid", version.ref = "uuid" }
 
 # Test libraries
 junit = { module = 'junit:junit', version.ref = 'junit-version' }
