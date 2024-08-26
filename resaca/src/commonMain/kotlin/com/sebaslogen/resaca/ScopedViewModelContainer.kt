@@ -284,10 +284,8 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      * Upon disposal, [ViewModel] objects will also be requested to cancel all their coroutines in their [CoroutineScope].
      */
     private fun scheduleToDisposeAfterReturningFromBackground() {
-        safeConcurrentMarkForDisposalMutation {
-            markedForDisposal.forEach { key ->
-                scheduleToDispose(key)
-            }
+        markedForDisposal.forEach { key ->
+            scheduleToDispose(key)
         }
     }
 
