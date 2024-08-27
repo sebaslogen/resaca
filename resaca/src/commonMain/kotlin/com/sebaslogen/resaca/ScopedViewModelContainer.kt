@@ -237,7 +237,8 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         creationExtras = creationExtras,
         scopedObjectsContainer = scopedObjectsContainer,
         scopedObjectKeys = scopedObjectKeys,
-        cancelDisposal = ::cancelDisposal
+        cancelDisposal = ::cancelDisposal,
+        clearLastDisposedViewModel = ::clearLastDisposedObject
     )
 
     /**
@@ -336,7 +337,9 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      * An object that is being disposed should also be cleared only if it was the last instance present in this container
      */
     private fun clearLastDisposedObject(disposedObject: Any, objectsContainer: List<Any> = scopedObjectsContainer.values.toList()) {
-        ScopedViewModelUtils.clearLastDisposedObject(disposedObject, objectsContainer)
+        threadSafeRunnerOnMain {
+            ScopedViewModelUtils.clearLastDisposedObject(disposedObject, objectsContainer)
+        }
     }
 
     private fun cancelDisposal(key: InternalKey) {
