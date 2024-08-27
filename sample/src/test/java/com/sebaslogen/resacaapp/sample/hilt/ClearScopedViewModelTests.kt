@@ -22,9 +22,11 @@ import com.sebaslogen.resacaapp.sample.viewModelsClearedGloballySharedCounter
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withContext
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -59,7 +61,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Test
-    fun `when I navigate to nested screen and back, then the Hilt scoped ViewModels of the second screen are cleared`() {
+    fun `when I navigate to nested screen and back, then the Hilt scoped ViewModels of the second screen are cleared`() = runTest {
         // Given the starting screen with Hilt injected ViewModel scoped
         composeTestRule.activity.setContent {
             navController = rememberNavController()
@@ -71,8 +73,14 @@ class ClearScopedViewModelTests : ComposeTestUtils {
         // When I navigate to a nested screen with a Hilt scoped ViewModel and back to initial screen
         navController.navigate(hiltViewModelScopedDestination)
         printComposeUiTreeToLog()
+        withContext(Dispatchers.Main) {
+            advanceTimeBy(100) // Advance time to allow clear call on ScopedViewModelContainer to be processed before querying the counter
+        }
         navController.popBackStack()
         printComposeUiTreeToLog()
+        withContext(Dispatchers.Main) {
+            advanceTimeBy(100) // Advance time to allow clear call on ScopedViewModelContainer to be processed before querying the counter
+        }
         val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
 
         // Then the Hilt scoped ViewModel from the second screen is cleared
@@ -189,7 +197,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
     /////////////////////////////////////////////////////
 
     @Test
-    fun `when the key associated with the Hilt ViewModel changes, then the old scoped ViewModel is cleared`() {
+    fun `when the key associated with the Hilt ViewModel changes, then the old scoped ViewModel is cleared`() = runTest {
 
         // Given the starting screen with a Hilt scoped ViewModel
         var viewModelKey by mutableStateOf("initial key")
@@ -206,6 +214,9 @@ class ClearScopedViewModelTests : ComposeTestUtils {
         val initialAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
         viewModelKey = "new key" // Trigger disposal
         composeTestRule.onNodeWithText(textTitle).assertExists() // Required to trigger recomposition
+        withContext(Dispatchers.Main) {
+            advanceTimeBy(100) // Advance time to allow clear call on ScopedViewModelContainer to be processed before querying the counter
+        }
         printComposeUiTreeToLog()
         val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
 

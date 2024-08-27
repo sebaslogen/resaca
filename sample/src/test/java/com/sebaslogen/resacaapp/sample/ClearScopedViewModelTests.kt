@@ -18,9 +18,11 @@ import com.sebaslogen.resacaapp.sample.ui.main.data.FakeScopedViewModel
 import com.sebaslogen.resacaapp.sample.ui.main.rememberScopedDestination
 import com.sebaslogen.resacaapp.sample.utils.ComposeTestUtils
 import com.sebaslogen.resacaapp.sample.utils.MainDispatcherRule
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withContext
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -50,7 +52,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Test
-    fun `when I navigate to nested screen and back, then the 2 scoped ViewModels of the second screen are cleared`() {
+    fun `when I navigate to nested screen and back, then the 2 scoped ViewModels of the second screen are cleared`() = runTest {
 
         // Given the starting screen with scoped ViewModels
         composeTestRule.setContent {
@@ -64,6 +66,9 @@ class ClearScopedViewModelTests : ComposeTestUtils {
         val initialAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
         printComposeUiTreeToLog()
         navController.popBackStack()
+        withContext(Dispatchers.Main) {
+            advanceTimeBy(100) // Advance time to allow clear call on ScopedViewModelContainer to be processed before querying the counter
+        }
         printComposeUiTreeToLog() // This seems to be needed to trigger recomposition
         val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
 
@@ -149,7 +154,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
     /////////////////////////////////////////////////////
 
     @Test
-    fun `when the keys associated with the ViewModels change, then the old scoped ViewModels are cleared`() {
+    fun `when the keys associated with the ViewModels change, then the old scoped ViewModels are cleared`() = runTest {
 
         // Given the starting screen with two scoped ViewModels
         var viewModelKey by mutableStateOf("initial key")
@@ -167,6 +172,9 @@ class ClearScopedViewModelTests : ComposeTestUtils {
         val initialAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
         viewModelKey = "new key" // Trigger disposal
         composeTestRule.onNodeWithText(textTitle).assertExists() // Required to trigger recomposition
+        withContext(Dispatchers.Main) {
+            advanceTimeBy(100) // Advance time to allow clear call on ScopedViewModelContainer to be processed before querying the counter
+        }
         printComposeUiTreeToLog()
         val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
 
