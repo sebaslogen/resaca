@@ -1,5 +1,6 @@
 package com.sebaslogen.resaca
 
+import androidx.annotation.MainThread
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -38,7 +39,8 @@ internal object ScopedViewModelUtils {
         creationExtras: CreationExtras,
         scopedObjectsContainer: MutableMap<InternalKey, Any>,
         scopedObjectKeys: MutableMap<InternalKey, ExternalKey>,
-        cancelDisposal: ((InternalKey) -> Unit)
+        cancelDisposal: (InternalKey) -> Unit,
+        clearLastDisposedViewModel: (Any, List<Any>) -> Unit
     ): T {
         cancelDisposal(positionalMemoizationKey)
 
@@ -55,7 +57,7 @@ internal object ScopedViewModelUtils {
             } else { // First time ViewModel's object creation or externalKey changed
                 scopedObjectsContainer.remove(positionalMemoizationKey) // Remove in case key changed
                     ?.also { // Old object may need to be cleared before it's forgotten
-                        clearLastDisposedObject(disposedObject = it, objectsContainer = scopedObjectsContainer.values.toList())
+                        clearLastDisposedViewModel(it, scopedObjectsContainer.values.toList())
                     }
                 scopedObjectKeys[positionalMemoizationKey] = externalKey // Set the new external key used to track and store the new object version
                 val newScopedViewModelOwner = ScopedViewModelOwner(
@@ -90,6 +92,7 @@ internal object ScopedViewModelUtils {
      * An object that is being disposed should also be cleared only if there are no more references to it in this [objectsContainer]
      */
     @PublishedApi
+    @MainThread
     internal fun clearLastDisposedObject(disposedObject: Any, objectsContainer: List<Any>) {
         if (disposedObject is ScopedViewModelOwner<*>) {
             clearLastDisposedViewModel(scopedViewModelOwner = disposedObject, objectsContainer = objectsContainer)
