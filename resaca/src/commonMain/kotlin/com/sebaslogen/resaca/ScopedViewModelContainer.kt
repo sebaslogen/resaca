@@ -16,12 +16,11 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.sebaslogen.resaca.viewmodel.DefaultViewModelProviderFactory
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.MainCoroutineDispatcher
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlin.collections.set
 import kotlin.jvm.JvmInline
@@ -110,18 +109,19 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     private val markedForDisposal: MutableSet<InternalKey> = mutableSetOf()
 
     /**
-     * Mutex lock to prevent multiple threads from marking or removing the same object for disposal
+     * Launch a coroutine in the [viewModelScope] that will execute [block] on the same thread.
+     * The [Dispatchers.Main.immediate] dispatcher will be used to avoid unnecessary thread jumps.
+     * If [Dispatchers.Main.immediate] is not available in the target platform, then [Dispatchers.Main] will be used.
      */
-    private val markedForDisposalMutationMutex = Mutex()
-
-    /**
-     * Lock mutations to the [markedForDisposal] set with [markedForDisposalMutationMutex] to prevent concurrent modifications
-     */
-    private fun safeConcurrentMarkForDisposalMutation(block: () -> Unit) {
-        runBlocking {
-            markedForDisposalMutationMutex.withLock {
-                block()
+    private fun threadSafeRunnerOnMain(block: suspend () -> Unit): Job {
+        val dispatcher: MainCoroutineDispatcher =
+            try {
+                Dispatchers.Main.immediate
+            } catch (e: UnsupportedOperationException) { // When Main.immediate is not available in the target platform
+                Dispatchers.Main
             }
+        return viewModelScope.launch(dispatcher) {
+            block()
         }
     }
 
@@ -246,10 +246,10 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      * is not going to be used anymore (e.g. after configuration change or container fragment returning from backstack)
      */
     internal fun onDisposedFromComposition(key: InternalKey) {
-        safeConcurrentMarkForDisposalMutation {
+        threadSafeRunnerOnMain {
             markedForDisposal.add(key) // Marked to be disposed after onResume
+            scheduleToDisposeBeforeGoingToBackground(key) // Schedule to dispose this object before onPause
         }
-        scheduleToDisposeBeforeGoingToBackground(key) // Schedule to dispose this object before onPause
     }
 
     /**
@@ -258,10 +258,12 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      * need to be disposed of.
      */
     internal fun <T> onDisposedFromComposition(keyInScopeResolver: KeyInScopeResolver<T>) {
-        scopedObjectKeys.forEach { (key, externalKey: ExternalKey) ->
-            val scopeKeyWithResolver: ScopeKeyWithResolver<*>? = externalKey.scopeKeyWithResolver() // Get the KeyInScopeResolver if ExternalKey is one
-            if (scopeKeyWithResolver is ScopeKeyWithResolver && scopeKeyWithResolver.keyInScopeResolver == keyInScopeResolver) {
-                onDisposedFromComposition(key = key) // Mark it to be disposed if the disposed KeyInScopeResolver matches
+        threadSafeRunnerOnMain {
+            scopedObjectKeys.forEach { (key, externalKey: ExternalKey) ->
+                val scopeKeyWithResolver: ScopeKeyWithResolver<*>? = externalKey.scopeKeyWithResolver() // Get the KeyInScopeResolver if ExternalKey is one
+                if (scopeKeyWithResolver is ScopeKeyWithResolver && scopeKeyWithResolver.keyInScopeResolver == keyInScopeResolver) {
+                    onDisposedFromComposition(key = key) // Mark it to be disposed if the disposed KeyInScopeResolver matches
+                }
             }
         }
     }
@@ -270,7 +272,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      * Schedules the object referenced by this [key] in the [scopedObjectsContainer]
      * to be removed (so it can be garbage collected) if the screen associated with this is still in foreground ([isInForeground])
      */
-    private fun scheduleToDisposeBeforeGoingToBackground(key: InternalKey) {
+    private suspend fun scheduleToDisposeBeforeGoingToBackground(key: InternalKey) {
         scheduleToDispose(key = key)
     }
 
@@ -283,7 +285,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      * for the first frame to give the Activity/Fragment enough time to recreate the desired UI after resuming or configuration change.
      * Upon disposal, [ViewModel] objects will also be requested to cancel all their coroutines in their [CoroutineScope].
      */
-    private fun scheduleToDisposeAfterReturningFromBackground() {
+    private suspend fun scheduleToDisposeAfterReturningFromBackground() {
         markedForDisposal.forEach { key ->
             scheduleToDispose(key)
         }
@@ -312,19 +314,19 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
 
         val newDisposingJob = viewModelScope.launch {
             platformLifecycleHandler.awaitBeforeDisposing(isInForeground) // Android: Wait for next frame when the Activity is resumed. No-op in other platforms
-            withContext(NonCancellable) { // We treat the disposal/remove/clear block as an atomic transaction
-                if (isInForeground || isChangingConfiguration) {
-                    val externalKey: ExternalKey? = scopedObjectKeys[key]
-                    val objectExternalKeyNotInScope = externalKey?.scopeKeyWithResolver()?.isKeyInScope() != true
-                    if (objectExternalKeyNotInScope) { // If the key is not in scope, then the object is not needed anymore
-                        safeConcurrentMarkForDisposalMutation {
+            threadSafeRunnerOnMain {
+                withContext(NonCancellable) { // We treat the disposal/remove/clear block as an atomic transaction
+                    if (isInForeground || isChangingConfiguration) {
+                        val externalKey: ExternalKey? = scopedObjectKeys[key]
+                        val objectExternalKeyNotInScope = externalKey?.scopeKeyWithResolver()?.isKeyInScope() != true
+                        if (objectExternalKeyNotInScope) { // If the key is not in scope, then the object is not needed anymore
                             markedForDisposal.remove(key)
+                            scopedObjectKeys.remove(key)
+                            scopedObjectsContainer.remove(key)?.also { clearLastDisposedObject(it) }
                         }
-                        scopedObjectKeys.remove(key)
-                        scopedObjectsContainer.remove(key)?.also { clearLastDisposedObject(it) }
                     }
+                    disposingJobs.remove(key)
                 }
-                disposingJobs.remove(key)
             }
         }
         disposingJobs[key] = newDisposingJob
@@ -338,8 +340,8 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     }
 
     private fun cancelDisposal(key: InternalKey) {
-        disposingJobs.remove(key)?.cancel() // Cancel scheduled disposal
-        safeConcurrentMarkForDisposalMutation {
+        threadSafeRunnerOnMain {
+            disposingJobs.remove(key)?.cancel() // Cancel scheduled disposal
             markedForDisposal.remove(key) // Un-mark for disposal in case it's not yet scheduled for disposal
         }
     }
@@ -364,19 +366,25 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         when (event) {
             Lifecycle.Event.ON_RESUME -> { // Note Fragment View creation happens before this onResume
-                isInForeground = true
-                isChangingConfiguration = false // Clear this flag when the scope is resumed
-                platformLifecycleHandler.onResumed() // Notify the handler that the Activity is resumed
-                scheduleToDisposeAfterReturningFromBackground()
+                threadSafeRunnerOnMain {
+                    isInForeground = true
+                    isChangingConfiguration = false // Clear this flag when the scope is resumed
+                    platformLifecycleHandler.onResumed() // Notify the handler that the Activity is resumed
+                    scheduleToDisposeAfterReturningFromBackground()
+                }
             }
 
             Lifecycle.Event.ON_PAUSE -> {
-                isInForeground = false
+                threadSafeRunnerOnMain {
+                    isInForeground = false
+                }
             }
 
             Lifecycle.Event.ON_DESTROY -> { // Remove ourselves so that this ViewModel can be garbage collected
-                source.lifecycle.removeObserver(this)
-                platformLifecycleHandler.onDestroyed() // Notify the handler that the Activity is destroyed
+                threadSafeRunnerOnMain {
+                    source.lifecycle.removeObserver(this)
+                    platformLifecycleHandler.onDestroyed() // Notify the handler that the Activity is destroyed
+                }
             }
 
             else -> {
