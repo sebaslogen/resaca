@@ -12,9 +12,11 @@ import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedObject
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeRepo
 import com.sebaslogen.resacaapp.sample.utils.ComposeTestUtils
 import com.sebaslogen.resacaapp.sample.utils.MainDispatcherRule
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withContext
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -103,7 +105,7 @@ class ClearRememberScopedObjectTests : ComposeTestUtils {
         }
 
     @Test
-    fun `when the keys associated with the Closeable change, then the scoped Closeable is closed`() {
+    fun `when the keys associated with the Closeable change, then the scoped Closeable is closed`() = runTest {
 
         // Given the starting screen with a scoped Closeable
         var closeableKey by mutableStateOf("initial key")
@@ -121,6 +123,10 @@ class ClearRememberScopedObjectTests : ComposeTestUtils {
         closeableKey = "new key" // Trigger disposal
         composeTestRule.onNodeWithText(textTitle).assertExists() // Required to trigger recomposition
         printComposeUiTreeToLog()
+
+        withContext(Dispatchers.Main) {
+            advanceTimeBy(100) // Advance time to allow clear call on ScopedViewModelContainer to be processed before querying the counter
+        }
         val finalAmountOfCloseableCleared = closeableClosedGloballySharedCounter.get()
 
         // Then both scoped Closeable are cleared
