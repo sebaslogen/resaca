@@ -41,7 +41,7 @@ jobs:
           open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app
 
       - name: Run tests with code coverage
-        run: ./gradlew check
+        run: ./gradlew check koverXmlReport
         env:
           CI_FLOW: ${{ github.workflow }}
 

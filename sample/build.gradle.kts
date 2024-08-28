@@ -148,15 +148,6 @@ dependencies {
 }
 
 kover {
-    currentProject {
-        createVariant("custom") {
-            /**
-             * Tests, sources, classes, and compilation tasks of the 'debug' build variant will be included in the report variant `custom`.
-             * Thus, information from the 'debug' variant will be included in the `custom` report for this project and any project that specifies this project as a dependency.
-             */
-            addWithDependencies("debug")
-        }
-    }
     reports {
         // filters for all report types of all build variants
         filters {
@@ -164,7 +155,7 @@ kover {
                 androidGeneratedClasses()
             }
         }
-        variant("custom") {
+        variant("debug") {
             filters {
                 excludes {
                     androidGeneratedClasses()
