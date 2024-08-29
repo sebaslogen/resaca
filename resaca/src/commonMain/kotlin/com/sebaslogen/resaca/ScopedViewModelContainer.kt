@@ -260,7 +260,8 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      */
     internal fun <T> onDisposedFromComposition(keyInScopeResolver: KeyInScopeResolver<T>) {
         threadSafeRunnerOnMain {
-            scopedObjectKeys.forEach { (key, externalKey: ExternalKey) ->
+            val keys = scopedObjectKeys.toList()
+            keys.forEach { (key, externalKey: ExternalKey) ->
                 val scopeKeyWithResolver: ScopeKeyWithResolver<*>? = externalKey.scopeKeyWithResolver() // Get the KeyInScopeResolver if ExternalKey is one
                 if (scopeKeyWithResolver is ScopeKeyWithResolver && scopeKeyWithResolver.keyInScopeResolver == keyInScopeResolver) {
                     onDisposedFromComposition(key = key) // Mark it to be disposed if the disposed KeyInScopeResolver matches
@@ -287,7 +288,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      * Upon disposal, [ViewModel] objects will also be requested to cancel all their coroutines in their [CoroutineScope].
      */
     private suspend fun scheduleToDisposeAfterReturningFromBackground() {
-        markedForDisposal.forEach { key ->
+        markedForDisposal.toList().forEach { key ->
             scheduleToDispose(key)
         }
     }
@@ -354,7 +355,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      */
     override fun onCleared() {
         // Cancel disposal jobs, all those references will be garbage collected anyway with this ViewModel
-        disposingJobs.forEach { (_, job) -> job.cancel() }
+        disposingJobs.values.forEach { job -> job.cancel() }
         // Cancel all coroutines, Closeables and ViewModels hosted in this object
         val objectsToClear: MutableList<Any> = scopedObjectsContainer.values.toMutableList()
         while (objectsToClear.isNotEmpty()) {
