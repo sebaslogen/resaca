@@ -29,7 +29,7 @@ hilt-navigation-compose = '1.2.0'
 # Koin
 koin = '4.0.0-RC1'
 # Compose Multiplatform
-compose-plugin = "1.7.0-alpha03"
+compose-plugin = "1.7.0-dev1783"
 # Test
 junit-version = '4.13.2'
 kover = '0.8.3'
