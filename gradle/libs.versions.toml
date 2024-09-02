@@ -27,7 +27,7 @@ jetbrains-lifecycle = "2.8.0"
 hilt = '2.52'
 hilt-navigation-compose = '1.2.0'
 # Koin
-koin = '4.0.0-RC1'
+koin = '4.0.0-RC2'
 # Compose Multiplatform
 compose-plugin = "1.7.0-alpha03"
 # Test
