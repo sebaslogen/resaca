@@ -24,10 +24,12 @@ import kotlin.experimental.ExperimentalNativeApi
  */
 @OptIn(ExperimentalNativeApi::class)
 internal class ScopedViewModelProvider(
-    private val factory: ViewModelProvider.Factory?,
     private val viewModelStore: ViewModelStore,
 ) {
-    private var viewModelStoreOwnerDefaultViewModelProviderFactory: ViewModelProvider.Factory? = null
+    /**
+     * [cachedDefaultViewModelFactory] caches the [ViewModelProvider.Factory] from the [ViewModelStoreOwner].
+     */
+    private var cachedDefaultViewModelFactory: WeakReference<ViewModelProvider.Factory>? = null
 
     /**
      * [cachedViewModelProvider] is a [WeakReference] to avoid memory leaks because the [ViewModelProvider] has a reference to the [CreationExtras],
@@ -41,29 +43,39 @@ internal class ScopedViewModelProvider(
      */
     private lateinit var cachedCreationExtras: WeakReference<CreationExtras>
 
-    internal fun getViewModelProvider(creationExtras: CreationExtras): ViewModelProvider =
-        if (updateCreationExtras(creationExtras)) { // If the creationExtras are different, create a new ViewModelProvider
-            createViewModelProvider(creationExtras)
-        } else { // Return cached ViewModelProvider or new if cache is empty
-            cachedViewModelProvider.get() ?: createViewModelProvider(creationExtras)
-        }
-
-    internal fun getCachedViewModelProvider(): ViewModelProvider? = cachedViewModelProvider.get()
-
     /**
-     * Update the [cachedViewModelProvider] with the new [viewModelStoreOwner] and [CreationExtras].
+     * Returns a [ViewModelProvider] using the [viewModelStoreOwner] and [CreationExtras].
      *
+     * Updates the [cachedCreationExtras] and [cachedDefaultViewModelFactory]
+     * with the provided [CreationExtras] and [viewModelStoreOwner] respectively if they are new.
+     *
+     * If there was an update in the [CreationExtras] or [cachedDefaultViewModelFactory],
+     * or if there is no cached [ViewModelProvider] in [cachedViewModelProvider], then a new [ViewModelProvider] will be created.
+     *
+     * @param factory [ViewModelProvider] factory to create the requested [ViewModel]
      * @param viewModelStoreOwner Used to extract possible defaultViewModelCreationExtras and defaultViewModelProviderFactory
-     * @param newCreationExtras [CreationExtras] with default arguments that will be provided to the [ViewModel] through the [SavedStateHandle] and creationCallbacks.
+     * @param creationExtras [CreationExtras] with default arguments that will be provided to the [ViewModel] through the [SavedStateHandle] and creationCallbacks.
+     * @return [ViewModelProvider] created with the provided [factory] (or [cachedDefaultViewModelFactory]) and [viewModelStore]
      */
-    @PublishedApi
-    internal fun updateViewModelProvider(viewModelStoreOwner: ViewModelStoreOwner, newCreationExtras: CreationExtras) {
-        val updatedCreationExtras = updateCreationExtras(newCreationExtras)
-        val updatedViewModelProvider = updateViewModelProviderDependencies(viewModelStoreOwner)
-        if (updatedCreationExtras || updatedViewModelProvider) {
-            createViewModelProvider(newCreationExtras)
+    internal fun getViewModelProvider(
+        factory: ViewModelProvider.Factory?,
+        viewModelStoreOwner: ViewModelStoreOwner,
+        creationExtras: CreationExtras
+    ): ViewModelProvider {
+        val updatedCreationExtras = updateCreationExtras(creationExtras)
+        val updatedViewModelProvider = updateDefaultFactory(viewModelStoreOwner)
+        return if (updatedCreationExtras || updatedViewModelProvider) {
+            createViewModelProvider(factory, creationExtras)
+        } else { // Return cached ViewModelProvider or new if cache is empty
+            cachedViewModelProvider.get() ?: createViewModelProvider(factory, creationExtras)
         }
     }
+
+    /**
+     * Returns the cached [ViewModelProvider] or null if it was not created yet.
+     * Useful to get a reference to the [ViewModelProvider] to get a [ViewModel] from it if the [ViewModel] was already created.
+     */
+    internal fun getCachedViewModelProvider(): ViewModelProvider? = cachedViewModelProvider.get()
 
     private fun updateCreationExtras(newCreationExtras: CreationExtras): Boolean =
         if (!this::cachedCreationExtras.isInitialized || newCreationExtras != cachedCreationExtras.get()) {
@@ -73,25 +85,40 @@ internal class ScopedViewModelProvider(
             false
         }
 
-    private fun updateViewModelProviderDependencies(viewModelStoreOwner: ViewModelStoreOwner): Boolean {
-        val newViewModelStoreOwnerDefaultViewModelProviderFactory =
+    private fun updateDefaultFactory(viewModelStoreOwner: ViewModelStoreOwner): Boolean {
+        val newDefaultViewModelFactory: ViewModelProvider.Factory? =
             (viewModelStoreOwner as? HasDefaultViewModelProviderFactory)?.defaultViewModelProviderFactory
+        val cachedFactory: WeakReference<ViewModelProvider.Factory>? = cachedDefaultViewModelFactory
+        return when {
+            // There is a new factory and it's different from the cached one
+            newDefaultViewModelFactory != null && newDefaultViewModelFactory != cachedFactory?.get() -> {
+                cachedDefaultViewModelFactory = WeakReference(newDefaultViewModelFactory)
+                true
+            }
 
-        if (newViewModelStoreOwnerDefaultViewModelProviderFactory != viewModelStoreOwnerDefaultViewModelProviderFactory) {
-            viewModelStoreOwnerDefaultViewModelProviderFactory = newViewModelStoreOwnerDefaultViewModelProviderFactory
-            return true
+            newDefaultViewModelFactory == null && cachedFactory != null -> {
+                cachedDefaultViewModelFactory = null
+                true
+            }
+
+            else -> false
         }
-        return false
     }
 
     /**
      * Create a [ViewModelProvider] by either:
      * - using the existing [factory], or
-     * - using the default factory provided by the [ViewModelStoreOwner] in [updateViewModelProviderDependencies], or
+     * - using the default factory provided by the [ViewModelStoreOwner] in [updateDefaultFactory], or
      * - creating a default factory (e.g. for [ViewModel]s with no parameters in the constructor) using the [viewModelStore].
+     *
+     * This function also caches the created [ViewModelProvider] in [cachedViewModelProvider].
+     *
+     * @param factory [ViewModelProvider] factory to create the requested [ViewModel]
+     * @param creationExtras [CreationExtras] with default arguments that will be provided to the [ViewModel] through the [SavedStateHandle] and creationCallbacks.
+     * @return [ViewModelProvider] created with the provided [factory] (or [cachedDefaultViewModelFactory]) and [viewModelStore]
      */
-    private fun createViewModelProvider(creationExtras: CreationExtras): ViewModelProvider {
-        val defaultFactory = viewModelStoreOwnerDefaultViewModelProviderFactory
+    private fun createViewModelProvider(factory: ViewModelProvider.Factory?, creationExtras: CreationExtras): ViewModelProvider {
+        val defaultFactory = cachedDefaultViewModelFactory?.get()
         val viewModelProvider = when {
             factory != null -> ViewModelProvider.create(viewModelStore, factory, creationExtras)
             defaultFactory != null -> ViewModelProvider.create(viewModelStore, defaultFactory, creationExtras)
