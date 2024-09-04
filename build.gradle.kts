@@ -46,6 +46,7 @@ subprojects {
     tasks.withType<KotlinJvmCompile>().configureEach {
         compilerOptions {
             jvmTarget = JvmTarget.JVM_17
+            freeCompilerArgs.add("-Xexpect-actual-classes")
             if (!project.name.contains(sampleModuleName)) {
                 freeCompilerArgs.add("-Xexplicit-api=strict")
             }

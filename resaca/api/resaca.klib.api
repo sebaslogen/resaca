@@ -7,7 +7,7 @@
 
 // Library unique name: <io.github.sebaslogen:resaca>
 final class <#A: androidx.lifecycle/ViewModel> com.sebaslogen.resaca/ScopedViewModelOwner { // com.sebaslogen.resaca/ScopedViewModelOwner|null[0]
-    constructor <init>(kotlin/String, kotlin.reflect/KClass<#A>, androidx.lifecycle/ViewModelProvider.Factory?, androidx.lifecycle.viewmodel/CreationExtras, androidx.lifecycle/ViewModelStoreOwner) // com.sebaslogen.resaca/ScopedViewModelOwner.<init>|<init>(kotlin.String;kotlin.reflect.KClass<1:0>;androidx.lifecycle.ViewModelProvider.Factory?;androidx.lifecycle.viewmodel.CreationExtras;androidx.lifecycle.ViewModelStoreOwner){}[0]
+    constructor <init>(kotlin/String, kotlin.reflect/KClass<#A>) // com.sebaslogen.resaca/ScopedViewModelOwner.<init>|<init>(kotlin.String;kotlin.reflect.KClass<1:0>){}[0]
 }
 
 final class <#A: kotlin/Any> com.sebaslogen.resaca/ScopeKeyWithResolver { // com.sebaslogen.resaca/ScopeKeyWithResolver|null[0]
