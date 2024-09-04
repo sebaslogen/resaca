@@ -21,20 +21,18 @@ import kotlin.reflect.KClass
  *
  * @param key Unique [key] required to support [SavedStateHandle] across multiple instances of the same [ViewModel] type.
  * @param modelClass Class type of the [ViewModel] to instantiate
- * @param factory [ViewModelProvider] factory to create the requested [ViewModel] when required
  */
 public class ScopedViewModelOwner<T : ViewModel>(
     private val key: String,
-    private val modelClass: KClass<T>,
-    private val factory: ViewModelProvider.Factory?,
+    private val modelClass: KClass<T>
 ) {
 
     private val viewModelStore = ViewModelStore()
-    private val scopedViewModelProvider = ScopedViewModelProvider(factory, viewModelStore)
+    private val scopedViewModelProvider = ScopedViewModelProvider(viewModelStore)
 
-    internal fun getViewModel(creationExtras: CreationExtras): T {
+    internal fun getViewModel(factory: ViewModelProvider.Factory?, viewModelStoreOwner: ViewModelStoreOwner, creationExtras: CreationExtras): T {
         val canonicalName = modelClass.qualifiedName ?: throw IllegalArgumentException("Local and anonymous classes can not be ViewModels")
-        val viewModelProvider = scopedViewModelProvider.getViewModelProvider(creationExtras)
+        val viewModelProvider = scopedViewModelProvider.getViewModelProvider(factory, viewModelStoreOwner, creationExtras)
         @Suppress("ReplaceGetOrSet")
         return viewModelProvider.get("$canonicalName:$key", modelClass)
     }
@@ -42,16 +40,6 @@ public class ScopedViewModelOwner<T : ViewModel>(
     internal fun getCachedViewModel(): T? {
         val canonicalName = modelClass.qualifiedName ?: throw IllegalArgumentException("Local and anonymous classes can not be ViewModels")
         return scopedViewModelProvider.getCachedViewModelProvider()?.get("$canonicalName:$key", modelClass)
-    }
-    /**
-     * Update the [ViewModelProvider] with the new [viewModelStoreOwner] and [CreationExtras].
-     *
-     * @param viewModelStoreOwner Used to extract possible defaultViewModelCreationExtras and defaultViewModelProviderFactory
-     * @param creationExtras [CreationExtras] with default arguments that will be provided to the [ViewModel] through the [SavedStateHandle] and creationCallbacks.
-     */
-    @PublishedApi
-    internal fun updateViewModelProvider(viewModelStoreOwner: ViewModelStoreOwner, creationExtras: CreationExtras) {
-        scopedViewModelProvider.updateViewModelProvider(viewModelStoreOwner, creationExtras)
     }
 
     internal fun clear() {

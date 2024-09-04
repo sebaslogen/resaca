@@ -44,16 +44,15 @@ internal object ScopedViewModelUtils {
     ): T {
         cancelDisposal(positionalMemoizationKey)
 
-        val originalScopedViewModelOwner: ScopedViewModelOwner<T>? =
-            restoreAndUpdateScopedViewModelOwner(positionalMemoizationKey, scopedObjectsContainer, viewModelStoreOwner, creationExtras)
+        val originalScopedViewModelOwner: ScopedViewModelOwner<T>? = restoreAndUpdateScopedViewModelOwner(positionalMemoizationKey, scopedObjectsContainer)
 
         val viewModel: T =
-            if (scopedObjectKeys.containsKey(positionalMemoizationKey)
+            if (originalScopedViewModelOwner != null
+                && scopedObjectKeys.containsKey(positionalMemoizationKey)
                 && (scopedObjectKeys[positionalMemoizationKey] == externalKey)
-                && originalScopedViewModelOwner is ScopedViewModelOwner
             ) {
                 // When the object is already present and the external key matches, then return the existing one in the ScopedViewModelOwner
-                originalScopedViewModelOwner.getViewModel(creationExtras)
+                originalScopedViewModelOwner.getViewModel(factory, viewModelStoreOwner, creationExtras)
             } else { // First time ViewModel's object creation or externalKey changed
                 scopedObjectsContainer.remove(positionalMemoizationKey) // Remove in case key changed
                     ?.also { // Old object may need to be cleared before it's forgotten
@@ -62,12 +61,10 @@ internal object ScopedViewModelUtils {
                 scopedObjectKeys[positionalMemoizationKey] = externalKey // Set the new external key used to track and store the new object version
                 val newScopedViewModelOwner = ScopedViewModelOwner(
                     key = positionalMemoizationKey + externalKey, // Both keys needed to handle recreation by ViewModelProvider when any of these keys changes
-                    modelClass = modelClass,
-                    factory = factory,
+                    modelClass = modelClass
                 )
-                newScopedViewModelOwner.updateViewModelProvider(viewModelStoreOwner, creationExtras)
                 scopedObjectsContainer[positionalMemoizationKey] = newScopedViewModelOwner
-                newScopedViewModelOwner.getViewModel(creationExtras)
+                newScopedViewModelOwner.getViewModel(factory, viewModelStoreOwner, creationExtras)
             }
 
         return viewModel
@@ -75,18 +72,14 @@ internal object ScopedViewModelUtils {
 
     /**
      * Restore the stored [ScopedViewModelOwner], if any present, for the given [positionalMemoizationKey]
-     * and update its dependencies to create a new [ViewModelProvider] (i.e. [CreationExtras] and default [ViewModelProvider.Factory])
      */
     @Suppress("UNCHECKED_CAST")
     @PublishedApi
     internal fun <T : ViewModel> restoreAndUpdateScopedViewModelOwner(
         positionalMemoizationKey: InternalKey,
-        scopedObjectsContainer: MutableMap<InternalKey, Any>,
-        viewModelStoreOwner: ViewModelStoreOwner,
-        creationExtras: CreationExtras
+        scopedObjectsContainer: Map<InternalKey, Any>
     ): ScopedViewModelOwner<T>? =
         (scopedObjectsContainer[positionalMemoizationKey] as? ScopedViewModelOwner<T>)
-            ?.also { it.updateViewModelProvider(viewModelStoreOwner, creationExtras) }
 
     /**
      * An object that is being disposed should also be cleared only if there are no more references to it in this [objectsContainer]
@@ -123,7 +116,8 @@ internal object ScopedViewModelUtils {
             objectsContainer
                 .filterIsInstance<ScopedViewModelOwner<T>>()
                 .none { storedObject ->
-                    val viewModel = storedObject.getCachedViewModel() // This happens only when one of the ViewModels requested was never actually created before this function call
+                    val viewModel =
+                        storedObject.getCachedViewModel() // This happens only when one of the ViewModels requested was never actually created before this function call
                     viewModel != null && viewModel == scopedViewModelOwner.getCachedViewModel()
                 }
         if (viewModelMissingInContainer) scopedViewModelOwner.clear()
