@@ -45,7 +45,7 @@ internal object ScopedViewModelUtils {
         cancelDisposal(positionalMemoizationKey)
 
         val originalScopedViewModelOwner: ScopedViewModelOwner<T>? =
-            restoreAndUpdateScopedViewModelOwner(positionalMemoizationKey, scopedObjectsContainer, viewModelStoreOwner)
+            restoreAndUpdateScopedViewModelOwner(positionalMemoizationKey, scopedObjectsContainer, viewModelStoreOwner, creationExtras)
 
         val viewModel: T =
             if (scopedObjectKeys.containsKey(positionalMemoizationKey)
@@ -53,7 +53,7 @@ internal object ScopedViewModelUtils {
                 && originalScopedViewModelOwner is ScopedViewModelOwner
             ) {
                 // When the object is already present and the external key matches, then return the existing one in the ScopedViewModelOwner
-                originalScopedViewModelOwner.viewModel
+                originalScopedViewModelOwner.getViewModel(creationExtras)
             } else { // First time ViewModel's object creation or externalKey changed
                 scopedObjectsContainer.remove(positionalMemoizationKey) // Remove in case key changed
                     ?.also { // Old object may need to be cleared before it's forgotten
@@ -64,11 +64,10 @@ internal object ScopedViewModelUtils {
                     key = positionalMemoizationKey + externalKey, // Both keys needed to handle recreation by ViewModelProvider when any of these keys changes
                     modelClass = modelClass,
                     factory = factory,
-                    creationExtras = creationExtras,
-                    viewModelStoreOwner = viewModelStoreOwner
                 )
+                newScopedViewModelOwner.updateViewModelProvider(viewModelStoreOwner, creationExtras)
                 scopedObjectsContainer[positionalMemoizationKey] = newScopedViewModelOwner
-                newScopedViewModelOwner.viewModel
+                newScopedViewModelOwner.getViewModel(creationExtras)
             }
 
         return viewModel
@@ -83,10 +82,11 @@ internal object ScopedViewModelUtils {
     internal fun <T : ViewModel> restoreAndUpdateScopedViewModelOwner(
         positionalMemoizationKey: InternalKey,
         scopedObjectsContainer: MutableMap<InternalKey, Any>,
-        viewModelStoreOwner: ViewModelStoreOwner
+        viewModelStoreOwner: ViewModelStoreOwner,
+        creationExtras: CreationExtras
     ): ScopedViewModelOwner<T>? =
         (scopedObjectsContainer[positionalMemoizationKey] as? ScopedViewModelOwner<T>)
-            ?.also { it.updateViewModelProvider(viewModelStoreOwner) }
+            ?.also { it.updateViewModelProvider(viewModelStoreOwner, creationExtras) }
 
     /**
      * An object that is being disposed should also be cleared only if there are no more references to it in this [objectsContainer]
@@ -123,7 +123,8 @@ internal object ScopedViewModelUtils {
             objectsContainer
                 .filterIsInstance<ScopedViewModelOwner<T>>()
                 .none { storedObject ->
-                    storedObject.viewModel == scopedViewModelOwner.viewModel
+                    val viewModel = storedObject.getCachedViewModel() // This happens only when one of the ViewModels requested was never actually created before this function call
+                    viewModel != null && viewModel == scopedViewModelOwner.getCachedViewModel()
                 }
         if (viewModelMissingInContainer) scopedViewModelOwner.clear()
     }
