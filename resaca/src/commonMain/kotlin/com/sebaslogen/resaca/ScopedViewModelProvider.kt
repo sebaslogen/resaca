@@ -35,9 +35,10 @@ internal class ScopedViewModelProvider(
      * Returns a [ViewModelProvider] using the [viewModelStoreOwner] and [CreationExtras].
      *
      * @param factory [ViewModelProvider] factory to create the requested [ViewModel]
-     * @param viewModelStoreOwner Used to extract possible defaultViewModelCreationExtras and defaultViewModelProviderFactory
+     * @param viewModelStoreOwner Used to extract possible [ViewModelProvider.Factory] defaultViewModelProviderFactory
      * @param creationExtras [CreationExtras] with default arguments that will be provided to the [ViewModel] through the [SavedStateHandle] and creationCallbacks.
-     * @return [ViewModelProvider] created with the provided [factory] (or [cachedDefaultViewModelFactory]) and [viewModelStore]
+     *
+     * @return [ViewModelProvider] created with the provided [factory] and [viewModelStore]
      */
     internal fun getViewModelProvider(
         factory: ViewModelProvider.Factory?,
@@ -70,7 +71,8 @@ internal class ScopedViewModelProvider(
      * @param factory [ViewModelProvider] factory to create the requested [ViewModel]
      * @param defaultFactory Default [ViewModelProvider.Factory] to create the requested [ViewModel] from the [ViewModelStoreOwner]
      * @param creationExtras [CreationExtras] with default arguments that will be provided to the [ViewModel] through the [SavedStateHandle] and creationCallbacks.
-     * @return [ViewModelProvider] created with the provided [factory] (or [cachedDefaultViewModelFactory]) and [viewModelStore]
+     *
+     * @return [ViewModelProvider] created with the provided [factory] and [viewModelStore]
      */
     private fun createViewModelProvider(
         factory: ViewModelProvider.Factory?,
