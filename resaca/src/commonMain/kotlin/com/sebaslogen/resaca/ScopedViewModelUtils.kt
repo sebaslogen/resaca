@@ -116,8 +116,8 @@ internal object ScopedViewModelUtils {
             objectsContainer
                 .filterIsInstance<ScopedViewModelOwner<T>>()
                 .none { storedObject ->
-                    val viewModel =
-                        storedObject.getCachedViewModel() // This happens only when one of the ViewModels requested was never actually created before this function call
+                    // Cached ViewModel will be null only when one of the ViewModels requested was never actually created before this function call
+                    val viewModel = storedObject.getCachedViewModel()
                     viewModel != null && viewModel == scopedViewModelOwner.getCachedViewModel()
                 }
         if (viewModelMissingInContainer) scopedViewModelOwner.clear()

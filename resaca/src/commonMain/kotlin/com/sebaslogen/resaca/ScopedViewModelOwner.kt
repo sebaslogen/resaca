@@ -31,15 +31,18 @@ public class ScopedViewModelOwner<T : ViewModel>(
     private val scopedViewModelProvider = ScopedViewModelProvider(viewModelStore)
 
     internal fun getViewModel(factory: ViewModelProvider.Factory?, viewModelStoreOwner: ViewModelStoreOwner, creationExtras: CreationExtras): T {
-        val canonicalName = modelClass.qualifiedName ?: throw IllegalArgumentException("Local and anonymous classes can not be ViewModels")
         val viewModelProvider = scopedViewModelProvider.getViewModelProvider(factory, viewModelStoreOwner, creationExtras)
         @Suppress("ReplaceGetOrSet")
-        return viewModelProvider.get("$canonicalName:$key", modelClass)
+        return viewModelProvider.get(getCanonicalNameKey(), modelClass)
     }
 
     internal fun getCachedViewModel(): T? {
+        return scopedViewModelProvider.getCachedViewModelProvider()?.get(getCanonicalNameKey(), modelClass)
+    }
+
+    private fun getCanonicalNameKey(): String {
         val canonicalName = modelClass.qualifiedName ?: throw IllegalArgumentException("Local and anonymous classes can not be ViewModels")
-        return scopedViewModelProvider.getCachedViewModelProvider()?.get("$canonicalName:$key", modelClass)
+        return "$canonicalName:$key"
     }
 
     internal fun clear() {
@@ -57,4 +60,3 @@ public class ScopedViewModelOwner<T : ViewModel>(
             }
     }
 }
-
