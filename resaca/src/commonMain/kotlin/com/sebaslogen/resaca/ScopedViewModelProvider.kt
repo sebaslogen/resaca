@@ -19,7 +19,6 @@ import kotlin.experimental.ExperimentalNativeApi
  * The created [ViewModelProvider] is cached until the [ViewModelStoreOwner] is updated and
  * contains new [CreationExtras] or [ViewModelProvider.Factory].
  *
- * @param factory [ViewModelProvider] factory to create the requested [ViewModel] when required
  * @param viewModelStore Used to store and clear the [ViewModel]
  */
 @OptIn(ExperimentalNativeApi::class)
