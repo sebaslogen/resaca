@@ -66,7 +66,7 @@ internal class ScopedViewModelProvider(
         return if (updatedCreationExtras || updatedViewModelProvider) {
             createViewModelProvider(factory, creationExtras)
         } else { // Return cached ViewModelProvider or new if cache is empty
-            cachedViewModelProvider.get() ?: createViewModelProvider(factory, creationExtras)
+            getCachedViewModelProvider() ?: createViewModelProvider(factory, creationExtras)
         }
     }
 
@@ -74,7 +74,7 @@ internal class ScopedViewModelProvider(
      * Returns the cached [ViewModelProvider] or null if it was not created yet.
      * Useful to get a reference to the [ViewModelProvider] to get a [ViewModel] from it if the [ViewModel] was already created.
      */
-    internal fun getCachedViewModelProvider(): ViewModelProvider? = cachedViewModelProvider.get()
+    internal fun getCachedViewModelProvider(): ViewModelProvider? = if (this::cachedViewModelProvider.isInitialized) cachedViewModelProvider.get() else null
 
     private fun updateCreationExtras(newCreationExtras: CreationExtras): Boolean =
         if (!this::cachedCreationExtras.isInitialized || newCreationExtras != cachedCreationExtras.get()) {
