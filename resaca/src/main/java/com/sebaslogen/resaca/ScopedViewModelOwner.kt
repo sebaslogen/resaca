@@ -21,31 +21,28 @@ import kotlin.reflect.KClass
  *
  * @param key Unique [key] required to support [SavedStateHandle] across multiple instances of the same [ViewModel] type.
  * @param modelClass Class type of the [ViewModel] to instantiate
- * @param factory [ViewModelProvider] factory to create the requested [ViewModel] when required
- * @param creationExtras [CreationExtras] with default arguments that will be provided to the [ViewModel] through the [SavedStateHandle] and creationCallbacks.
- * @param viewModelStoreOwner Used to extract possible defaultViewModelCreationExtras and defaultViewModelProviderFactory
  */
 public class ScopedViewModelOwner<T : ViewModel>(
     private val key: String,
-    private val modelClass: KClass<T>,
-    private val factory: ViewModelProvider.Factory?,
-    creationExtras: CreationExtras,
-    viewModelStoreOwner: ViewModelStoreOwner
+    private val modelClass: KClass<T>
 ) {
 
     private val viewModelStore = ViewModelStore()
-    private val scopedViewModelProvider = ScopedViewModelProvider(factory, viewModelStore, creationExtras, viewModelStoreOwner)
+    private val scopedViewModelProvider = ScopedViewModelProvider(viewModelStore)
 
-    internal val viewModel: T
+    internal fun getViewModel(factory: ViewModelProvider.Factory?, viewModelStoreOwner: ViewModelStoreOwner, creationExtras: CreationExtras): T {
+        val viewModelProvider = scopedViewModelProvider.getViewModelProvider(factory, viewModelStoreOwner, creationExtras)
         @Suppress("ReplaceGetOrSet")
-        get() {
-            val canonicalName = modelClass.qualifiedName ?: throw IllegalArgumentException("Local and anonymous classes can not be ViewModels")
-            return scopedViewModelProvider.viewModelProvider.get("$canonicalName:$key", modelClass)
-        }
+        return viewModelProvider.get(getCanonicalNameKey(), modelClass)
+    }
 
-    @PublishedApi
-    internal fun updateViewModelProvider(viewModelStoreOwner: ViewModelStoreOwner) {
-        scopedViewModelProvider.updateViewModelProvider(viewModelStoreOwner)
+    internal fun getCachedViewModel(): T? {
+        return scopedViewModelProvider.getCachedViewModelProvider()?.get(getCanonicalNameKey(), modelClass)
+    }
+
+    private fun getCanonicalNameKey(): String {
+        val canonicalName = modelClass.qualifiedName ?: throw IllegalArgumentException("Local and anonymous classes can not be ViewModels")
+        return "$canonicalName:$key"
     }
 
     internal fun clear() {
@@ -63,4 +60,3 @@ public class ScopedViewModelOwner<T : ViewModel>(
             }
     }
 }
-
