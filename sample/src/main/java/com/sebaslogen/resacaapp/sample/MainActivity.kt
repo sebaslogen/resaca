@@ -3,9 +3,17 @@ package com.sebaslogen.resacaapp.sample
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.sebaslogen.resacaapp.sample.ui.main.ComposeActivity
@@ -48,18 +56,26 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @Composable
+    fun CreateActivityComposeContent(clickListener: () -> Unit) {
+        Surface(color = MaterialTheme.colors.background.copy(alpha = 0.5f)) {
+            Column(Modifier.fillMaxWidth()) {
+                IconButton( // Recreate Activity on Refresh button pressed to test scoped objects
+                    modifier = Modifier.align(Alignment.End),
+                    onClick = { recreate() }
+                ) {
+                    Icon(Icons.Filled.Refresh, contentDescription = "Recreate Activity")
+                }
+                DemoScreenInActivity(clickListener)
+            }
+        }
+    }
+
     private fun navigateToComposeActivity() {
         startActivity(Intent(this, ComposeActivity::class.java))
     }
 
     fun navigateToFragmentTwo() {
         supportFragmentManager.navigateToFragmentTwo()
-    }
-}
-
-@Composable
-fun CreateActivityComposeContent(clickListener: () -> Unit) {
-    Surface(color = MaterialTheme.colors.background.copy(alpha = 0.5f)) {
-        DemoScreenInActivity(clickListener)
     }
 }
