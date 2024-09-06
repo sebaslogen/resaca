@@ -16,8 +16,12 @@ constraintlayout = '2.1.4'
 binary-compatibility-validator = '0.16.3'
 dokka = '1.9.20'
 maven = '0.29.0'
-# Compose
-compose-bom = "2024.09.00" # https://developer.android.com/jetpack/compose/bom/bom-mapping
+# Compose Multiplatform
+compose-plugin = "1.7.0-beta01"
+# Compose libs not included in multiplatform
+compose-ui-test-junit = '1.7.0'
+compose-ui-test-manifest = '1.7.0'
+compose-ui-toolingPreview = '1.7.0'
 # Compose integration with Activities
 androidx-activity = '1.9.2'
 # Compose integration with ViewModels
@@ -28,8 +32,6 @@ hilt = '2.52'
 hilt-navigation-compose = '1.2.0'
 # Koin
 koin = '4.0.0-RC2'
-# Compose Multiplatform
-compose-plugin = "1.7.0-beta01"
 # Test
 junit-version = '4.13.2'
 kover = '0.8.3'
@@ -56,15 +58,10 @@ androidx-core-bundle = { module = "org.jetbrains.androidx.core:core-bundle", ver
 androidx-tracing = { module = "androidx.tracing:tracing", version.ref = "tracing" }
 leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanaryAndroid" }
 
-compose-bom = { module = 'androidx.compose:compose-bom', version.ref = 'compose-bom' }
-compose-foundation = { module = 'androidx.compose.foundation:foundation' }
-compose-material = { module = 'androidx.compose.material:material' }
-compose-runtime = { module = 'androidx.compose.runtime:runtime' }
-compose-ui = { module = 'androidx.compose.ui:ui' }
-compose-ui-tooling = { module = 'androidx.compose.ui:ui-tooling' }
-compose-ui-toolingPreview = { module = 'androidx.compose.ui:ui-tooling-preview' }
-compose-ui-test-junit = { module = 'androidx.compose.ui:ui-test-junit4' }
-compose-ui-test-manifest = { module = 'androidx.compose.ui:ui-test-manifest' }
+# Compose libraries
+compose-ui-toolingPreview = { module = 'androidx.compose.ui:ui-tooling-preview', version.ref = 'compose-ui-toolingPreview' }
+compose-ui-test-junit = { module = 'androidx.compose.ui:ui-test-junit4', version.ref = 'compose-ui-test-junit' }
+compose-ui-test-manifest = { module = 'androidx.compose.ui:ui-test-manifest', version.ref = 'compose-ui-test-manifest' }
 
 coroutines-android = { module = 'org.jetbrains.kotlinx:kotlinx-coroutines-android', version.ref = 'coroutines' }
 kotlin-coroutines-test = { module = 'org.jetbrains.kotlinx:kotlinx-coroutines-test', version.ref = 'coroutines' }

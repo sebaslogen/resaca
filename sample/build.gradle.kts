@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.dagger.hilt.android)
     alias(libs.plugins.kover)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.jetbrains.compose)
 }
 
 android {
@@ -95,7 +96,6 @@ dependencies {
     androidTestImplementation(libs.test.runner)
     androidTestImplementation(libs.test.rules)
     androidTestImplementation(libs.androidx.junit.ktx)
-    androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.compose.ui.test.junit)
     androidTestImplementation(libs.koin.android.test)
 
@@ -108,16 +108,14 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
 
     // Compose dependencies
-    implementation(platform(libs.compose.bom))
-    implementation(libs.compose.runtime)
-    implementation(libs.compose.ui)
+    implementation(compose.runtime)
+    implementation(compose.ui)
     // Tooling support (Previews, etc.)
     implementation(libs.compose.ui.toolingPreview)
-    debugRuntimeOnly(libs.compose.ui.tooling)
     // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
-    implementation(libs.compose.foundation)
+    implementation(compose.foundation)
     // Material Design
-    implementation(libs.compose.material)
+    implementation(compose.material)
 }
 
 tasks.withType<AbstractTestTask> {
