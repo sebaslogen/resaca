@@ -29,12 +29,22 @@ kotlin {
             isStatic = true
         }
     }
+
+    jvm("desktop")
+
     sourceSets {
         commonMain.dependencies {
             implementation(compose.runtime)
             api(libs.androidx.lifecycle.viewmodel)
             api(libs.androidx.lifecycle.viewmodel.compose)
             api(libs.androidx.core.bundle)
+            api(libs.coroutines.core)
+        }
+
+        val desktopMain by getting
+        desktopMain.dependencies {
+            implementation(compose.desktop.common)
+            implementation(libs.coroutines.swing)
         }
     }
 }
