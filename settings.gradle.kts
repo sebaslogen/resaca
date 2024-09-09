@@ -22,6 +22,7 @@ println("Running on CI flow: $ci")
 if (ci == null || !ci.contains("Maven")) { // Remove the sample app from Maven publication builds
     include(":sample")
     include(":samplecmp:sampleComposeApp")
+    include(":samplecmp:sampleDesktopApp")
 }
 
 include(
