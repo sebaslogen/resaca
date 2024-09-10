@@ -17,7 +17,7 @@ binary-compatibility-validator = '0.16.3'
 dokka = '1.9.20'
 maven = '0.29.0'
 # Compose Multiplatform
-compose-plugin = "1.7.0-beta01"
+compose-plugin = "1.7.0-beta02"
 # Compose libs not included in multiplatform
 compose-ui-test-junit = '1.7.0'
 compose-ui-test-manifest = '1.7.0'
@@ -26,7 +26,7 @@ compose-ui-toolingPreview = '1.7.0'
 androidx-activity = '1.9.2'
 # Compose integration with ViewModels
 androidx-lifecycle = "2.8.5"
-jetbrains-lifecycle = "2.8.1"
+jetbrains-lifecycle = "2.8.2"
 # Hilt
 hilt = '2.52'
 hilt-navigation-compose = '1.2.0'
