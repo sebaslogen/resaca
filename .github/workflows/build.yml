@@ -10,6 +10,15 @@ jobs:
     runs-on: macos-14
 
     steps:
+      - name: Remove unused applications and simulators
+        run: |
+          sudo rm -rf /Applications/Xcode_14.3.1.app
+          sudo rm -rf /Applications/Xcode_15.0.1.app
+          sudo rm -rf /Applications/Xcode_15.1.app
+          sudo rm -rf /Applications/Xcode_15.2.app
+          sudo rm -rf /Applications/Xcode_15.3.app
+          xcrun simctl delete all
+
       - name: Checkout
         uses: actions/checkout@v4
 
