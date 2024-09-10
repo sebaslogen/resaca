@@ -34,6 +34,11 @@ kotlin {
     jvm("desktop")
 
     sourceSets {
+        val desktopMain by getting
+        desktopMain.dependencies {
+            // Dependency required to run the tests without org.jetbrains.skiko.LibraryLoadException
+            implementation(compose.desktop.currentOs)
+        }
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
