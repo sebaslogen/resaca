@@ -11,3 +11,10 @@ expect public class PlatformLifecycleHandler() {
     public fun onDestroyed()
     public suspend fun awaitBeforeDisposing(inForeground: Boolean)
 }
+
+
+public class DefaultPlatformLifecycleHandler() {
+    public fun onResumed() {}
+    public fun onDestroyed() {}
+    public suspend fun awaitBeforeDisposing(inForeground: Boolean) {}
+}
