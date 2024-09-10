@@ -26,12 +26,12 @@ final class <#A: kotlin/Any> com.sebaslogen.resaca/ScopeKeyWithResolver { // com
     final fun toString(): kotlin/String // com.sebaslogen.resaca/ScopeKeyWithResolver.toString|toString(){}[0]
 }
 
-final class com.sebaslogen.resaca/PlatformLifecycleHandler { // com.sebaslogen.resaca/PlatformLifecycleHandler|null[0]
-    constructor <init>() // com.sebaslogen.resaca/PlatformLifecycleHandler.<init>|<init>(){}[0]
+final class com.sebaslogen.resaca/DefaultPlatformLifecycleHandler { // com.sebaslogen.resaca/DefaultPlatformLifecycleHandler|null[0]
+    constructor <init>() // com.sebaslogen.resaca/DefaultPlatformLifecycleHandler.<init>|<init>(){}[0]
 
-    final fun onDestroyed() // com.sebaslogen.resaca/PlatformLifecycleHandler.onDestroyed|onDestroyed(){}[0]
-    final fun onResumed() // com.sebaslogen.resaca/PlatformLifecycleHandler.onResumed|onResumed(){}[0]
-    final suspend fun awaitBeforeDisposing(kotlin/Boolean) // com.sebaslogen.resaca/PlatformLifecycleHandler.awaitBeforeDisposing|awaitBeforeDisposing(kotlin.Boolean){}[0]
+    final fun onDestroyed() // com.sebaslogen.resaca/DefaultPlatformLifecycleHandler.onDestroyed|onDestroyed(){}[0]
+    final fun onResumed() // com.sebaslogen.resaca/DefaultPlatformLifecycleHandler.onResumed|onResumed(){}[0]
+    final suspend fun awaitBeforeDisposing(kotlin/Boolean) // com.sebaslogen.resaca/DefaultPlatformLifecycleHandler.awaitBeforeDisposing|awaitBeforeDisposing(kotlin.Boolean){}[0]
 }
 
 final class com.sebaslogen.resaca/RememberScopedObserver : androidx.compose.runtime/RememberObserver { // com.sebaslogen.resaca/RememberScopedObserver|null[0]
@@ -76,7 +76,7 @@ final const val com.sebaslogen.resaca/COMPOSITION_RESUMED_TIMEOUT_IN_SECONDS // 
     final fun <get-COMPOSITION_RESUMED_TIMEOUT_IN_SECONDS>(): kotlin/Long // com.sebaslogen.resaca/COMPOSITION_RESUMED_TIMEOUT_IN_SECONDS.<get-COMPOSITION_RESUMED_TIMEOUT_IN_SECONDS>|<get-COMPOSITION_RESUMED_TIMEOUT_IN_SECONDS>(){}[0]
 
 final val com.sebaslogen.resaca.viewmodel/com_sebaslogen_resaca_viewmodel_DefaultViewModelProviderFactory$stableprop // com.sebaslogen.resaca.viewmodel/com_sebaslogen_resaca_viewmodel_DefaultViewModelProviderFactory$stableprop|#static{}com_sebaslogen_resaca_viewmodel_DefaultViewModelProviderFactory$stableprop[0]
-final val com.sebaslogen.resaca/com_sebaslogen_resaca_PlatformLifecycleHandler$stableprop // com.sebaslogen.resaca/com_sebaslogen_resaca_PlatformLifecycleHandler$stableprop|#static{}com_sebaslogen_resaca_PlatformLifecycleHandler$stableprop[0]
+final val com.sebaslogen.resaca/com_sebaslogen_resaca_DefaultPlatformLifecycleHandler$stableprop // com.sebaslogen.resaca/com_sebaslogen_resaca_DefaultPlatformLifecycleHandler$stableprop|#static{}com_sebaslogen_resaca_DefaultPlatformLifecycleHandler$stableprop[0]
 final val com.sebaslogen.resaca/com_sebaslogen_resaca_RememberScopedObserver$stableprop // com.sebaslogen.resaca/com_sebaslogen_resaca_RememberScopedObserver$stableprop|#static{}com_sebaslogen_resaca_RememberScopedObserver$stableprop[0]
 final val com.sebaslogen.resaca/com_sebaslogen_resaca_ScopeKeyWithResolver$stableprop // com.sebaslogen.resaca/com_sebaslogen_resaca_ScopeKeyWithResolver$stableprop|#static{}com_sebaslogen_resaca_ScopeKeyWithResolver$stableprop[0]
 final val com.sebaslogen.resaca/com_sebaslogen_resaca_ScopedViewModelContainer$stableprop // com.sebaslogen.resaca/com_sebaslogen_resaca_ScopedViewModelContainer$stableprop|#static{}com_sebaslogen_resaca_ScopedViewModelContainer$stableprop[0]
@@ -88,7 +88,7 @@ final fun <#A: kotlin/Any, #B: kotlin/Any> com.sebaslogen.resaca/rememberScoped(
 final fun <#A: kotlin/Any> com.sebaslogen.resaca/rememberKeysInScope(kotlin.collections/Collection<#A>, androidx.compose.runtime/Composer?, kotlin/Int): kotlin/Function1<#A, kotlin/Boolean> // com.sebaslogen.resaca/rememberKeysInScope|rememberKeysInScope(kotlin.collections.Collection<0:0>;androidx.compose.runtime.Composer?;kotlin.Int){0§<kotlin.Any>}[0]
 final fun <#A: kotlin/Any> com.sebaslogen.resaca/rememberScoped(kotlin/Any?, kotlin/Function0<#A>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): #A // com.sebaslogen.resaca/rememberScoped|rememberScoped(kotlin.Any?;kotlin.Function0<0:0>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){0§<kotlin.Any>}[0]
 final fun com.sebaslogen.resaca.viewmodel/com_sebaslogen_resaca_viewmodel_DefaultViewModelProviderFactory$stableprop_getter(): kotlin/Int // com.sebaslogen.resaca.viewmodel/com_sebaslogen_resaca_viewmodel_DefaultViewModelProviderFactory$stableprop_getter|com_sebaslogen_resaca_viewmodel_DefaultViewModelProviderFactory$stableprop_getter(){}[0]
-final fun com.sebaslogen.resaca/com_sebaslogen_resaca_PlatformLifecycleHandler$stableprop_getter(): kotlin/Int // com.sebaslogen.resaca/com_sebaslogen_resaca_PlatformLifecycleHandler$stableprop_getter|com_sebaslogen_resaca_PlatformLifecycleHandler$stableprop_getter(){}[0]
+final fun com.sebaslogen.resaca/com_sebaslogen_resaca_DefaultPlatformLifecycleHandler$stableprop_getter(): kotlin/Int // com.sebaslogen.resaca/com_sebaslogen_resaca_DefaultPlatformLifecycleHandler$stableprop_getter|com_sebaslogen_resaca_DefaultPlatformLifecycleHandler$stableprop_getter(){}[0]
 final fun com.sebaslogen.resaca/com_sebaslogen_resaca_RememberScopedObserver$stableprop_getter(): kotlin/Int // com.sebaslogen.resaca/com_sebaslogen_resaca_RememberScopedObserver$stableprop_getter|com_sebaslogen_resaca_RememberScopedObserver$stableprop_getter(){}[0]
 final fun com.sebaslogen.resaca/com_sebaslogen_resaca_ScopeKeyWithResolver$stableprop_getter(): kotlin/Int // com.sebaslogen.resaca/com_sebaslogen_resaca_ScopeKeyWithResolver$stableprop_getter|com_sebaslogen_resaca_ScopeKeyWithResolver$stableprop_getter(){}[0]
 final fun com.sebaslogen.resaca/com_sebaslogen_resaca_ScopedViewModelContainer$stableprop_getter(): kotlin/Int // com.sebaslogen.resaca/com_sebaslogen_resaca_ScopedViewModelContainer$stableprop_getter|com_sebaslogen_resaca_ScopedViewModelContainer$stableprop_getter(){}[0]
