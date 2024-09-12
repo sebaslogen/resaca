@@ -19,9 +19,9 @@ maven = '0.29.0'
 # Compose Multiplatform
 compose-plugin = "1.7.0-beta02"
 # Compose libs not included in multiplatform
-compose-ui-test-junit = '1.7.0'
-compose-ui-test-manifest = '1.7.0'
-compose-ui-toolingPreview = '1.7.0'
+compose-ui-test-junit = '1.7.1'
+compose-ui-test-manifest = '1.7.1'
+compose-ui-toolingPreview = '1.7.1'
 # Compose integration with Activities
 androidx-activity = '1.9.2'
 # Compose integration with ViewModels
