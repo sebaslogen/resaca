@@ -1,5 +1,5 @@
 // Klib ABI Dump
-// Targets: [iosArm64, iosSimulatorArm64, iosX64]
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, wasmJs]
 // Rendering settings:
 // - Signature version: 2
 // - Show manifest properties: true
@@ -100,3 +100,24 @@ final inline fun <#A: reified androidx.lifecycle/ViewModel, #B: kotlin/Any> com.
 final inline fun <#A: reified androidx.lifecycle/ViewModel, #B: kotlin/Any> com.sebaslogen.resaca/viewModelScoped(#B, noinline kotlin/Function1<#B, kotlin/Boolean>, androidx.core.bundle/Bundle?, noinline kotlin/Function0<#A>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): #A // com.sebaslogen.resaca/viewModelScoped|viewModelScoped(0:1;kotlin.Function1<0:1,kotlin.Boolean>;androidx.core.bundle.Bundle?;kotlin.Function0<0:0>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){0§<androidx.lifecycle.ViewModel>;1§<kotlin.Any>}[0]
 final inline fun <#A: reified androidx.lifecycle/ViewModel> com.sebaslogen.resaca/viewModelScoped(kotlin/Any?, androidx.core.bundle/Bundle?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): #A // com.sebaslogen.resaca/viewModelScoped|viewModelScoped(kotlin.Any?;androidx.core.bundle.Bundle?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){0§<androidx.lifecycle.ViewModel>}[0]
 final inline fun <#A: reified androidx.lifecycle/ViewModel> com.sebaslogen.resaca/viewModelScoped(kotlin/Any?, androidx.core.bundle/Bundle?, noinline kotlin/Function0<#A>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): #A // com.sebaslogen.resaca/viewModelScoped|viewModelScoped(kotlin.Any?;androidx.core.bundle.Bundle?;kotlin.Function0<0:0>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){0§<androidx.lifecycle.ViewModel>}[0]
+
+// Targets: [js, wasmJs]
+final class com.sebaslogen.resaca/PlatformLifecycleHandler { // com.sebaslogen.resaca/PlatformLifecycleHandler|null[0]
+    constructor <init>() // com.sebaslogen.resaca/PlatformLifecycleHandler.<init>|<init>(){}[0]
+
+    final fun onDestroyed() // com.sebaslogen.resaca/PlatformLifecycleHandler.onDestroyed|onDestroyed(){}[0]
+    final fun onResumed() // com.sebaslogen.resaca/PlatformLifecycleHandler.onResumed|onResumed(){}[0]
+    final suspend fun awaitBeforeDisposing(kotlin/Boolean) // com.sebaslogen.resaca/PlatformLifecycleHandler.awaitBeforeDisposing|awaitBeforeDisposing(kotlin.Boolean){}[0]
+}
+
+// Targets: [js, wasmJs]
+final val com.sebaslogen.resaca.utils/com_sebaslogen_resaca_utils_WeakReference$stableprop // com.sebaslogen.resaca.utils/com_sebaslogen_resaca_utils_WeakReference$stableprop|#static{}com_sebaslogen_resaca_utils_WeakReference$stableprop[0]
+
+// Targets: [js, wasmJs]
+final val com.sebaslogen.resaca/com_sebaslogen_resaca_PlatformLifecycleHandler$stableprop // com.sebaslogen.resaca/com_sebaslogen_resaca_PlatformLifecycleHandler$stableprop|#static{}com_sebaslogen_resaca_PlatformLifecycleHandler$stableprop[0]
+
+// Targets: [js, wasmJs]
+final fun com.sebaslogen.resaca.utils/com_sebaslogen_resaca_utils_WeakReference$stableprop_getter(): kotlin/Int // com.sebaslogen.resaca.utils/com_sebaslogen_resaca_utils_WeakReference$stableprop_getter|com_sebaslogen_resaca_utils_WeakReference$stableprop_getter(){}[0]
+
+// Targets: [js, wasmJs]
+final fun com.sebaslogen.resaca/com_sebaslogen_resaca_PlatformLifecycleHandler$stableprop_getter(): kotlin/Int // com.sebaslogen.resaca/com_sebaslogen_resaca_PlatformLifecycleHandler$stableprop_getter|com_sebaslogen_resaca_PlatformLifecycleHandler$stableprop_getter(){}[0]
