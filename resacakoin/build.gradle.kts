@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -29,6 +30,16 @@ kotlin {
             isStatic = true
         }
     }
+
+    jvm("desktop")
+
+    js {
+        browser()
+        useEsModules()
+    }
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs { browser() }
+
     sourceSets {
         commonMain.dependencies {
             api(project(":resaca"))
