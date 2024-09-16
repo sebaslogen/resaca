@@ -36,7 +36,11 @@ kotlin {
     jvm("desktop")
 
     js {
-        browser()
+        browser {
+            testTask {
+                enabled = false // Disabled due to https://youtrack.jetbrains.com/issue/CMP-4906
+            }
+        }
         useEsModules()
     }
     @OptIn(ExperimentalWasmDsl::class)
