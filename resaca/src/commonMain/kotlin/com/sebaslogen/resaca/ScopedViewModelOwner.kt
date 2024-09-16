@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.sebaslogen.resaca.utils.getClassName
 import kotlin.reflect.KClass
 
 /**
@@ -41,7 +42,7 @@ public class ScopedViewModelOwner<T : ViewModel>(
     }
 
     private fun getCanonicalNameKey(): String {
-        val canonicalName = modelClass.qualifiedName ?: throw IllegalArgumentException("Local and anonymous classes can not be ViewModels")
+        val canonicalName = modelClass.getClassName() ?: throw IllegalArgumentException("Local and anonymous classes can not be ViewModels")
         return "$canonicalName:$key"
     }
 

@@ -35,10 +35,6 @@ apiValidation {
     nonPublicMarkers.add("kotlin.PublishedApi")
 }
 
-tasks.register("clean", Delete::class) {
-    delete(rootProject.layout.buildDirectory)
-}
-
 subprojects {
     /**
      * Enable Strict API to force the library modules to explicitly declare visibility of function and classes in the API
