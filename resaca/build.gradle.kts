@@ -54,6 +54,10 @@ kotlin {
             implementation(compose.desktop.common)
             implementation(libs.coroutines.swing)
         }
+
+        jsMain.dependencies {
+            implementation(dependencies.platform(npm("webpack", "^5.94.0"))) // Force updated version to fix security issues
+        }
     }
 }
 
