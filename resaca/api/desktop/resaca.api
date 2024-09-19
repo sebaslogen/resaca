@@ -87,9 +87,3 @@ public final class com/sebaslogen/resaca/ScopedViewModelOwner {
 	public fun <init> (Ljava/lang/String;Lkotlin/reflect/KClass;)V
 }
 
-public final class com/sebaslogen/resaca/viewmodel/JvmViewModelProviders {
-	public static final field $stable I
-	public static final field INSTANCE Lcom/sebaslogen/resaca/viewmodel/JvmViewModelProviders;
-	public final fun createViewModel (Ljava/lang/Class;)Landroidx/lifecycle/ViewModel;
-}
-

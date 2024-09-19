@@ -11,14 +11,14 @@ import androidx.lifecycle.ViewModel
  *
  * @see <a href="https://youtrack.jetbrains.com/issue/KT-20427">KT-20427</a>
  */
-public object JvmViewModelProviders {
+internal object JvmViewModelProviders {
 
     /**
      * Creates a new [ViewModel] instance using the no-args constructor if available, otherwise
      * throws a [RuntimeException].
      */
     @Suppress("DocumentExceptions")
-    public fun <T : ViewModel> createViewModel(modelClass: Class<T>): T =
+    fun <T : ViewModel> createViewModel(modelClass: Class<T>): T =
         try {
             modelClass.getDeclaredConstructor().newInstance()
         } catch (e: NoSuchMethodException) {
