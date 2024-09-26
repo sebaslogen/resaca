@@ -4,7 +4,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.RememberObserver
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 
 @Composable
@@ -12,9 +13,23 @@ import androidx.compose.ui.platform.LocalContext
 internal actual fun ObserveComposableContainerLifecycle(scopedViewModelContainer: ScopedViewModelContainer) {
     // Observe state of configuration changes when disposing
     val context = LocalContext.current
-    DisposableEffect(context) {
-        onDispose {
-            scopedViewModelContainer.setIsChangingConfiguration(context.findActivity().isChangingConfigurations)
+    remember(context) {
+        object : RememberObserver {
+            private fun onRemoved() {
+                scopedViewModelContainer.setIsChangingConfiguration(context.findActivity().isChangingConfigurations)
+            }
+
+            override fun onAbandoned() {
+                onRemoved()
+            }
+
+            override fun onForgotten() {
+                onRemoved()
+            }
+
+            override fun onRemembered() {
+                // no-op
+            }
         }
     }
 }

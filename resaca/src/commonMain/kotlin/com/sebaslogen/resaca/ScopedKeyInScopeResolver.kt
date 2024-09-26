@@ -1,7 +1,8 @@
 package com.sebaslogen.resaca
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.RememberObserver
+import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 /**
@@ -52,10 +53,24 @@ public fun <T : Any> rememberKeysInScope(inputListOfKeys: Collection<T>): KeyInS
         keysList.addAll(inputListOfKeys)
     }
 
-    DisposableEffect(keyScopedResolver, scopedViewModelContainer) {
-        onDispose {
-            keysList.clear() // The keys in this list are no longer in scope and should be cleared here and in the container
-            scopedViewModelContainer.onDisposedFromComposition(keyScopedResolver)
+    remember(keyScopedResolver, scopedViewModelContainer) {
+        object : RememberObserver {
+            private fun onRemoved() {
+                keysList.clear() // The keys in this list are no longer in scope and should be cleared here and in the container
+                scopedViewModelContainer.onRemovedFromComposition(keyScopedResolver)
+            }
+
+            override fun onAbandoned() {
+                onRemoved()
+            }
+
+            override fun onForgotten() {
+                onRemoved()
+            }
+
+            override fun onRemembered() {
+                // no-op
+            }
         }
     }
 

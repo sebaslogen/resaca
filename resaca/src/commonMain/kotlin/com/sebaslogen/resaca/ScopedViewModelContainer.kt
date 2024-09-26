@@ -246,7 +246,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      * that the object might be also disposed from this container only when the stored object
      * is not going to be used anymore (e.g. after configuration change or container fragment returning from backstack)
      */
-    internal fun onDisposedFromComposition(key: InternalKey) {
+    internal fun onRemovedFromComposition(key: InternalKey) {
         threadSafeRunnerOnMain {
             markedForDisposal.add(key) // Marked to be disposed after onResume
             scheduleToDisposeBeforeGoingToBackground(key) // Schedule to dispose this object before onPause
@@ -258,13 +258,13 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      * that the [KeyInScopeResolver] is not in scope anymore so all the [ExternalKey]s contained in the [KeyInScopeResolver]
      * need to be disposed of.
      */
-    internal fun <T> onDisposedFromComposition(keyInScopeResolver: KeyInScopeResolver<T>) {
+    internal fun <T> onRemovedFromComposition(keyInScopeResolver: KeyInScopeResolver<T>) {
         threadSafeRunnerOnMain {
             val keys = scopedObjectKeys.toList()
             keys.forEach { (key, externalKey: ExternalKey) ->
                 val scopeKeyWithResolver: ScopeKeyWithResolver<*>? = externalKey.scopeKeyWithResolver() // Get the KeyInScopeResolver if ExternalKey is one
                 if (scopeKeyWithResolver is ScopeKeyWithResolver && scopeKeyWithResolver.keyInScopeResolver == keyInScopeResolver) {
-                    onDisposedFromComposition(key = key) // Mark it to be disposed if the disposed KeyInScopeResolver matches
+                    onRemovedFromComposition(key = key) // Mark it to be disposed if the disposed KeyInScopeResolver matches
                 }
             }
         }
