@@ -120,14 +120,17 @@ class ClearScopedViewModelTests : ComposeTestUtils {
         runTest {
 
             // Given the starting screen with two scoped ViewModels sharing the same ViewModel instance
-            var composablesShown by mutableStateOf(true)
+            var firstComposableShown by mutableStateOf(true)
+            var secondComposableShown by mutableStateOf(true)
             val textTitle = "Test text"
             val viewModelInstance = FakeScopedViewModel(stateSaver = SavedStateHandle(mapOf(FakeScopedViewModel.MY_ARGS_KEY to 0)))
             composeTestRule.setContent {
                 Column {
                     Text(textTitle)
-                    DemoScopedParametrizedViewModelComposable(viewModelInstance)
-                    if (composablesShown) {
+                    if (firstComposableShown) {
+                        DemoScopedParametrizedViewModelComposable(viewModelInstance)
+                    }
+                    if (secondComposableShown) {
                         DemoScopedParametrizedViewModelComposable(viewModelInstance)
                     }
                 }
@@ -136,16 +139,29 @@ class ClearScopedViewModelTests : ComposeTestUtils {
 
             // When one Composable with a scoped ViewModel is not part of composition anymore and disposed
             val initialAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
-            composablesShown = false // Trigger disposal
+            firstComposableShown = false // Trigger disposal
+            composeTestRule.onNodeWithText(textTitle).assertExists() // Required to trigger recomposition
+            advanceTimeBy(100) // Advance time to allow clear call on ScopedViewModelContainer to be processed before querying the counter
+            printComposeUiTreeToLog()
+            val firstAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+
+            // Then the scoped ViewModel is NOT cleared
+            assert(firstAmountOfViewModelsCleared == initialAmountOfViewModelsCleared) {
+                "The amount of FakeScopedViewModels that were cleared after disposal ($firstAmountOfViewModelsCleared) " +
+                        "is not the same as the initial the amount before the Composable was disposed ($initialAmountOfViewModelsCleared)"
+            }
+
+            // When one Composable with a scoped ViewModel is not part of composition anymore and disposed
+            secondComposableShown = false // Trigger disposal
             composeTestRule.onNodeWithText(textTitle).assertExists() // Required to trigger recomposition
             advanceTimeBy(100) // Advance time to allow clear call on ScopedViewModelContainer to be processed before querying the counter
             printComposeUiTreeToLog()
             val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
 
             // Then the scoped ViewModel is NOT cleared
-            assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared) {
+            assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 1) {
                 "The amount of FakeScopedViewModels that were cleared after disposal ($finalAmountOfViewModelsCleared) " +
-                        "is not the same as the initial the amount before the Composable was disposed ($initialAmountOfViewModelsCleared)"
+                        "is not the same as the initial the amount plus one (one cleared) before the Composable was disposed ($initialAmountOfViewModelsCleared)"
             }
         }
 

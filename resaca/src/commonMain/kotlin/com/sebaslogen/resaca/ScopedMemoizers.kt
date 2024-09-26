@@ -10,8 +10,6 @@ import com.sebaslogen.resaca.ScopedViewModelContainer.ExternalKey
 import com.sebaslogen.resaca.ScopedViewModelContainer.InternalKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 
 /**
@@ -196,7 +194,6 @@ public inline fun <reified T : ViewModel> viewModelScoped(
     )
 }
 
-@OptIn(ExperimentalUuidApi::class)
 @Composable
 public fun generateKeysAndObserveLifecycle(key: Any?): Triple<ScopedViewModelContainer, InternalKey, ExternalKey> {
     val scopedViewModelContainer: ScopedViewModelContainer = viewModel { ScopedViewModelContainer() }
@@ -211,10 +208,10 @@ public fun generateKeysAndObserveLifecycle(key: Any?): Triple<ScopedViewModelCon
             // - the same object will be returned when using the same key in more than one place in the composition
             key.key.toString()
         } else {
-            // If there is no better key, then use a random UUID as the internal key in combination with rememberSaveable, in this case:
+            // If there is no better key, then use the currentCompositeKeyHash as the internal key in combination with rememberSaveable, in this case:
             // - the object will be recreated when used in lazy lists and the Activity is recreated
             // - different objects will be returned when requesting the object on different places in the composition (e.g. when no key is provided)
-            Uuid.random().toString()
+            currentCompositeKeyHash.toString(36) + "-internalResacaKey"
         }
     val positionalMemoizationKey = InternalKey(rememberSaveable { internalKey })
     // The external key will be used to track and store new versions of the object, based on [key] input parameter
