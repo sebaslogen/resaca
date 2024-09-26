@@ -80,7 +80,7 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(project(":resaca")) // Depend on local resaca multiplatform library
 
-            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1") // Add kotlinx-datetime dependency just for testign purposes
+            implementation(libs.kotlinx.datetime) // Add kotlinx-datetime dependency just for testing purposes
         }
 
         commonTest.dependencies {
