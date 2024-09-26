@@ -53,7 +53,7 @@ class KeysInScopeActivityRecreationTests : ComposeTestUtils {
         Thread.sleep(COMPOSITION_RESUMED_TIMEOUT_IN_SECONDS * 2 * 1000) // Wait for the ViewModel to be cleared
         composeTestRule.onNodeWithTag("LazyList").performScrollToIndex(0)
 
-        // Then the scoped ViewModel disappears
+        // Then the scoped ViewModel is still the same
         onNodeWithTestTag("FakeScopedViewModel 1 Scoped").assertIsDisplayed().assertTextEquals(initialFakeScopedViewModelText)
     }
 }
