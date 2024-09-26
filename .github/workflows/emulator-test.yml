@@ -48,9 +48,12 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 32
+          arch: x86_64
+          disable-animations: true
+          disk-size: 6000M
+          heap-size: 600M
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disable-animations: false
           script: echo "Generated AVD snapshot for caching."
           
       - name: Build projects and run instrumentation tests
