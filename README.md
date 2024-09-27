@@ -1,4 +1,4 @@
-[![Maven Central Release](https://maven-badges.herokuapp.com/maven-central/io.github.sebaslogen/resaca/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.sebaslogen/resaca)
+[![Maven Central Release](https://maven-badges.herokuapp.com/maven-central/io.github.sebaslogen/resaca/badge.svg)](https://central.sonatype.com/artifact/io.github.sebaslogen/resaca)
 [![Build Status](https://github.com/sebaslogen/resaca/actions/workflows/build.yml/badge.svg)](https://github.com/sebaslogen/resaca/actions/workflows/build.yml)
 [![codecov](https://codecov.io/github/sebaslogen/resaca/graph/badge.svg?token=GRPMOQ3COS)](https://codecov.io/github/sebaslogen/resaca)
 [![javadoc](https://javadoc.io/badge2/io.github.sebaslogen/resaca/javadoc.svg)](https://javadoc.io/doc/io.github.sebaslogen/resaca)
