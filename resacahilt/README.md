@@ -1,4 +1,4 @@
-[![Maven Central Release](https://maven-badges.herokuapp.com/maven-central/io.github.sebaslogen/resacahilt/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.sebaslogen/resacahilt)
+[![Maven Central Release](https://img.shields.io/maven-central/v/io.github.sebaslogen/resaca)](https://maven-badges.herokuapp.com/maven-central/io.github.sebaslogen/resacahilt)
 [![Build Status](https://github.com/sebaslogen/resaca/actions/workflows/build.yml/badge.svg)](https://github.com/sebaslogen/resaca/actions/workflows/build.yml)
 [![API 21+](https://img.shields.io/badge/API-21%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=21)
 [![GitHub license](https://img.shields.io/github/license/sebaslogen/resaca)](https://github.com/sebaslogen/resaca/blob/main/LICENSE)
