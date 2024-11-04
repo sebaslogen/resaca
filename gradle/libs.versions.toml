@@ -19,7 +19,7 @@ maven = '0.30.0'
 # Compose Multiplatform
 compose-plugin = '1.7.0'
 # Compose libs not included in multiplatform
-compose-ui-test-junit = '1.7.4'
+compose-ui-test-junit = '1.7.5'
 compose-ui-test-manifest = '1.7.4'
 compose-ui-toolingPreview = '1.7.4'
 # Compose integration with Activities
