@@ -359,7 +359,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         // Cancel all coroutines, Closeables and ViewModels hosted in this object
         val objectsToClear: MutableList<Any> = scopedObjectsContainer.values.toMutableList()
         while (objectsToClear.isNotEmpty()) {
-            val lastObject = objectsToClear.removeLast()
+            val lastObject = objectsToClear.removeAt(objectsToClear.lastIndex)
             clearLastDisposedObject(lastObject, objectsToClear)
         }
         scopedObjectKeys.clear() // Clear all keys
