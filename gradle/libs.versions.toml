@@ -10,14 +10,14 @@ targetSdk = '35'
 coroutines = '1.9.0'
 material = '1.12.0'
 core-ktx = '1.15.0'
-navigation = '2.8.3'
+navigation = '2.8.4'
 appcompat = '1.7.0'
 constraintlayout = '2.2.0'
 binary-compatibility-validator = '0.16.3'
 dokka = '1.9.20'
 maven = '0.30.0'
 # Compose Multiplatform
-compose-plugin = '1.7.0'
+compose-plugin = '1.7.1'
 # Compose libs not included in multiplatform
 compose-ui-test-junit = '1.7.5'
 compose-ui-test-manifest = '1.7.5'
@@ -25,7 +25,7 @@ compose-ui-toolingPreview = '1.7.5'
 # Compose integration with Activities
 androidx-activity = '1.9.3'
 # Compose integration with ViewModels
-jetbrains-lifecycle = '2.8.3'
+jetbrains-lifecycle = '2.8.4'
 # Hilt
 hilt = '2.52'
 hilt-navigation-compose = '1.2.0'
