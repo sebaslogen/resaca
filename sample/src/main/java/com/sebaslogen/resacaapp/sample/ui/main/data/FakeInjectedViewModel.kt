@@ -31,7 +31,6 @@ class FakeInjectedViewModel @Inject constructor(
     override fun onCleared() {
         println("FakeInjectedViewModel.onCleared() with SSH: $stateSaver")
         viewModelsClearedCounter.incrementAndGet()
-        viewModelsClearedCounter.incrementAndGet()
         super.onCleared()
     }
 }
