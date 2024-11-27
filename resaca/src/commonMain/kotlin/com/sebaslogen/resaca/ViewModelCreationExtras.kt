@@ -3,6 +3,8 @@ package com.sebaslogen.resaca
 import androidx.core.bundle.Bundle
 import androidx.lifecycle.DEFAULT_ARGS_KEY
 import androidx.lifecycle.HasDefaultViewModelProviderFactory
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.Companion.VIEW_MODEL_KEY
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.MutableCreationExtras
@@ -30,3 +32,10 @@ internal fun Bundle.toCreationExtras(
     } else {
         CreationExtras.Empty
     }.addDefaultArguments(this)
+
+internal fun CreationExtras.addViewModelKey(viewModelKey: String): CreationExtras =
+    MutableCreationExtras(this).apply {
+        if (get(VIEW_MODEL_KEY) == null) {
+            set(VIEW_MODEL_KEY, viewModelKey)
+        }
+    }

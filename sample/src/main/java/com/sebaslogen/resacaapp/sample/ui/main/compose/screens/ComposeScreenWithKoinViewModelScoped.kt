@@ -15,6 +15,7 @@ import com.sebaslogen.resacaapp.sample.ui.main.NavigationButtons
 import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoNotScopedObjectComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedKoinInjectedObjectComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedKoinInjectedViewModelComposable
+import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedKoinParametrizedInjectedViewModelComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedKoinSimpleInjectedViewModelComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedObjectComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedSecondKoinInjectedViewModelComposable
@@ -30,6 +31,7 @@ fun ComposeScreenWithKoinViewModelScoped(navController: NavHostController) {
         DemoScopedObjectComposable()
         DemoScopedKoinInjectedObjectComposable()
         DemoScopedKoinSimpleInjectedViewModelComposable()
+        DemoScopedKoinParametrizedInjectedViewModelComposable()
         Text(
             modifier = Modifier.padding(8.dp),
             text = "The Koin ViewModel below will be shown in light mode and garbage collected in dark mode"

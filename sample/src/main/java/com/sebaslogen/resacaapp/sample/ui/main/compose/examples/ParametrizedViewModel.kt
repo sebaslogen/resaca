@@ -18,6 +18,9 @@ fun DemoScopedParametrizedViewModelComposable(
     viewModelInstance: FakeScopedViewModel = FakeScopedViewModel(stateSaver = SavedStateHandle(mapOf(FakeInjectedViewModel.MY_ARGS_KEY to 0))),
     key: String? = null
 ) {
-    val fakeScopedParametrizedVM: FakeScopedViewModel = viewModelScoped(key = key) { viewModelInstance }
+    val fakeScopedParametrizedVM: FakeScopedViewModel = viewModelScoped(key = key) { ssh ->
+        println("Sebas provided $ssh")
+        viewModelInstance
+    }
     DemoComposable(inputObject = fakeScopedParametrizedVM, objectType = "FakeScopedParametrizedViewModel", scoped = true)
 }

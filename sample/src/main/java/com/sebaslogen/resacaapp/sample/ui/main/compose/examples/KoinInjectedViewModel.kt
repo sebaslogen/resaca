@@ -11,6 +11,7 @@ import com.sebaslogen.resaca.viewModelScoped
 import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoComposable
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeInjectedRepo
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeInjectedViewModel
+import com.sebaslogen.resacaapp.sample.ui.main.data.FakeScopedViewModel
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeSecondInjectedViewModel
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeSimpleInjectedViewModel
 import com.sebaslogen.resacaapp.sample.viewModelsClearedGloballySharedCounter
@@ -50,6 +51,31 @@ fun DemoScopedKoinSimpleInjectedViewModelComposable(key: String? = null) {
             viewModelScoped(key = key) { getKoin().get() } // Koin assisted injection is possible using parameters: getKoin().get { parametersOf(myThing) } }
         }
     DemoComposable(inputObject = fakeInjectedVM, objectType = "Koin FakeSimpleInjectedViewModel", scoped = true)
+}
+
+/**
+ * Create a [ViewModel] with Resaca's [viewModelScoped] function to let
+ * Koin provide the [ViewModel] with all the required dependencies and
+ * Resaca handle the lifecycle of the provided [ViewModel].
+ *
+ * Assisted Injection is out-of-the-box supported by Koin using parameters.
+ *
+ * Note: This [FakeScopedViewModel] depends on the [SavedStateHandle] to be injected
+ * and we can use the [SavedStateHandle] provided by resaca in [viewModelScoped] instead of the [koinViewModelScoped] function.
+ */
+@Composable
+fun DemoScopedKoinParametrizedInjectedViewModelComposable(key: String? = null) {
+    val fakeScopedVM: FakeScopedViewModel =
+        if (LocalInspectionMode.current) { // In Preview we can't use viewModelScoped
+            FakeScopedViewModel(
+                stateSaver = SavedStateHandle(mapOf(FakeInjectedViewModel.MY_ARGS_KEY to 0))
+            )
+        } else {
+            viewModelScoped(key = key) { savedStateHandle: SavedStateHandle ->
+                getKoin().get() { parametersOf(savedStateHandle) }
+            } // Koin assisted injection is possible using parameters: getKoin().get { parametersOf(myThing) } }
+        }
+    DemoComposable(inputObject = fakeScopedVM, objectType = "Koin FakeScopedViewModel", scoped = true)
 }
 
 /**

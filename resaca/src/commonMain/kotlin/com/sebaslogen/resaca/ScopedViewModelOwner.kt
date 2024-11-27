@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.sebaslogen.resaca.utils.getCanonicalNameKey
 import com.sebaslogen.resaca.utils.getClassName
 import kotlin.reflect.KClass
 
@@ -34,16 +35,11 @@ public class ScopedViewModelOwner<T : ViewModel>(
     internal fun getViewModel(factory: ViewModelProvider.Factory?, viewModelStoreOwner: ViewModelStoreOwner, creationExtras: CreationExtras): T {
         val viewModelProvider = scopedViewModelProvider.getViewModelProvider(factory, viewModelStoreOwner, creationExtras)
         @Suppress("ReplaceGetOrSet")
-        return viewModelProvider.get(getCanonicalNameKey(), modelClass)
+        return viewModelProvider.get(modelClass.getCanonicalNameKey(key), modelClass)
     }
 
     internal fun getCachedViewModel(): T? {
-        return scopedViewModelProvider.getCachedViewModelProvider()?.get(getCanonicalNameKey(), modelClass)
-    }
-
-    private fun getCanonicalNameKey(): String {
-        val canonicalName = modelClass.getClassName() ?: throw IllegalArgumentException("Local and anonymous classes can not be ViewModels")
-        return "$canonicalName:$key"
+        return scopedViewModelProvider.getCachedViewModelProvider()?.get(modelClass.getCanonicalNameKey(key), modelClass)
     }
 
     internal fun clear() {
@@ -55,9 +51,9 @@ public class ScopedViewModelOwner<T : ViewModel>(
          * Returns a [ViewModelProvider.Factory] based on the given ViewModel [builder].
          */
         @Suppress("UNCHECKED_CAST")
-        inline fun <T : ViewModel> viewModelFactoryFor(crossinline builder: @DisallowComposableCalls () -> T): ViewModelProvider.Factory =
+        inline fun <T : ViewModel> viewModelFactoryFor(crossinline builder: @DisallowComposableCalls (savedStateHandle: SavedStateHandle) -> T, savedStateHandle: SavedStateHandle): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
-                override fun <VM : ViewModel> create(modelClass: KClass<VM>, extras: CreationExtras): VM = builder() as VM
+                override fun <VM : ViewModel> create(modelClass: KClass<VM>, extras: CreationExtras): VM = builder(savedStateHandle) as VM
             }
     }
 }
