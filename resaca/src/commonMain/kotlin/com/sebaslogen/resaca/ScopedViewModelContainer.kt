@@ -215,7 +215,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         val viewModelKey = modelClass.getCanonicalNameKey(positionalMemoizationKey + externalKey)
         val creationExtrasWithViewModelKey = defaultArguments.toCreationExtras(viewModelStoreOwner).addViewModelKey(viewModelKey)
         val savedStateHandle: SavedStateHandle = creationExtrasWithViewModelKey.createSavedStateHandle()
-        println("Sebas created SSH: $savedStateHandle")
+        println("created SSH: $savedStateHandle")
         return getOrBuildViewModel(
             modelClass = modelClass,
             positionalMemoizationKey = positionalMemoizationKey,

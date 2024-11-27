@@ -26,11 +26,9 @@ class FakeAssistedInjectionViewModel @AssistedInject constructor(
     private val viewModelsClearedCounter: AtomicInteger,
     @Assisted private val viewModelId: Int
 ) : ViewModel() {
-    init {
-        println("stateSaver: $stateSaver")
-    }
+
     override fun onCleared() {
-        println("Sebas FakeAssistedInjectionViewModel.onCleared() with SSH: $stateSaver")
+        println("FakeAssistedInjectionViewModel.onCleared() with SSH: $stateSaver")
         viewModelsClearedCounter.incrementAndGet()
         super.onCleared()
     }

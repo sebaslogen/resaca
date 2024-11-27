@@ -15,9 +15,6 @@ import java.util.concurrent.atomic.AtomicInteger
  * @param stateSaver A dependency provided by the Android and DI frameworks to save and restore state in a [Bundle]
  */
 class FakeScopedViewModel(private val stateSaver: SavedStateHandle) : ViewModel() {
-    init {
-        println("stateSaver: $stateSaver")
-    }
 
     companion object {
         const val MY_ARGS_KEY = "MY_ARGS_KEY"
@@ -36,7 +33,7 @@ class FakeScopedViewModel(private val stateSaver: SavedStateHandle) : ViewModel(
     val memoryAddress: String = objectToShortStringWithoutPackageName(this).replaceBeforeLast("@", "")
 
     override fun onCleared() {
-        println("Sebas FakeScopedViewModel.onCleared() with SSH: $stateSaver")
+        println("FakeScopedViewModel.onCleared() with SSH: $stateSaver")
         viewModelsClearedCounter.incrementAndGet()
         super.onCleared()
     }

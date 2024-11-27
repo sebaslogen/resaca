@@ -61,7 +61,8 @@ fun DemoScopedKoinSimpleInjectedViewModelComposable(key: String? = null) {
  * Assisted Injection is out-of-the-box supported by Koin using parameters.
  *
  * Note: This [FakeScopedViewModel] depends on the [SavedStateHandle] to be injected
- * and we can use the [SavedStateHandle] provided by resaca in [viewModelScoped] instead of the [koinViewModelScoped] function.
+ * and we can use the [SavedStateHandle] provided by resaca in the [viewModelScoped] builder lambda,
+ * instead of using the [koinViewModelScoped] function.
  */
 @Composable
 fun DemoScopedKoinParametrizedInjectedViewModelComposable(key: String? = null) {

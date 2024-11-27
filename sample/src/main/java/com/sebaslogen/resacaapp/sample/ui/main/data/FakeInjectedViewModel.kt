@@ -21,9 +21,6 @@ class FakeInjectedViewModel @Inject constructor(
     private val repository: FakeInjectedRepo,
     private val viewModelsClearedCounter: AtomicInteger
 ) : ViewModel() {
-    init {
-        println("stateSaver: $stateSaver")
-    }
 
     companion object {
         const val MY_ARGS_KEY = "MY_ARGS_KEY"
@@ -32,7 +29,7 @@ class FakeInjectedViewModel @Inject constructor(
     val viewModelId = stateSaver.get<Int>(MY_ARGS_KEY)
 
     override fun onCleared() {
-        println("Sebas FakeInjectedViewModel.onCleared() with SSH: $stateSaver")
+        println("FakeInjectedViewModel.onCleared() with SSH: $stateSaver")
         viewModelsClearedCounter.incrementAndGet()
         viewModelsClearedCounter.incrementAndGet()
         super.onCleared()
