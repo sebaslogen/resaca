@@ -120,7 +120,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
             } catch (e: UnsupportedOperationException) { // When Main.immediate is not available in the target platform
                 Dispatchers.Main
             }
-        return viewModelScope.launch(dispatcher) {
+        return viewModelScope.launch(dispatcher + NonCancellable) { // This needs to be non-cancellable to avoid cancellation of the block in onCleared
             block()
         }
     }
