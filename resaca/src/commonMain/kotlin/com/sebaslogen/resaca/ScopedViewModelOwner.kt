@@ -51,7 +51,7 @@ public class ScopedViewModelOwner<T : ViewModel>(
          * Returns a [ViewModelProvider.Factory] based on the given ViewModel [builder].
          */
         @Suppress("UNCHECKED_CAST")
-        inline fun <T : ViewModel> viewModelFactoryFor(crossinline builder: @DisallowComposableCalls (savedStateHandle: SavedStateHandle) -> T, savedStateHandle: SavedStateHandle): ViewModelProvider.Factory =
+        inline fun <T : ViewModel> viewModelFactoryFor(savedStateHandle: SavedStateHandle, crossinline builder: @DisallowComposableCalls (savedStateHandle: SavedStateHandle) -> T): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 override fun <VM : ViewModel> create(modelClass: KClass<VM>, extras: CreationExtras): VM = builder(savedStateHandle) as VM
             }

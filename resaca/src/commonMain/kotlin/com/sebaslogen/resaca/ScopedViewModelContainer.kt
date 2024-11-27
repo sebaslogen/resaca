@@ -220,7 +220,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
             modelClass = modelClass,
             positionalMemoizationKey = positionalMemoizationKey,
             externalKey = externalKey,
-            factory = ScopedViewModelOwner.viewModelFactoryFor(builder, savedStateHandle),
+            factory = ScopedViewModelOwner.viewModelFactoryFor(savedStateHandle, builder),
             creationExtras = creationExtrasWithViewModelKey,
             viewModelStoreOwner = viewModelStoreOwner
         )
