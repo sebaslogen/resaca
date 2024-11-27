@@ -15,6 +15,7 @@ import com.sebaslogen.resacaapp.sample.ui.main.ComposeActivity
 import com.sebaslogen.resacaapp.sample.ui.main.ScreensWithNavigation
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedHiltInjectedViewModelComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedSecondHiltInjectedViewModelComposable
+import com.sebaslogen.resacaapp.sample.ui.main.emptyDestination
 import com.sebaslogen.resacaapp.sample.ui.main.hiltViewModelScopedDestination
 import com.sebaslogen.resacaapp.sample.utils.ComposeTestUtils
 import com.sebaslogen.resacaapp.sample.utils.MainDispatcherRule
@@ -65,7 +66,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
         // Given the starting screen with Hilt injected ViewModel scoped
         composeTestRule.activity.setContent {
             navController = rememberNavController()
-            ScreensWithNavigation(navController = navController, startDestination = hiltViewModelScopedDestination)
+            ScreensWithNavigation(navController = navController, startDestination = emptyDestination)
         }
         printComposeUiTreeToLog()
         val initialAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()

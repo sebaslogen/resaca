@@ -15,6 +15,7 @@ import com.sebaslogen.resacaapp.sample.ui.main.ComposeActivity
 import com.sebaslogen.resacaapp.sample.ui.main.ScreensWithNavigation
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedKoinInjectedViewModelComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedSecondKoinInjectedViewModelComposable
+import com.sebaslogen.resacaapp.sample.ui.main.emptyDestination
 import com.sebaslogen.resacaapp.sample.ui.main.koinViewModelScopedDestination
 import com.sebaslogen.resacaapp.sample.utils.ComposeTestUtils
 import com.sebaslogen.resacaapp.sample.utils.MainDispatcherRule
@@ -58,7 +59,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
         composeTestRule.activity.setContent {
             KoinContext {
                 navController = rememberNavController()
-                ScreensWithNavigation(navController = navController, startDestination = koinViewModelScopedDestination)
+                ScreensWithNavigation(navController = navController, startDestination = emptyDestination)
             }
         }
         printComposeUiTreeToLog()
