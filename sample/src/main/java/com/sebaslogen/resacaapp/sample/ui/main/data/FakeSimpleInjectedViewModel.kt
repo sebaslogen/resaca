@@ -21,7 +21,7 @@ class FakeSimpleInjectedViewModel @Inject constructor(
 ) : ViewModel() {
 
     override fun onCleared() {
-        println("Sebas FakeSimpleInjectedViewModel.onCleared() without SSH")
+        println("FakeSimpleInjectedViewModel.onCleared() without SSH")
         viewModelsClearedCounter.incrementAndGet()
         super.onCleared()
     }

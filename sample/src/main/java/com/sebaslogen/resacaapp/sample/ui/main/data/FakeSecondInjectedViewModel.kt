@@ -18,12 +18,9 @@ class FakeSecondInjectedViewModel @Inject constructor(
     private val stateSaver: SavedStateHandle,
     private val viewModelsClearedCounter: AtomicInteger
 ) : ViewModel() {
-    init {
-        println("stateSaver: $stateSaver")
-    }
 
     override fun onCleared() {
-        println("Sebas FakeSecondInjectedViewModel.onCleared() with SSH: $stateSaver")
+        println("FakeSecondInjectedViewModel.onCleared() with SSH: $stateSaver")
         viewModelsClearedCounter.incrementAndGet()
         super.onCleared()
     }

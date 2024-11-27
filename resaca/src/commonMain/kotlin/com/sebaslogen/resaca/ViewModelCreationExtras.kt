@@ -33,6 +33,10 @@ internal fun Bundle.toCreationExtras(
         CreationExtras.Empty
     }.addDefaultArguments(this)
 
+/**
+ * This is a helper function to add the [viewModelKey] to the [CreationExtras] if it is not already present.
+ * The [viewModelKey] is, among others, used to create a [SavedStateHandle] for the [ViewModel].
+ */
 internal fun CreationExtras.addViewModelKey(viewModelKey: String): CreationExtras =
     MutableCreationExtras(this).apply {
         if (get(VIEW_MODEL_KEY) == null) {
