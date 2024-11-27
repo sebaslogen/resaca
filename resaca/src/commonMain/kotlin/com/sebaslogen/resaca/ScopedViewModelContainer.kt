@@ -8,12 +8,15 @@ import androidx.lifecycle.HasDefaultViewModelProviderFactory
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import com.sebaslogen.resaca.utils.getCanonicalNameKey
 import com.sebaslogen.resaca.viewmodel.DefaultViewModelProviderFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -174,24 +177,6 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     }
 
     /**
-     * Restore or build a [ViewModel] using the provided [builder] as the factory
-     */
-    @Composable
-    public fun <T : ViewModel> getOrBuildViewModel(
-        modelClass: KClass<T>,
-        positionalMemoizationKey: InternalKey,
-        externalKey: ExternalKey,
-        defaultArguments: Bundle,
-        builder: @DisallowComposableCalls () -> T
-    ): T = getOrBuildViewModel(
-        modelClass = modelClass,
-        positionalMemoizationKey = positionalMemoizationKey,
-        externalKey = externalKey,
-        factory = ScopedViewModelOwner.viewModelFactoryFor(builder),
-        defaultArguments = defaultArguments
-    )
-
-    /**
      * Restore or build a [ViewModel] using a factory provided or the default factory if none is provided
      */
     @Composable
@@ -204,15 +189,39 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         viewModelStoreOwner: ViewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
             "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
         }
-    ): T {
-        val creationExtras = defaultArguments.toCreationExtras(viewModelStoreOwner)
+    ): T = getOrBuildViewModel(
+        modelClass = modelClass,
+        positionalMemoizationKey = positionalMemoizationKey,
+        externalKey = externalKey,
+        factory = factory,
+        creationExtras = defaultArguments.toCreationExtras(viewModelStoreOwner),
+        viewModelStoreOwner = viewModelStoreOwner
+    )
 
+    /**
+     * Restore or build a [ViewModel] using the provided [builder] as the factory
+     */
+    @Composable
+    public fun <T : ViewModel> getOrBuildViewModel(
+        modelClass: KClass<T>,
+        positionalMemoizationKey: InternalKey,
+        externalKey: ExternalKey,
+        defaultArguments: Bundle,
+        builder: @DisallowComposableCalls (savedStateHandle: SavedStateHandle) -> T
+    ): T {
+        val viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
+            "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
+        }
+        val viewModelKey = modelClass.getCanonicalNameKey(positionalMemoizationKey + externalKey)
+        val creationExtrasWithViewModelKey = defaultArguments.toCreationExtras(viewModelStoreOwner).addViewModelKey(viewModelKey)
+        val savedStateHandle: SavedStateHandle = creationExtrasWithViewModelKey.createSavedStateHandle()
+        println("Sebas created SSH: $savedStateHandle")
         return getOrBuildViewModel(
             modelClass = modelClass,
             positionalMemoizationKey = positionalMemoizationKey,
             externalKey = externalKey,
-            factory = factory,
-            creationExtras = creationExtras,
+            factory = ScopedViewModelOwner.viewModelFactoryFor(builder, savedStateHandle),
+            creationExtras = creationExtrasWithViewModelKey,
             viewModelStoreOwner = viewModelStoreOwner
         )
     }

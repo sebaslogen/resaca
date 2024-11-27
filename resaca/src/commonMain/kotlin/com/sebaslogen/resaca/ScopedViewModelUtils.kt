@@ -124,5 +124,5 @@ internal object ScopedViewModelUtils {
     }
 }
 
-private operator fun InternalKey.plus(externalKey: ExternalKey): String =
+internal operator fun InternalKey.plus(externalKey: ExternalKey): String =
     this.hashCode().toString() + externalKey.hashCode().toString()

@@ -149,7 +149,7 @@ public inline fun <reified T : ViewModel, K : Any> viewModelScoped(
     key: K,
     noinline keyInScopeResolver: KeyInScopeResolver<K>,
     defaultArguments: Bundle = Bundle(),
-    noinline builder: @DisallowComposableCalls () -> T
+    noinline builder: @DisallowComposableCalls (savedStateHandle: SavedStateHandle) -> T
 ): T {
     val scopeKeyWithResolver: ScopeKeyWithResolver<K> = remember(key, keyInScopeResolver) { ScopeKeyWithResolver(key, keyInScopeResolver) }
     return viewModelScoped(key = scopeKeyWithResolver, defaultArguments = defaultArguments, builder = builder)
@@ -177,7 +177,7 @@ public inline fun <reified T : ViewModel, K : Any> viewModelScoped(
 public inline fun <reified T : ViewModel> viewModelScoped(
     key: Any? = null,
     defaultArguments: Bundle = Bundle(),
-    noinline builder: @DisallowComposableCalls () -> T
+    noinline builder: @DisallowComposableCalls (savedStateHandle: SavedStateHandle) -> T
 ): T {
     require(key !is Function0<*>) { "The Key for viewModelScoped should not be a lambda" }
 
