@@ -58,6 +58,8 @@ kotlin {
 
         jsMain.dependencies {
             implementation(dependencies.platform(npm("webpack", "^5.94.0"))) // Force updated version to fix security issues
+            implementation(dependencies.platform(npm("http-proxy-middleware", "^2.0.7"))) // Force updated version to fix security issues
+            implementation(dependencies.platform(npm("cookie", "^0.7.0"))) // Force updated version to fix security issues
         }
     }
 }
