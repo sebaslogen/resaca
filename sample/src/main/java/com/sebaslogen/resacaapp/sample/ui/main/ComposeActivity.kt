@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -71,7 +72,11 @@ class ComposeActivity : ComponentActivity() {
             ResacaAppTheme {
                 Surface(color = MaterialTheme.colors.background) {
                     val startDestination = intent.extras?.getString(START_DESTINATION) ?: defaultDestination
-                    Column(Modifier.fillMaxWidth()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .safeDrawingPadding()
+                    ) {
                         IconButton( // Recreate Activity on Refresh button pressed to test scoped objects
                             modifier = Modifier.align(Alignment.End),
                             onClick = { recreate() }
@@ -123,7 +128,9 @@ fun ScreensWithNavigation(navController: NavHostController = rememberNavControll
  */
 @Composable
 fun NavigationButtons(navController: NavHostController) {
-    Button(modifier = Modifier.padding(top = 16.dp, bottom = 2.dp).testTag("Navigate to rememberScoped"),
+    Button(modifier = Modifier
+        .padding(top = 16.dp, bottom = 2.dp)
+        .testTag("Navigate to rememberScoped"),
         onClick = { navController.navigate(rememberScopedDestination) }) {
         Text(text = "Push rememberScoped destination")
     }
