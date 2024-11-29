@@ -153,7 +153,7 @@ To use the `hiltViewModelScoped` function you need to follow these 3 Hilt config
 - Annotate your application class with `@HiltAndroidApp`.
 - Annotate with `@AndroidEntryPoint` the Activity class that will contain the Composables with the ViewModel.
 - Annotate your ViewModel class with `@HiltViewModel` and the constructor with `@Inject`
-  . [See example here](https://github.com/sebaslogen/resaca/blob/main/sample/src/main/java/com/sebaslogen/resacaapp/ui/main/data/FakeInjectedViewModel.kt).
+  . [See example here](https://github.com/sebaslogen/resaca/blob/main/sample/src/main/java/com/sebaslogen/resacaapp/sample/ui/main/data/FakeInjectedViewModel.kt).
 
 **Optionally: Annotate with `@Inject` any other classes that are part of your ViewModel's constructor.*
 

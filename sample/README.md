@@ -3,9 +3,9 @@
 The purpose of this app is to show the usage of the `rememberScoped` function in the context of different lifecycle events.
 
 The demo will instantiate different fake business logic
-objects ([FakeRepo](https://github.com/sebaslogen/resaca/blob/main/sample/src/main/java/com/sebaslogen/resacaapp/ui/main/data/FakeRepo.kt)
-, [FakeScopedViewModel](https://github.com/sebaslogen/resaca/blob/main/sample/src/main/java/com/sebaslogen/resacaapp/ui/main/data/FakeScopedViewModel.kt)
-or [FakeInjectedViewModel](https://github.com/sebaslogen/resaca/blob/main/sample/src/main/java/com/sebaslogen/resacaapp/ui/main/data/FakeInjectedViewModel.kt))
+objects ([FakeRepo](https://github.com/sebaslogen/resaca/blob/main/sample/src/main/java/com/sebaslogen/resacaapp/sample/ui/main/data/FakeRepo.kt)
+, [FakeScopedViewModel](https://github.com/sebaslogen/resaca/blob/main/sample/src/main/java/com/sebaslogen/resacaapp/sample/ui/main/data/FakeScopedViewModel.kt)
+or [FakeInjectedViewModel](https://github.com/sebaslogen/resaca/blob/main/sample/src/main/java/com/sebaslogen/resacaapp/sample/ui/main/data/FakeInjectedViewModel.kt))
 and either scope them with `rememberScoped`, `hiltViewModelScoped` or with the vanilla `remember` from Compose, to illustrate the differences in memory
 retention across different lifecycle events.
 
@@ -14,7 +14,7 @@ The remembered objects will be represented on the screen with their **unique mem
 - the object's toString representation in a `Text` Composable
 - a unique color for the object's instance using `objectToColorInt` as background
 - a semi-unique emoji for the object's instance (limited to list of emojis available
-  in [emojis](https://github.com/sebaslogen/resaca/blob/main/sample/src/main/java/com/sebaslogen/resacaapp/ui/main/ui/theme/Emojis.kt))
+  in [emojis](https://github.com/sebaslogen/resaca/blob/main/sample/src/main/java/com/sebaslogen/resacaapp/sample/ui/main/ui/theme/Emojis.kt))
 
 # Screens structure of the app
 
