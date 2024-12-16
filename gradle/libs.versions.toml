@@ -33,7 +33,7 @@ hilt-navigation-compose = '1.2.0'
 koin = '4.0.0'
 # Test
 junit-version = '4.13.2'
-kover = '0.8.3'
+kover = '0.9.0'
 robolectric-version = '4.14.1'
 espresso = '3.6.1'
 testRunner = '1.6.2'
