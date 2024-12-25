@@ -60,6 +60,8 @@ kotlin {
             implementation(dependencies.platform(npm("webpack", "^5.94.0"))) // Force updated version to fix security issues
             implementation(dependencies.platform(npm("http-proxy-middleware", "^2.0.7"))) // Force updated version to fix security issues
             implementation(dependencies.platform(npm("cookie", "^0.7.0"))) // Force updated version to fix security issues
+            implementation(dependencies.platform(npm("cross-spawn", "^7.0.5"))) // Force updated version to fix security issues
+            implementation(dependencies.platform(npm("path-to-regexp", "^0.1.12"))) // Force updated version to fix security issues
         }
     }
 }
