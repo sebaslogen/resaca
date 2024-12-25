@@ -1,7 +1,6 @@
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
-import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
@@ -64,12 +63,10 @@ tasks.withType<DokkaMultiModuleTask>().configureEach {
 // Must be afterEvaluate or else com.vanniktech.maven.publish will overwrite our
 // dokka and version configuration.
 afterEvaluate {
-    tasks.withType<DokkaTaskPartial>().configureEach {
+    dokka {
         dokkaSourceSets.configureEach {
             jdkVersion = 17
-            failOnWarning = true
             skipDeprecated = true
-            suppressInheritedMembers = true
         }
     }
 }
