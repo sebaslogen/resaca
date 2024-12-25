@@ -17,7 +17,7 @@ binary-compatibility-validator = '0.17.0'
 dokka = '2.0.0'
 maven = '0.30.0'
 # Compose Multiplatform
-compose-plugin = '1.7.1'
+compose-plugin = '1.7.3'
 # Compose libs not included in multiplatform
 compose-ui-test-junit = '1.7.6'
 compose-ui-test-manifest = '1.7.6'
