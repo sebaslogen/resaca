@@ -63,6 +63,10 @@ kotlin {
             implementation(dependencies.platform(npm("cross-spawn", "^7.0.5"))) // Force updated version to fix security issues
             implementation(dependencies.platform(npm("path-to-regexp", "^0.1.12"))) // Force updated version to fix security issues
         }
+
+        androidMain.dependencies {
+            implementation(libs.androidx.activity.compose)
+        }
     }
 }
 

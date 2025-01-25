@@ -3,6 +3,7 @@ package com.sebaslogen.resacaapp.sample.ui.main
 import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -150,7 +151,7 @@ fun NavigationButtons(navController: NavHostController) {
         onClick = { navController.navigate(koinViewModelScopedDestination) }) {
         Text(text = "Push Koin ViewModelScoped destination")
     }
-    val activity = (LocalContext.current as? Activity)
+    val activity = LocalActivity.current
     Button(modifier = Modifier.padding(vertical = 2.dp),
         onClick = {
             if (!navController.popBackStack()) activity?.finish()
