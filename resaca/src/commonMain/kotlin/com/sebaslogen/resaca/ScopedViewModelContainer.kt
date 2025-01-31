@@ -29,6 +29,9 @@ import kotlin.collections.set
 import kotlin.jvm.JvmInline
 import kotlin.reflect.KClass
 
+
+private const val MISSING_VIEW_MODEL_STORE_OWNER = "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
+
 /**
  * [ViewModel] class used to store objects and [ViewModel]s as long as the
  * requester doesn't completely leave composition (even temporary)
@@ -164,7 +167,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         externalKey: ExternalKey,
         defaultArguments: Bundle
     ): T {
-        val owner = checkNotNull(LocalViewModelStoreOwner.current) { "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner" }
+        val owner = checkNotNull(LocalViewModelStoreOwner.current) { MISSING_VIEW_MODEL_STORE_OWNER }
         val factory = if (owner is HasDefaultViewModelProviderFactory) owner.defaultViewModelProviderFactory else DefaultViewModelProviderFactory
         return getOrBuildViewModel(
             modelClass = modelClass,
@@ -186,9 +189,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         externalKey: ExternalKey,
         factory: ViewModelProvider.Factory?,
         defaultArguments: Bundle,
-        viewModelStoreOwner: ViewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
-            "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
-        }
+        viewModelStoreOwner: ViewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) { MISSING_VIEW_MODEL_STORE_OWNER }
     ): T = getOrBuildViewModel(
         modelClass = modelClass,
         positionalMemoizationKey = positionalMemoizationKey,
@@ -209,9 +210,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         defaultArguments: Bundle,
         builder: @DisallowComposableCalls (savedStateHandle: SavedStateHandle) -> T
     ): T {
-        val viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
-            "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
-        }
+        val viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) { MISSING_VIEW_MODEL_STORE_OWNER }
         val viewModelKey = modelClass.getCanonicalNameKey(positionalMemoizationKey + externalKey)
         val creationExtrasWithViewModelKey = defaultArguments.toCreationExtras(viewModelStoreOwner).addViewModelKey(viewModelKey)
         val savedStateHandle: SavedStateHandle = creationExtrasWithViewModelKey.createSavedStateHandle()
