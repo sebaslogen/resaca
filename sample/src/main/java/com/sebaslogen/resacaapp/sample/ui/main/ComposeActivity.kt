@@ -1,6 +1,5 @@
 package com.sebaslogen.resacaapp.sample.ui.main
 
-import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
@@ -20,7 +19,6 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -129,30 +127,36 @@ fun ScreensWithNavigation(navController: NavHostController = rememberNavControll
  */
 @Composable
 fun NavigationButtons(navController: NavHostController) {
-    Button(modifier = Modifier
-        .padding(top = 16.dp, bottom = 2.dp)
-        .testTag("Navigate to rememberScoped"),
+    Button(
+        modifier = Modifier
+            .padding(top = 16.dp, bottom = 2.dp)
+            .testTag("Navigate to rememberScoped"),
         onClick = { navController.navigate(rememberScopedDestination) }) {
         Text(text = "Push rememberScoped destination")
     }
-    Button(modifier = Modifier.padding(vertical = 2.dp),
+    Button(
+        modifier = Modifier.padding(vertical = 2.dp),
         onClick = { navController.navigate(viewModelScopedDestination) }) {
         Text(text = "Push ViewModelScoped dest. with day/night")
     }
-    Button(modifier = Modifier.padding(vertical = 2.dp),
+    Button(
+        modifier = Modifier.padding(vertical = 2.dp),
         onClick = { navController.navigate(viewModelScopedWithKeysDestination) }) {
         Text(text = "Push ViewModelScoped dest. with LazyColumn")
     }
-    Button(modifier = Modifier.padding(vertical = 2.dp),
+    Button(
+        modifier = Modifier.padding(vertical = 2.dp),
         onClick = { navController.navigate(hiltViewModelScopedDestination) }) {
         Text(text = "Push Hilt ViewModelScoped destination")
     }
-    Button(modifier = Modifier.padding(vertical = 2.dp),
+    Button(
+        modifier = Modifier.padding(vertical = 2.dp),
         onClick = { navController.navigate(koinViewModelScopedDestination) }) {
         Text(text = "Push Koin ViewModelScoped destination")
     }
     val activity = LocalActivity.current
-    Button(modifier = Modifier.padding(vertical = 2.dp),
+    Button(
+        modifier = Modifier.padding(vertical = 2.dp),
         onClick = {
             if (!navController.popBackStack()) activity?.finish()
         }) {
