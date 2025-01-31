@@ -81,7 +81,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      * Mark whether the container of this class (usually a screen like an Activity, a Fragment or a Compose destination)
      * is in foreground or in background to avoid disposing objects while in the background
      */
-    private var isInForeground = true
+    private var isInForeground = false
 
     /**
      * Mark whether the Activity containing this class is changing configuration and use this
@@ -320,7 +320,6 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
      */
     private fun scheduleToDispose(key: InternalKey) {
         if (disposingJobs.containsKey(key)) return // Already disposing, quit
-
         val newDisposingJob = viewModelScope.launch {
             platformLifecycleHandler.awaitBeforeDisposing(isInForeground) // Android: Wait for next frame when the Activity is resumed. No-op in other platforms
             threadSafeRunnerOnMain {

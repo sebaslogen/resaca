@@ -271,9 +271,7 @@ internal fun ObserveLifecycleWithScopedViewModelContainer(scopedViewModelContain
     // Use LaunchedEffect to make sure we have a coroutine scope to run on main-thread
     // and to add the observer again every time the lifecycle or the ScopedViewModelContainer change
     LaunchedEffect(lifecycle, scopedViewModelContainer) {
-        withContext(Dispatchers.Main) {
-            lifecycle.addObserver(scopedViewModelContainer)
-        }
+        lifecycle.addObserver(scopedViewModelContainer)
     }
 }
 

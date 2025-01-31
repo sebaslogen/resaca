@@ -66,10 +66,10 @@ class ClearScopedViewModelTests : ComposeTestUtils {
         val initialAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
         printComposeUiTreeToLog()
         navController.popBackStack()
+        printComposeUiTreeToLog() // This seems to be needed to trigger recomposition
         withContext(Dispatchers.Main) {
             advanceTimeBy(100) // Advance time to allow clear call on ScopedViewModelContainer to be processed before querying the counter
         }
-        printComposeUiTreeToLog() // This seems to be needed to trigger recomposition
         val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
 
         // Then the scoped ViewModel from the second screen is cleared
