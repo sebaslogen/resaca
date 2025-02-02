@@ -115,9 +115,9 @@ private fun ObserveComposableContainerLifecycleWithoutComposeNavigation(scopedVi
              */
             private fun onRemoved() {
                 val shouldBeReturningToForeground = activity.isChangingConfigurations
-                    scopedViewModelContainer.setShouldBeReturningToForeground {
-                        shouldBeReturningToForeground
-                    }
+                scopedViewModelContainer.setShouldBeReturningToForeground {
+                    shouldBeReturningToForeground
+                }
             }
 
             override fun onAbandoned() {
