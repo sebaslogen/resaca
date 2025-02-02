@@ -135,7 +135,9 @@ fun NavigationButtons(navController: NavHostController) {
         Text(text = "Push rememberScoped destination")
     }
     Button(
-        modifier = Modifier.padding(vertical = 2.dp),
+        modifier = Modifier
+            .padding(vertical = 2.dp)
+            .testTag("Navigate to ViewModelScoped D&N"),
         onClick = { navController.navigate(viewModelScopedDestination) }) {
         Text(text = "Push ViewModelScoped dest. with day/night")
     }
@@ -156,7 +158,9 @@ fun NavigationButtons(navController: NavHostController) {
     }
     val activity = LocalActivity.current
     Button(
-        modifier = Modifier.padding(vertical = 2.dp),
+        modifier = Modifier
+            .padding(vertical = 2.dp)
+            .testTag("Back"),
         onClick = {
             if (!navController.popBackStack()) activity?.finish()
         }) {

@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -108,7 +109,43 @@ class ComposeActivityRecreationTests : ComposeTestUtils {
                 onNodeWithTestTag("Hilt FakeInjectedViewModel Scoped", assertDisplayed = false).assertDoesNotExist()
                 assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 1) {
                     "The amount of FakeInjectedViewModel that were cleared after key change ($finalAmountOfViewModelsCleared) " +
-                            "was not higher that the amount before the key change ($initialAmountOfViewModelsCleared)"
+                        "was not higher that the amount before the key change ($initialAmountOfViewModelsCleared)"
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `given Activity is recreated while navigating to a new destination, when I navigate back then the Hilt scoped ViewModel is not cleared`() {
+        // Given the starting screen with a single ViewModel scoped
+        val launchIntent = Intent(ApplicationProvider.getApplicationContext(), ComposeActivity::class.java).apply {
+            putExtra(START_DESTINATION, hiltSingleViewModelScopedDestination)
+        }
+        ActivityScenario.launch<ComposeActivity>(launchIntent).use { scenario ->
+            scenario.onActivity { activity: ComposeActivity ->
+                // Find the scoped text fields and grab their texts
+                val initialFakeInjectedViewModelText = retrieveTextFromNodeWithTestTag("Hilt FakeInjectedViewModel Scoped")
+                val initialAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+                printComposeUiTreeToLog()
+
+                // When I change to night mode and apply the configuration change by recreating the Activity
+                onNodeWithTestTag("Navigate to ViewModelScoped D&N").performClick()
+                activity.recreate()
+                printComposeUiTreeToLog()
+                Thread.sleep(COMPOSITION_RESUMED_TIMEOUT_IN_SECONDS * 2 * 1000) // Wait for the ViewModel to be cleared
+                printComposeUiTreeToLog() // Second print is needed to push the main thread forward
+
+                // And then I navigate back to the first screen
+                onNodeWithTestTag("Back").performClick()
+                printComposeUiTreeToLog() // Second print is needed to push the main thread forward
+                val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+
+                // Then the scoped ViewModel disappears
+
+                onNodeWithTestTag("Hilt FakeInjectedViewModel Scoped").assertIsDisplayed().assertTextEquals(initialFakeInjectedViewModelText)
+                assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 1) {
+                    "The amount of FakeInjectedViewModel that were cleared after key change ($finalAmountOfViewModelsCleared) " +
+                        "was not higher that the amount before the key change ($initialAmountOfViewModelsCleared)"
                 }
             }
         }
