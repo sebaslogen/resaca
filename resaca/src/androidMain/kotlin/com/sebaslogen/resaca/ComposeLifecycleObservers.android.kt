@@ -23,11 +23,15 @@ import java.lang.reflect.Field
  *
  * @param scopedViewModelContainer the container that stores the object remembered together with this [RememberScopedObserver]
  */
-@SuppressLint("RestrictedApi")
 @Composable
 @PublishedApi
 internal actual fun ObserveComposableContainerLifecycle(scopedViewModelContainer: ScopedViewModelContainer) {
-    val viewModelStores = getViewModelStores() ?: return
+    val viewModelStores = getViewModelStores()
+    if (viewModelStores == null) {
+        // Use a different observer when not using Compose Navigation with a NavHost, default to just Activity recreation
+        ObserveComposableContainerLifecycleWithoutComposeNavigation(scopedViewModelContainer)
+        return
+    }
     val totalViewModelStoresWhenDestinationIsCreatedInNavHost = viewModelStores.size
 
     // Observe state of configuration changes when disposing
@@ -90,5 +94,43 @@ private fun getViewModelStores(): Map<String, ViewModelStore>? {
         return viewModelStoresField.get(navViewModelStoreProvider) as? Map<String, ViewModelStore>
     } catch (_: Exception) {
         return null
+    }
+}
+
+
+@Composable
+private fun ObserveComposableContainerLifecycleWithoutComposeNavigation(scopedViewModelContainer: ScopedViewModelContainer) {
+    // Observe state of configuration changes when disposing
+    val activity = LocalActivity.current
+        ?: throw IllegalStateException("Expected an Activity for detecting configuration changes for a NavBackStackEntry but instead found null")
+    remember(activity) {
+        object : RememberObserver {
+            /**
+             * When the destination is removed from the composition, we can check if the destination is still in the foreground.
+             *
+             * We assume that after Activity recreation due to configuration change happens
+             * if we wait for the first frame (see [ScopedViewModelContainer.scheduleToDispose])
+             * and the scoped object was not requested again in the composition,
+             * then the scoped object is not in Composition anymore and it should be disposed of.
+             */
+            private fun onRemoved() {
+                val shouldBeReturningToForeground = activity.isChangingConfigurations
+                    scopedViewModelContainer.setShouldBeReturningToForeground {
+                        shouldBeReturningToForeground
+                    }
+            }
+
+            override fun onAbandoned() {
+                onRemoved()
+            }
+
+            override fun onForgotten() {
+                onRemoved()
+            }
+
+            override fun onRemembered() {
+                // no-op
+            }
+        }
     }
 }
