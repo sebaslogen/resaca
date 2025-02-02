@@ -11,6 +11,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sebaslogen.resaca.COMPOSITION_RESUMED_TIMEOUT_IN_SECONDS
 import com.sebaslogen.resacaapp.sample.ui.main.ComposeActivity
+import com.sebaslogen.resacaapp.sample.ui.main.ComposeActivity.Companion.START_DESTINATION
 import com.sebaslogen.resacaapp.sample.ui.main.rememberScopedDestination
 import com.sebaslogen.resacaapp.sample.ui.main.showSingleScopedViewModel
 import com.sebaslogen.resacaapp.sample.ui.main.viewModelScopedDestination
@@ -79,7 +80,7 @@ class ComposeActivityRecreationTests : ComposeTestUtils {
     fun `when I switch from light mode to night mode, then the one and only scoped ViewModel that's only used in light mode is gone`() {
         // Given the starting screen with ViewModel scoped that is ONLY shown in light mode
         val launchIntent = Intent(ApplicationProvider.getApplicationContext(), ComposeActivity::class.java).apply {
-            putExtra(ComposeActivity.START_DESTINATION, viewModelScopedDestination)
+            putExtra(START_DESTINATION, viewModelScopedDestination)
         }
         ActivityScenario.launch<ComposeActivity>(launchIntent).use { scenario ->
             scenario.onActivity { activity: ComposeActivity ->

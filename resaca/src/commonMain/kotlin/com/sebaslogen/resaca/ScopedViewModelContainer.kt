@@ -30,7 +30,7 @@ import kotlin.jvm.JvmInline
 import kotlin.reflect.KClass
 
 
-private const val MISSING_VIEW_MODEL_STORE_OWNER = "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
+internal const val MISSING_VIEW_MODEL_STORE_OWNER = "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
 
 /**
  * [ViewModel] class used to store objects and [ViewModel]s as long as the
@@ -84,12 +84,19 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     private var isInForeground = false
 
     /**
-     * Mark whether the Activity containing this class is changing configuration and use this
-     * information to dispose objects that are completely gone after a configuration change.
+     * This callback will let the platform specific lifecycle handler code indicate
+     * whether the container of this class (e.g. a NavHost inside an Activity) has
+     * finished changing configuration and is returning to foreground.
+     *
+     * This is useful to dispose objects that were marked for disposal after the container
+     * went to background and there was no callback to retrieve the object again after coming
+     * back to foreground (e.g. during a configuration change). In this case,
+     * we are sure the object is not needed anymore and can be safely disposed of.
+     *
      * Note: This is only required when no other object scoped to this container is still alive, otherwise,
      * the [isInForeground] will be used to dispose objects that are completely gone after a configuration change.
      */
-    private var isChangingConfiguration = false
+    private var isReturningToForeground: () -> Boolean = { false }
 
     /**
      * Container of object keys associated with their [ExternalKey],
@@ -324,7 +331,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
             platformLifecycleHandler.awaitBeforeDisposing(isInForeground) // Android: Wait for next frame when the Activity is resumed. No-op in other platforms
             threadSafeRunnerOnMain {
                 withContext(NonCancellable) { // We treat the disposal/remove/clear block as an atomic transaction
-                    if (isInForeground || isChangingConfiguration) {
+                    if (isInForeground || isReturningToForeground()) {
                         val externalKey: ExternalKey? = scopedObjectKeys[key]
                         val objectExternalKeyNotInScope = externalKey?.scopeKeyWithResolver()?.isKeyInScope() != true
                         if (objectExternalKeyNotInScope) { // If the key is not in scope, then the object is not needed anymore
@@ -378,7 +385,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
             Lifecycle.Event.ON_RESUME -> { // Note Fragment View creation happens before this onResume
                 threadSafeRunnerOnMain {
                     isInForeground = true
-                    isChangingConfiguration = false // Clear this flag when the scope is resumed
+                    isReturningToForeground = { false } // Reset this flag when the scope is resumed
                     platformLifecycleHandler.onResumed() // Notify the handler that the Activity is resumed
                     scheduleToDisposeAfterReturningFromBackground()
                 }
@@ -404,14 +411,14 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     }
 
     /**
-     * We need to track if the last object was disposed with a configuration change,
+     * We need to track if the last object was disposed when going to background and the Activity is being recreated,
      * because, if no other scoped object in this container observes the [isInForeground] state,
      * after the next frame when the Activity is resumed, the object can safely be disposed of.
      * In this case, we can safely assume the object was never requested again
      * after the configuration change finished and the container screen was again in the foreground.
      */
-    internal fun setIsChangingConfiguration(newState: Boolean) {
-        isChangingConfiguration = newState
+    internal fun setShouldBeReturningToForeground(query: () -> Boolean) {
+        isReturningToForeground = query
     }
 
     /**
