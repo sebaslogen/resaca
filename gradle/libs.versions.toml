@@ -15,7 +15,7 @@ appcompat = '1.7.0'
 constraintlayout = '2.2.1'
 binary-compatibility-validator = '0.17.0'
 dokka = '2.0.0'
-maven = '0.30.0'
+maven = '0.31.0'
 # Compose Multiplatform
 compose-plugin = '1.7.3'
 # Compose libs not included in multiplatform
