@@ -87,3 +87,6 @@ public final class com/sebaslogen/resaca/ScopedViewModelOwner {
 	public fun <init> (Ljava/lang/String;Lkotlin/reflect/KClass;)V
 }
 
+public abstract interface annotation class com/sebaslogen/resaca/utils/ResacaPackagePrivate : java/lang/annotation/Annotation {
+}
+
