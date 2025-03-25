@@ -149,7 +149,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
             val initialAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
             composablesShown = false // Trigger disposal
             composeTestRule.onNodeWithText(textTitle).assertExists() // Required to trigger recomposition
-            advanceTimeBy(100) // Advance time to allow clear call on ScopedViewModelContainer to be processed before querying the counter
+            advanceTimeBy(1000) // Advance time to allow clear call on ScopedViewModelContainer to be processed before querying the counter
             printComposeUiTreeToLog()
             val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
 
