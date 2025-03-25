@@ -1,3 +1,5 @@
+@file:OptIn(ResacaPackagePrivate::class)
+
 package com.sebaslogen.resaca.koin
 
 import androidx.compose.runtime.Composable
@@ -16,6 +18,7 @@ import com.sebaslogen.resaca.ScopedViewModelContainer.ExternalKey
 import com.sebaslogen.resaca.ScopedViewModelContainer.InternalKey
 import com.sebaslogen.resaca.ScopedViewModelOwner
 import com.sebaslogen.resaca.generateKeysAndObserveLifecycle
+import com.sebaslogen.resaca.utils.ResacaPackagePrivate
 import org.koin.compose.getKoin
 import org.koin.core.annotation.KoinInternalApi
 import org.koin.core.parameter.ParametersDefinition

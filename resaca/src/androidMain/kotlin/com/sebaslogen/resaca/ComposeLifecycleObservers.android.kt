@@ -1,3 +1,5 @@
+@file:OptIn(ResacaPackagePrivate::class)
+
 package com.sebaslogen.resaca
 
 import android.annotation.SuppressLint
@@ -9,6 +11,7 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavViewModelStoreProvider
+import com.sebaslogen.resaca.utils.ResacaPackagePrivate
 import java.lang.reflect.Field
 
 /**
@@ -81,6 +84,7 @@ internal actual fun ObserveComposableContainerLifecycle(scopedViewModelContainer
  * When the number differs, it means the destination is not the top of the back stack and we should NOT dispose any scoped objects yet. Only after resuming.
  */
 @SuppressLint("RestrictedApi")
+@Suppress("UNCHECKED_CAST")
 @Composable
 private fun getViewModelStores(): Map<String, ViewModelStore>? {
     val current = LocalLifecycleOwner.current

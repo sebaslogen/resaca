@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.sebaslogen.resaca.utils.ResacaPackagePrivate
 import com.sebaslogen.resaca.utils.getCanonicalNameKey
 import com.sebaslogen.resaca.utils.getClassName
 import kotlin.reflect.KClass
@@ -24,6 +25,7 @@ import kotlin.reflect.KClass
  * @param key Unique [key] required to support [SavedStateHandle] across multiple instances of the same [ViewModel] type.
  * @param modelClass Class type of the [ViewModel] to instantiate
  */
+@ResacaPackagePrivate
 public class ScopedViewModelOwner<T : ViewModel>(
     private val key: String,
     private val modelClass: KClass<T>

@@ -1,9 +1,12 @@
+@file:OptIn(ResacaPackagePrivate::class)
+
 package com.sebaslogen.resaca
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.sebaslogen.resaca.utils.ResacaPackagePrivate
 
 /**
  * A function that given a key returns true if the key is in scope, false otherwise.

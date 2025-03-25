@@ -1,3 +1,5 @@
+@file:OptIn(ResacaPackagePrivate::class)
+
 package com.sebaslogen.resaca
 
 import androidx.compose.runtime.*
@@ -8,6 +10,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebaslogen.resaca.ScopedViewModelContainer.ExternalKey
 import com.sebaslogen.resaca.ScopedViewModelContainer.InternalKey
+import com.sebaslogen.resaca.utils.ResacaPackagePrivate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -194,6 +197,7 @@ public inline fun <reified T : ViewModel> viewModelScoped(
     )
 }
 
+@ResacaPackagePrivate
 @Composable
 public fun generateKeysAndObserveLifecycle(key: Any?): Triple<ScopedViewModelContainer, InternalKey, ExternalKey> {
     val scopedViewModelContainer: ScopedViewModelContainer = viewModel { ScopedViewModelContainer() }

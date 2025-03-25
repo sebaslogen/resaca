@@ -16,6 +16,7 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import com.sebaslogen.resaca.utils.ResacaPackagePrivate
 import com.sebaslogen.resaca.utils.getCanonicalNameKey
 import com.sebaslogen.resaca.viewmodel.DefaultViewModelProviderFactory
 import kotlinx.coroutines.CoroutineScope
@@ -69,6 +70,7 @@ internal const val MISSING_VIEW_MODEL_STORE_OWNER = "No ViewModelStoreOwner was 
  * - the foreground/background state of the container [LifecycleOwner]
  * - the configuration changing state of the container [Activity]
  */
+@ResacaPackagePrivate
 public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
 
     /**

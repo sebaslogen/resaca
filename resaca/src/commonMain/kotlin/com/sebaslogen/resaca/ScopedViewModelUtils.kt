@@ -1,3 +1,5 @@
+@file:OptIn(ResacaPackagePrivate::class)
+
 package com.sebaslogen.resaca
 
 import androidx.annotation.MainThread
@@ -9,6 +11,7 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.sebaslogen.resaca.ScopedViewModelContainer.ExternalKey
 import com.sebaslogen.resaca.ScopedViewModelContainer.InternalKey
+import com.sebaslogen.resaca.utils.ResacaPackagePrivate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
 import kotlin.coroutines.CoroutineContext

@@ -1,4 +1,5 @@
 @file:Suppress("NOTHING_TO_INLINE")
+@file:OptIn(ResacaPackagePrivate::class)
 
 package com.sebaslogen.resaca.hilt
 
@@ -22,6 +23,7 @@ import com.sebaslogen.resaca.ScopedViewModelContainer.ExternalKey
 import com.sebaslogen.resaca.ScopedViewModelContainer.InternalKey
 import com.sebaslogen.resaca.ScopedViewModelOwner
 import com.sebaslogen.resaca.generateKeysAndObserveLifecycle
+import com.sebaslogen.resaca.utils.ResacaPackagePrivate
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.hilt.android.AndroidEntryPoint
