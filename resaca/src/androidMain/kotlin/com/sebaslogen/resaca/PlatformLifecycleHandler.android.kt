@@ -3,6 +3,7 @@ package com.sebaslogen.resaca
 import android.os.Handler
 import android.os.Looper
 import android.view.Choreographer
+import com.sebaslogen.resaca.utils.ResacaPackagePrivate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -57,6 +58,7 @@ public actual class PlatformLifecycleHandler {
      * If the Activity never comes back, then the work will be cancelled and
      * the FrameCallback will be removed thanks to the coroutine scope cancellation.
      */
+    @OptIn(ResacaPackagePrivate::class)
     private suspend fun awaitChoreographerFramePostFrontOfQueue() {
         val localCoroutineScope = CoroutineScope(coroutineContext)
         suspendCancellableCoroutine { continuation ->

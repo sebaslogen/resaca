@@ -9,6 +9,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.sebaslogen.resaca.COMPOSITION_RESUMED_TIMEOUT_IN_SECONDS
+import com.sebaslogen.resaca.utils.ResacaPackagePrivate
 import com.sebaslogen.resacaapp.sample.ui.main.ComposeActivity
 import com.sebaslogen.resacaapp.sample.ui.main.koinSingleViewModelScopedDestination
 import com.sebaslogen.resacaapp.sample.ui.main.koinViewModelScopedDestination
@@ -20,6 +21,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+@OptIn(ResacaPackagePrivate::class)
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class ComposeActivityRecreationTests : ComposeTestUtils {
