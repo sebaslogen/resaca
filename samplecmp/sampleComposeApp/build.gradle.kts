@@ -111,8 +111,6 @@ android {
     packaging {
         resources {
             excludes += setOf(
-                // Exclude AndroidX version files
-                "META-INF/*.version",
                 // Exclude consumer proguard files
                 "META-INF/proguard/*",
                 // Exclude the Firebase/Fabric/other random properties files
