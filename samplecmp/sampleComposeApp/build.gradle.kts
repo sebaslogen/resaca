@@ -14,7 +14,6 @@ plugins {
 
 kotlin {
     androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             jvmTarget = JvmTarget.JVM_17
         }
