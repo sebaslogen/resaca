@@ -83,13 +83,17 @@ internal actual fun ObserveComposableContainerLifecycle(scopedViewModelContainer
  * When the number matches we are still on top of the back stack and the destination is back in the foreground.
  * When the number differs, it means the destination is not the top of the back stack and we should NOT dispose any scoped objects yet. Only after resuming.
  */
-@SuppressLint("RestrictedApi")
-@Suppress("UNCHECKED_CAST")
 @Composable
 private fun getViewModelStores(): Map<String, ViewModelStore>? {
     val current = LocalLifecycleOwner.current
+    val navBackEntry = current as? NavBackStackEntry ?: return null // No-op if not a NavBackStackEntry, aka if not using Compose Navigation with a NavHost
+    return getViewModelStores(navBackEntry)
+}
+
+@SuppressLint("RestrictedApi")
+@Suppress("UNCHECKED_CAST")
+private fun getViewModelStores(navBackEntry: NavBackStackEntry): Map<String, ViewModelStore>? {
     try {
-        val navBackEntry = current as? NavBackStackEntry ?: return null // No-op if not a NavBackStackEntry, aka if not using Compose Navigation with a NavHost
         val navViewModelStoreProviderField: Field = navBackEntry.javaClass.getDeclaredField("viewModelStoreProvider")
         navViewModelStoreProviderField.isAccessible = true // Make the field accessible to read
         val navViewModelStoreProvider: NavViewModelStoreProvider = navViewModelStoreProviderField.get(navBackEntry) as? NavViewModelStoreProvider ?: return null
