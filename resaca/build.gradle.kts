@@ -65,7 +65,7 @@ kotlin {
 
             // Updates only to patch Dependabot security alerts in transitive libraries. See https://github.com/sebaslogen/resaca/security/dependabot
             implementation("com.google.protobuf:protobuf-java:3.25.5")
-            implementation("io.netty:netty-codec-http2:4.1.118.Final")
+            implementation("io.netty:netty-codec-http2:4.2.0.Final")
         }
     }
 }
