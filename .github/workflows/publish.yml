@@ -8,6 +8,11 @@ on:
       version:
         description: 'Version to publish'
         required: true
+
+permissions:
+  contents: read
+  packages: write
+
 env:
   PACKAGE_VERSION: ${{ github.event_name == 'release' && github.event.release.tag_name || github.event.inputs.version }}
 jobs:
