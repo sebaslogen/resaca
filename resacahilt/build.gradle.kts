@@ -40,6 +40,7 @@ android {
                 "fabric/*.properties",
                 "META-INF/*.properties",
                 "/META-INF/{AL2.0,LGPL2.1}",
+                "/META-INF/INDEX.LIST",
             )
         }
     }
