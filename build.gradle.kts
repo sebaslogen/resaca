@@ -34,6 +34,14 @@ apiValidation {
     nonPublicMarkers.add("kotlin.PublishedApi")
 }
 
+// Accept Gradle Terms of Use for test scans
+extensions.findByName("develocity")?.withGroovyBuilder {
+    getProperty("buildScan")?.withGroovyBuilder {
+        setProperty("termsOfUseUrl", "https://gradle.com/help/legal-terms-of-use")
+        setProperty("termsOfUseAgree", "yes")
+    }
+}
+
 subprojects {
     /**
      * Enable Strict API to force the library modules to explicitly declare visibility of function and classes in the API
