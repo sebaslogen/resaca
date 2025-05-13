@@ -115,6 +115,7 @@ dependencies {
     implementation(compose.foundation)
     // Material Design
     implementation(compose.material)
+    implementation(libs.androidx.material.icons.extended)
 }
 
 tasks.withType<AbstractTestTask> {
