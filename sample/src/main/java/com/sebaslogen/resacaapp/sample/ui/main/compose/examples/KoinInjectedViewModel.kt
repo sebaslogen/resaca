@@ -1,5 +1,6 @@
 package com.sebaslogen.resacaapp.sample.ui.main.compose.examples
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.core.os.bundleOf
@@ -39,6 +40,7 @@ fun DemoScopedKoinInjectedObjectComposable(key: String? = null) {
  * Note: This [FakeSimpleInjectedViewModel] does not depend on the [SavedStateHandle] to be injected
  * and therefore no special [koinViewModelScoped] function is required for Koin injection of [ViewModel].
  */
+@SuppressLint("ViewModelConstructorInComposable") // This is only used for previews
 @Composable
 fun DemoScopedKoinSimpleInjectedViewModelComposable(key: String? = null) {
     val fakeInjectedVM: FakeSimpleInjectedViewModel =
@@ -64,6 +66,7 @@ fun DemoScopedKoinSimpleInjectedViewModelComposable(key: String? = null) {
  * and we can use the [SavedStateHandle] provided by resaca in the [viewModelScoped] builder lambda,
  * instead of using the [koinViewModelScoped] function.
  */
+@SuppressLint("ViewModelConstructorInComposable") // This is only used for previews
 @Composable
 fun DemoScopedKoinParametrizedInjectedViewModelComposable(key: String? = null) {
     val fakeScopedVM: FakeScopedViewModel =
@@ -89,6 +92,7 @@ fun DemoScopedKoinParametrizedInjectedViewModelComposable(key: String? = null) {
  *
  * Note: [koinViewModelScoped] is required for [FakeInjectedViewModel] because it depends on the [SavedStateHandle].
  */
+@SuppressLint("ViewModelConstructorInComposable") // This is only used for previews
 @Composable
 fun DemoScopedKoinInjectedViewModelComposable(key: String? = null, fakeInjectedViewModelId: Int = 666) {
     val fakeInjectedVM: FakeInjectedViewModel =
@@ -117,6 +121,7 @@ fun DemoScopedKoinInjectedViewModelComposable(key: String? = null, fakeInjectedV
  *
  * Note: [koinViewModelScoped] is required for [FakeSecondInjectedViewModel] because it depends on the [SavedStateHandle].
  */
+@SuppressLint("ViewModelConstructorInComposable") // This is only used for previews
 @Composable
 fun DemoScopedSecondKoinInjectedViewModelComposable() {
     val fakeSecondInjectedVM: FakeSecondInjectedViewModel =

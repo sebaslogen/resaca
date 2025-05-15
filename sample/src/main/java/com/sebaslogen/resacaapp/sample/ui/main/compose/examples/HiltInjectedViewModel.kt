@@ -1,5 +1,6 @@
 package com.sebaslogen.resacaapp.sample.ui.main.compose.examples
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalInspectionMode
@@ -23,6 +24,7 @@ import com.sebaslogen.resacaapp.sample.viewModelsClearedGloballySharedCounter
  * is supported using the [hiltViewModelScoped] defaultArguments parameter and a [Bundle] of parameters,
  * for more info and instructions see https://github.com/sebaslogen/resaca/blob/main/resacahilt/README.md#pseudo-assisted-injection-support
  */
+@SuppressLint("ViewModelConstructorInComposable") // This is only used for previews
 @Composable
 fun DemoScopedHiltInjectedViewModelComposable(key: String? = null, fakeInjectedViewModelId: Int = 666) {
     val fakeInjectedVM: FakeInjectedViewModel =
@@ -38,6 +40,7 @@ fun DemoScopedHiltInjectedViewModelComposable(key: String? = null, fakeInjectedV
     DemoComposable(inputObject = fakeInjectedVM, objectType = "Hilt FakeInjectedViewModel", scoped = true)
 }
 
+@SuppressLint("ViewModelConstructorInComposable") // This is only used for previews
 @Composable
 fun DemoScopedSecondHiltInjectedViewModelComposable() {
     val fakeSecondInjectedVM: FakeSecondInjectedViewModel =
@@ -52,6 +55,7 @@ fun DemoScopedSecondHiltInjectedViewModelComposable() {
     DemoComposable(inputObject = fakeSecondInjectedVM, objectType = "Hilt FakeSecondInjectedViewModel", scoped = true)
 }
 
+@SuppressLint("ViewModelConstructorInComposable") // This is only used for previews
 @Composable
 fun DemoScopedHiltAssistedInjectionViewModelComposable(key: String? = null, fakeInjectedViewModelId: Int = 666) {
     val fakeInjectedVM: FakeAssistedInjectionViewModel =
