@@ -61,7 +61,7 @@ class MemoryLeakTests : ComposeTestUtils {
         printComposeUiTreeToLog()
 
         // Then the original Activity object is garbage collected
-        assertNotNull(weakActivityReference) { "WeakReference container for initial ComposeActivity should not be null because it was created" }
+        assertNotNull(weakActivityReference, "WeakReference container for initial ComposeActivity should not be null because it was created")
         assertNull(weakActivityReference?.get(), "Initial ComposeActivity should have been garbage collected but it wasn't, so it's leaking")
     }
 }
