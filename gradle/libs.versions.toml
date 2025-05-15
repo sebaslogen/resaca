@@ -1,7 +1,7 @@
 [versions]
 agp = "8.10.0"
-kotlin = '2.1.20'
-ksp = '2.1.20-2.0.0'
+kotlin = '2.1.21'
+ksp = '2.1.21-2.0.1'
 core-bundle = '1.0.1'
 compileSdk = '35'
 leakcanaryAndroid = '2.14'
@@ -11,7 +11,7 @@ coroutines = '1.10.2'
 material = '1.12.0'
 materialIconsExtended = "1.7.8"
 core-ktx = '1.16.0'
-navigation = '2.8.9'
+navigation = '2.9.0'
 appcompat = '1.7.0'
 constraintlayout = '2.2.1'
 binary-compatibility-validator = '0.17.0'
@@ -20,9 +20,9 @@ maven = '0.31.0'
 # Compose Multiplatform
 compose-plugin = '1.8.0'
 # Compose libs not included in multiplatform
-compose-ui-test-junit = '1.7.8'
-compose-ui-test-manifest = '1.7.8'
-compose-ui-toolingPreview = '1.7.8'
+compose-ui-test-junit = '1.8.1'
+compose-ui-test-manifest = '1.8.1'
+compose-ui-toolingPreview = '1.8.1'
 # Compose integration with Activities
 androidx-activity = '1.10.1'
 # Compose integration with ViewModels
