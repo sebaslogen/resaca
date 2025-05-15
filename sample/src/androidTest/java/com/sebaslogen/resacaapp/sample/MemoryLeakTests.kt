@@ -58,6 +58,7 @@ class MemoryLeakTests : ComposeTestUtils {
 
         // And trigger Garbage Collection to make sure old ComposeActivity is collected
         Runtime.getRuntime().gc()
+        Thread.sleep(100)
         printComposeUiTreeToLog()
 
         // Then the original Activity object is garbage collected
