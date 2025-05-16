@@ -5,6 +5,8 @@ import com.sebaslogen.resaca.utils.ResacaPackagePrivate
 /**
  * Timeout in seconds to wait for the composition to be resumed after the Activity/Fragment is resumed.
  * This is only applicable to Android.
+ *
+ * Warning: This is only to be used in com.sebaslogen.resaca library
  */
 @ResacaPackagePrivate
 public const val COMPOSITION_RESUMED_TIMEOUT_IN_SECONDS: Long = 1
