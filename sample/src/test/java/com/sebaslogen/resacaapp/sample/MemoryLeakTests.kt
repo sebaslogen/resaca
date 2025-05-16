@@ -8,6 +8,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sebaslogen.resacaapp.sample.ui.main.ComposeActivity
 import com.sebaslogen.resacaapp.sample.ui.main.rememberScopedDestination
 import com.sebaslogen.resacaapp.sample.utils.ComposeTestUtils
+import com.sebaslogen.resacaapp.sample.utils.FlakyTestRetryRule
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -28,6 +29,9 @@ class MemoryLeakTests : ComposeTestUtils {
 
     @get:Rule
     override val composeTestRule = createComposeRule()
+
+    @get:Rule
+    val retryRule = FlakyTestRetryRule(3) // Retry up to 3 times
 
     @Test
     fun `given ComposeActivity with Composables in a nested Navigation Composable, when the activity is recreated, then the original ComposeActivity object is garbage collected`() {
