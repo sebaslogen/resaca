@@ -188,14 +188,14 @@ Before                     |  After backstack navigation & configuration change
 
 # Multiplatform support
 <details>
-  <summary>Resaca works in Kotlin Multiplaform and also in Compose Multiplatform for Android and iOS targets:</summary>
+  <summary>Resaca works in Kotlin Multiplaform and also in Compose Multiplatform for Android, iOS, Desktop-JVM and Web targets:</summary>
 
 ## Compose Multiplatform
-Since version 4.0, Resaca supports Compose Multiplatform for Android and iOS targets.
+Since version 4.0, Resaca supports Compose Multiplatform for Android, iOS, Desktop-JVM and Web targets.
 To see an example of usage and configuration check the [Sample Compose Multiplatform project](https://github.com/sebaslogen/resaca/blob/main/samplecmp/sampleComposeApp/src/commonMain/kotlin/App.kt) in the `samplecmp` module.
 
 ## Kotlin Multiplatform
-Resaca is a Kotlin Multiplatform library and can be used in any Kotlin Multiplatform project that targets Android or iOS. Nevertheless, 
+Resaca is a Kotlin Multiplatform library and can be used in any Kotlin Multiplatform project that targets Android, iOS, Desktop-JVM and Web. Nevertheless, 
 Resaca does not make sense in a SwiftUI project because it's a Compose only library, instead, if you want to scope ViewModels to SwiftUI views, 
 you can look at the solutions provided in the first comments of this ticket https://github.com/sebaslogen/resaca/issues/91.
 </details>
