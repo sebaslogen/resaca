@@ -148,6 +148,7 @@ kover {
         filters {
             excludes {
                 androidGeneratedClasses()
+                annotatedBy("androidx.compose.ui.tooling.preview.Preview") // Exclude Previews from code coverage
             }
         }
         variant("debug") {
