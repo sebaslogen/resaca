@@ -12,21 +12,21 @@ material = '1.12.0'
 materialIconsExtended = "1.7.8"
 core-ktx = '1.16.0'
 navigation = '2.9.0'
-appcompat = '1.7.0'
+appcompat = '1.7.1'
 constraintlayout = '2.2.1'
 binary-compatibility-validator = '0.17.0'
 dokka = '2.0.0'
 maven = '0.32.0'
 # Compose Multiplatform
-compose-plugin = '1.8.1'
+compose-plugin = '1.8.2'
 # Compose libs not included in multiplatform
-compose-ui-test-junit = '1.8.2'
-compose-ui-test-manifest = '1.8.2'
-compose-ui-toolingPreview = '1.8.2'
+compose-ui-test-junit = '1.8.3'
+compose-ui-test-manifest = '1.8.3'
+compose-ui-toolingPreview = '1.8.3'
 # Compose integration with Activities
 androidx-activity = '1.10.1'
 # Compose integration with ViewModels
-jetbrains-lifecycle = '2.8.4'
+jetbrains-lifecycle = '2.9.1'
 # Hilt
 hilt = '2.56.2'
 hilt-navigation-compose = '1.2.0'
