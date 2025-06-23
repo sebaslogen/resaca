@@ -305,7 +305,6 @@ public inline fun <reified T : ViewModel> viewModelScoped(
  * @param key Key to track the version of the [ViewModel]. Changing [key] between compositions will produce and remember a new [ViewModel].
  * @param builder Factory function to produce a new [ViewModel] that will be remembered. The factory also creates the [SavedStateHandle] for the [ViewModel].
  */
-@Deprecated("Use viewModelScoped without \"defaultArguments: Bundle\" instead")
 @Composable
 public inline fun <reified T : ViewModel> viewModelScoped(
     key: Any? = null,
