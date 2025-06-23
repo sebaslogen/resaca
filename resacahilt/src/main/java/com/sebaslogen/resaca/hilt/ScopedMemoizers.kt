@@ -15,7 +15,6 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
-import androidx.navigation.NavBackStackEntry
 import com.sebaslogen.resaca.KeyInScopeResolver
 import com.sebaslogen.resaca.ScopeKeyWithResolver
 import com.sebaslogen.resaca.ScopedViewModelContainer
@@ -61,6 +60,7 @@ public inline fun <reified T : ViewModel, K : Any> hiltViewModelScoped(
     val scopeKeyWithResolver: ScopeKeyWithResolver<K> = remember(key, keyInScopeResolver) { ScopeKeyWithResolver(key, keyInScopeResolver) }
     return hiltViewModelScoped(key = scopeKeyWithResolver, defaultArguments = defaultArguments)
 }
+
 /**
  * Return a [ViewModel] (annotated with [HiltViewModel]) provided by a Hilt [ViewModelProvider.Factory] and a [ViewModelProvider].
  * The [ViewModel] will keep in memory for as long as needed, and until the requester Composable is permanently gone
@@ -162,6 +162,70 @@ public inline fun <reified T : ViewModel> hiltViewModelScoped(key: Any? = null):
         factory = createHiltViewModelFactory(viewModelStoreOwner),
         viewModelStoreOwner = viewModelStoreOwner,
         defaultArguments = Bundle.EMPTY
+    )
+}
+
+/**
+ * Return a [ViewModel] (annotated with [HiltViewModel]) provided by a custom factory (see [AssistedFactory]),
+ * a Hilt [ViewModelProvider.Factory] and a [ViewModelProvider].
+ * The [AssistedFactory] will be used to create the [ViewModel] with one or more parameter provided outside of Hilt/dependency injection.
+ * For more documentation about Hilt assisted injection see https://dagger.dev/hilt/view-model#assisted-injection
+ *
+ * The [ViewModel] will keep in memory for as long as needed, and until the requester Composable is permanently gone
+ * and the [key] is not present anymore in [keyInScopeResolver] or the [keyInScopeResolver] itself leaves Composition.
+ * This means, it retains the [ViewModel] across recompositions, during configuration changes, and
+ * also when the container Fragment or Compose Navigation destination goes into the backstack.
+ *
+ * The returned [ViewModel] is provided by the [ViewModelProvider] using a Hilt [ViewModelProvider.Factory] and a [ViewModelStore].
+ * The [ViewModel] will be created and stored by the [ViewModelProvider] in the [ViewModelStore].
+ * The [ScopedViewModelOwner] will be the object stored in the [ScopedViewModelContainer] and
+ * the [ScopedViewModelContainer] will be in charge of keeping the [ScopedViewModelOwner] and its [ViewModel] in memory for as long as needed.
+ *
+ * Internally, a key will be generated for this [ScopedViewModelOwner] in the Compose tree and if a [ScopedViewModelOwner] is present
+ * for this key in the [ScopedViewModelContainer], then it will be used to invoke [ViewModelProvider] to return an existing [ViewModel],
+ * instead of creating a new [ScopedViewModelOwner] that produces a new [ViewModel] instance when the keys don't match.
+ *
+ * Usage example:
+ * val keys = rememberKeysInScope(inputListOfKeys = listItems)
+ * val myViewModel: MyViewModel =
+ *             hiltViewModelScoped(key = key) { factory: MyViewModelFactory ->
+ *                 factory.create(
+ *                     myViewModelId = someIdAvailableInMyComposable
+ *                 )
+ *             }
+ *
+ * @param key Key to track the version of the [ViewModel]. Changing [key] between compositions will produce and store a new [ViewModel].
+ * @param keyInScopeResolver A function that uses [key] to determine if the ViewModel should be kept in memory even after it's no longer part of the composition.
+ * @param creationCallback A callback to pass [ViewModel] creation [Assisted] parameters to Hilt using your [AssistedFactory].
+ */
+@Composable
+public inline fun <reified VM : ViewModel, reified VMF, K : Any> hiltViewModelScoped(
+    key: K,
+    noinline keyInScopeResolver: KeyInScopeResolver<K>,
+    noinline creationCallback: (VMF) -> VM
+): VM {
+
+    val scopeKeyWithResolver: ScopeKeyWithResolver<K> = remember(key, keyInScopeResolver) { ScopeKeyWithResolver(key, keyInScopeResolver) }
+
+    val (scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: InternalKey, externalKey: ExternalKey) =
+        generateKeysAndObserveLifecycle(key = scopeKeyWithResolver)
+
+    val viewModelStoreOwner: ViewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
+        "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
+    }
+
+    val defaultCreationExtras =
+        if (viewModelStoreOwner is HasDefaultViewModelProviderFactory) viewModelStoreOwner.defaultViewModelCreationExtras else CreationExtras.Empty
+    val creationExtras = defaultCreationExtras.withCreationCallback(creationCallback)
+
+    // The object will be built the first time and retrieved in next calls or recompositions
+    return scopedViewModelContainer.getOrBuildViewModel(
+        modelClass = VM::class,
+        positionalMemoizationKey = positionalMemoizationKey,
+        externalKey = externalKey,
+        factory = createHiltViewModelFactory(viewModelStoreOwner),
+        viewModelStoreOwner = viewModelStoreOwner,
+        creationExtras = creationExtras
     )
 }
 
