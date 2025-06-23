@@ -92,32 +92,9 @@ class MyViewModel @Inject constructor(private val stateSaver: SavedStateHandle) 
 </details>
 
 <details>
-  <summary>Scope a ViewModel injected by Hilt with an argument or id (pseudo assisted injection) to a Composable</summary>
-  
-```kotlin
-@Composable
-fun DemoInjectedViewModelWithId(idOne: String = "myFirstId", idTwo: String = "mySecondId") {
-    val scopedVMWithFirstId: MyIdViewModel = hiltViewModelScoped(idOne, defaultArguments = bundleOf(MY_ARGS_KEY to idOne))
-    val scopedVMWithSecondId: MyIdViewModel = hiltViewModelScoped(idTwo, defaultArguments = bundleOf(MY_ARGS_KEY to idTwo))
-    // We now have 2 instances on memory of the same ViewModel type, both inside the same Composable scope
-    // When one Id updates only the ViewModel with that Id will be recreated
-    // Each ViewModel instance has its own Id
-    DemoComposable(inputObject = scopedVMWithFirstId)
-    DemoComposable(inputObject = scopedVMWithSecondId)
-}
-  
-@HiltViewModel
-class MyIdViewModel @Inject constructor(
-    private val stateSaver: SavedStateHandle
-) : ViewModel() {
+  <summary>Scope a ViewModel injected by Hilt with an argument or id to a Composable</summary>
 
-    companion object {
-        const val MY_ARGS_KEY = "MY_ARGS_KEY"
-    }
-
-    val viewModelId = stateSaver.get<String>(MY_ARGS_KEY)
-}
-```
+  Use Hilt's Assisted Injection, see https://dagger.dev/hilt/view-model#assisted-injection
 </details>
 
 <details>
@@ -219,7 +196,7 @@ use the vanilla `viewModelScoped` from [the Resaca library](https://github.com/s
 of `viewModelScoped`.
 
 ### Hilt
-Assisted Injection is supported by Hilt, see the [official documentation](https://dagger.dev/hilt/assisted-injection.html). To use Hilt in combination with
+Assisted Injection is supported by Hilt, see the [official documentation](https://dagger.dev/hilt/view-model#assisted-injection). To use Hilt in combination with
 scoped ViewModels you need to use the `hiltViewModelScoped` with `creationCallback` parameter from this library and do four things:
 
 - Create a factory interface that has a function to return your ViewModel and annotate it with `@AssistedFactory`
@@ -252,29 +229,3 @@ class MyViewModel @AssistedInject constructor(
 }
 ```
 </details>
-
-## Pseudo Assisted Injection support
-
-In addition to the official assisted injection introduced in Hilt in 2023, the `hiltViewModelScoped` function accepts a `defaultArguments: Bundle` parameter, 
-this Bundle will be provided to your ViewModel as long as the constructor of your ViewModel contains a `SavedStateHandle` parameter. 
-With this Bundle you can provide default arguments to each ViewModel from the Composable call site. 
-This way, you can have multiple ViewModels in the same Composable with different ids.
-
-Usage example:
-
-```kotlin
-val myVM: MyViewModel = hiltViewModelScoped(key = myId, defaultArguments = bundleOf(MyViewModel.MY_ARGS_KEY to myId))
-```
-
-```kotlin
-class MyViewModel(private val stateSaver: SavedStateHandle, val repoDependency: MyRepository) : ViewModel() {
-
-    companion object {
-        const val MY_ARGS_KEY = "MY_ARGS_KEY"
-    }
-
-    val viewModelId = stateSaver.get<Int>(MY_ARGS_KEY)
-    
-    fun getData() = repoDependency.getDataForId(viewModelId)
-}
-```
