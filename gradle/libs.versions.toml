@@ -12,6 +12,8 @@ material = '1.12.0'
 materialIconsExtended = "1.7.8"
 core-ktx = '1.16.0'
 navigation = '2.9.0'
+navigation3 = "1.0.0-SNAPSHOT"
+lifecycleViewmodelNav3 = "1.0.0-SNAPSHOT"
 appcompat = '1.7.1'
 constraintlayout = '2.2.1'
 binary-compatibility-validator = '0.17.0'
@@ -82,6 +84,11 @@ koin-core = { module = 'io.insert-koin:koin-core', version.ref = 'koin' }
 koin-compose = { module = 'io.insert-koin:koin-compose', version.ref = 'koin' }
 koin-android = { module = 'io.insert-koin:koin-android', version.ref = 'koin' }
 koin-android-test = { module = 'io.insert-koin:koin-android-test', version.ref = 'koin' }
+
+# Navigation 3 libs
+androidx-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycleViewmodelNav3" }
+androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "navigation3" }
+androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
 
 # Test libraries
 junit = { module = 'junit:junit', version.ref = 'junit-version' }

@@ -15,6 +15,10 @@
             android:label="@string/title_activity_compose"
             android:theme="@style/Theme.ResacaApp.NoActionBar" />
         <activity
+            android:name=".ui.main.InjectedViewModelsActivity"
+            android:exported="true"
+            android:theme="@style/Theme.ResacaApp.NoActionBar"/>
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

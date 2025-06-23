@@ -116,6 +116,10 @@ dependencies {
     // Material Design
     implementation(compose.material)
     implementation(libs.androidx.material.icons.extended)
+    // Navigation 3 libs
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
 }
 
 tasks.withType<AbstractTestTask> {

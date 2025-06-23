@@ -3,6 +3,9 @@ pluginManagement {
         gradlePluginPortal()
         google()
         mavenCentral()
+        maven {
+            url = uri("https://androidx.dev/snapshots/builds/13617490/artifacts/repository")
+        }
     }
 }
 
@@ -12,6 +15,9 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven { setUrl("https://androidx.dev/storage/compose-compiler/repository/") }
+        maven {
+            url = uri("https://androidx.dev/snapshots/builds/13617490/artifacts/repository")
+        }
     }
 }
 rootProject.name = "resaca"

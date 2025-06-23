@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.sebaslogen.resacaapp.sample.ui.main.ComposeActivity
+import com.sebaslogen.resacaapp.sample.ui.main.InjectedViewModelsActivity
 import com.sebaslogen.resacaapp.sample.ui.main.MainFragment
 import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoScreenInActivity
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeRepo
