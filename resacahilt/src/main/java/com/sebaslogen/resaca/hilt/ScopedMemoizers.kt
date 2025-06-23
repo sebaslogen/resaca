@@ -226,10 +226,10 @@ public inline fun <reified VM : ViewModel, reified VMF> hiltViewModelScoped(key:
  */
 @Composable
 public inline fun createHiltViewModelFactory(viewModelStoreOwner: ViewModelStoreOwner): ViewModelProvider.Factory? =
-    if (viewModelStoreOwner is NavBackStackEntry) {
+    if (viewModelStoreOwner is HasDefaultViewModelProviderFactory) {
         HiltViewModelFactory(
             context = LocalContext.current,
-            navBackStackEntry = viewModelStoreOwner
+            delegateFactory = viewModelStoreOwner.defaultViewModelProviderFactory
         )
     } else {
         // Use the default factory provided by the ViewModelStoreOwner
