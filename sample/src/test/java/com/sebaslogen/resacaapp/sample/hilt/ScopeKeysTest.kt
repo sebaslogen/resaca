@@ -14,7 +14,6 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasTextExactly
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
-import androidx.core.os.bundleOf
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sebaslogen.resaca.hilt.hiltViewModelScoped
 import com.sebaslogen.resacaapp.sample.ui.main.ComposeActivity
@@ -57,9 +56,12 @@ class ScopeKeysTest : ComposeTestUtils {
         composeTestRule.activity.setContent {
             var myKey by remember { mutableStateOf(false) }
             val fakeInjectedViewModel: FakeInjectedViewModel =
-                hiltViewModelScoped(key = myKey, defaultArguments = bundleOf(FakeInjectedViewModel.MY_ARGS_KEY to 123))
+                hiltViewModelScoped(key = myKey) { factory: FakeInjectedViewModel.FakeInjectedViewModelFactory ->
+                    factory.create(viewModelId = 123)
+                }
             DemoComposable(inputObject = fakeInjectedViewModel, objectType = "FakeInjectedViewModel", scoped = true)
-            Button(modifier = Modifier.testTag("Button"),
+            Button(
+                modifier = Modifier.testTag("Button"),
                 onClick = { myKey = !myKey }) {
                 Text("Click to change")
             }

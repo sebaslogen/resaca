@@ -14,7 +14,6 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasTextExactly
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
-import androidx.core.os.bundleOf
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sebaslogen.resaca.koin.koinViewModelScoped
 import com.sebaslogen.resacaapp.sample.ui.main.ComposeActivity
@@ -54,11 +53,11 @@ class ScopeKeysTest : ComposeTestUtils {
                 val fakeInjectedViewModel: FakeInjectedViewModel =
                     koinViewModelScoped(
                         key = myKey,
-                        defaultArguments = bundleOf(FakeInjectedViewModel.MY_ARGS_KEY to 123),
-                        parameters = { parametersOf(viewModelsClearedGloballySharedCounter) }
+                        parameters = { parametersOf(viewModelsClearedGloballySharedCounter, 123) }
                     )
                 DemoComposable(inputObject = fakeInjectedViewModel, objectType = "FakeInjectedViewModel", scoped = true)
-                Button(modifier = Modifier.testTag("Button"),
+                Button(
+                    modifier = Modifier.testTag("Button"),
                     onClick = { myKey = !myKey }) {
                     Text("Click to change")
                 }

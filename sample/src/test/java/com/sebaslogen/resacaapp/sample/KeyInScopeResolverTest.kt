@@ -109,7 +109,12 @@ class KeyInScopeResolverTest : ComposeTestUtils {
                 LazyColumn(modifier = Modifier.fillMaxHeight()) {
                     items(items = listItems, key = { it.number }) { item ->
                         Box(modifier = Modifier.size(width = 200.dp, height = 100.dp)) {
-                            val fakeScopedVM: FakeScopedViewModel = viewModelScoped(key = item, keyInScopeResolver = keys)
+                            val fakeScopedVM: FakeScopedViewModel = viewModelScoped(key = item, keyInScopeResolver = keys) {
+                                FakeScopedViewModel(
+                                    stateSaver = it,
+                                    viewModelId = item.number
+                                )
+                            }
                             DemoComposable(inputObject = fakeScopedVM, objectType = "FakeScopedViewModel $item", scoped = true)
                         }
                     }
@@ -147,7 +152,12 @@ class KeyInScopeResolverTest : ComposeTestUtils {
                 LazyColumn(modifier = Modifier.fillMaxHeight()) {
                     items(items = listItems, key = { it.number }) { item ->
                         Box(modifier = Modifier.size(width = 200.dp, height = 100.dp)) {
-                            val fakeScopedVM: FakeScopedViewModel = viewModelScoped(key = item, keyInScopeResolver = keys)
+                            val fakeScopedVM: FakeScopedViewModel = viewModelScoped(key = item, keyInScopeResolver = keys) {
+                                FakeScopedViewModel(
+                                    stateSaver = it,
+                                    viewModelId = item.number
+                                )
+                            }
                             DemoComposable(inputObject = fakeScopedVM, objectType = "FakeScopedViewModel $item", scoped = true)
                         }
                     }
@@ -190,7 +200,12 @@ class KeyInScopeResolverTest : ComposeTestUtils {
                         LazyColumn(modifier = Modifier.fillMaxHeight()) {
                             items(items = listItems, key = { it.number }) { item ->
                                 Box(modifier = Modifier.size(width = 200.dp, height = 100.dp)) {
-                                    val fakeScopedVM: FakeScopedViewModel = viewModelScoped(key = item, keyInScopeResolver = keys)
+                                    val fakeScopedVM: FakeScopedViewModel = viewModelScoped(key = item, keyInScopeResolver = keys) {
+                                        FakeScopedViewModel(
+                                            stateSaver = it,
+                                            viewModelId = item.number
+                                        )
+                                    }
                                     DemoComposable(inputObject = fakeScopedVM, objectType = "FakeScopedViewModel $item", scoped = true)
                                 }
                             }
@@ -238,7 +253,12 @@ class KeyInScopeResolverTest : ComposeTestUtils {
                     }
                 }
                 val keys = rememberKeysInScope(inputListOfKeys = inputListOfKeys)
-                val fakeScopedVM: FakeScopedViewModel = viewModelScoped(key = viewModelKey, keyInScopeResolver = keys)
+                val fakeScopedVM: FakeScopedViewModel = viewModelScoped(key = viewModelKey, keyInScopeResolver = keys) {
+                    FakeScopedViewModel(
+                        stateSaver = it,
+                        viewModelId = 666
+                    )
+                }
                 DemoComposable(inputObject = fakeScopedVM, objectType = "FakeScopedViewModel $viewModelKey", scoped = true)
             }
         }

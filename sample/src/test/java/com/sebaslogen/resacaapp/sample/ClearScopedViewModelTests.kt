@@ -123,7 +123,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
             var firstComposableShown by mutableStateOf(true)
             var secondComposableShown by mutableStateOf(true)
             val textTitle = "Test text"
-            val viewModelInstance = FakeScopedViewModel(stateSaver = SavedStateHandle(mapOf(FakeScopedViewModel.MY_ARGS_KEY to 0)))
+            val viewModelInstance = FakeScopedViewModel(stateSaver = SavedStateHandle(), viewModelId = 0)
             composeTestRule.setContent {
                 Column {
                     Text(textTitle)

@@ -1,7 +1,6 @@
 package com.sebaslogen.resacaapp.sample
 
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.core.os.bundleOf
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sebaslogen.resaca.viewModelScoped
 import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoComposable
@@ -34,7 +33,7 @@ class AssistedInjectionTest : ComposeTestUtils {
         val fakeScopedViewModelId = 555
         var fakeScopedViewModel: FakeScopedViewModel? = null
         composeTestRule.setContent {
-            fakeScopedViewModel = viewModelScoped(defaultArguments = bundleOf(FakeScopedViewModel.MY_ARGS_KEY to fakeScopedViewModelId))
+            fakeScopedViewModel = viewModelScoped { FakeScopedViewModel(stateSaver = it, viewModelId = fakeScopedViewModelId) }
             DemoComposable(inputObject = fakeScopedViewModel!!, objectType = "FakeScopedViewModel", scoped = true)
         }
         printComposeUiTreeToLog()

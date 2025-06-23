@@ -62,6 +62,7 @@ class KeyInScopeResolverTest : ComposeTestUtils {
 
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
+
     @Test
     fun `Given a long lazy list when the first item is not visible anymore, then its ViewModel remains in the container and it's not cleared`() = runTest {
 
@@ -74,7 +75,10 @@ class KeyInScopeResolverTest : ComposeTestUtils {
                 LazyColumn(modifier = Modifier.fillMaxHeight()) {
                     items(items = listItems, key = { it.number }) { item ->
                         Box(modifier = Modifier.size(width = 200.dp, height = 100.dp)) {
-                            val fakeScopedVM: FakeInjectedViewModel = hiltViewModelScoped(key = item, keyInScopeResolver = keys)
+                            val fakeScopedVM: FakeInjectedViewModel =
+                                hiltViewModelScoped(key = item, keyInScopeResolver = keys) { factory: FakeInjectedViewModel.FakeInjectedViewModelFactory ->
+                                    factory.create(viewModelId = 123)
+                                }
                             DemoComposable(inputObject = fakeScopedVM, objectType = "FakeInjectedViewModel $item", scoped = true)
                         }
                     }
@@ -112,7 +116,12 @@ class KeyInScopeResolverTest : ComposeTestUtils {
                 LazyColumn(modifier = Modifier.fillMaxHeight()) {
                     items(items = listItems, key = { it.number }) { item ->
                         Box(modifier = Modifier.size(width = 200.dp, height = 100.dp)) {
-                            val fakeScopedVM: FakeInjectedViewModel = hiltViewModelScoped(key = item, keyInScopeResolver = keys)
+                            val fakeScopedVM: FakeInjectedViewModel =
+                                hiltViewModelScoped(key = item, keyInScopeResolver = keys) { factory: FakeInjectedViewModel.FakeInjectedViewModelFactory ->
+                                    factory.create(
+                                        viewModelId = item.number
+                                    )
+                                }
                             DemoComposable(inputObject = fakeScopedVM, objectType = "FakeInjectedViewModel $item", scoped = true)
                         }
                     }
@@ -155,7 +164,14 @@ class KeyInScopeResolverTest : ComposeTestUtils {
                         LazyColumn(modifier = Modifier.fillMaxHeight()) {
                             items(items = listItems, key = { it.number }) { item ->
                                 Box(modifier = Modifier.size(width = 200.dp, height = 100.dp)) {
-                                    val fakeScopedVM: FakeInjectedViewModel = hiltViewModelScoped(key = item, keyInScopeResolver = keys)
+                                    val fakeScopedVM: FakeInjectedViewModel = hiltViewModelScoped(
+                                        key = item,
+                                        keyInScopeResolver = keys
+                                    ) { factory: FakeInjectedViewModel.FakeInjectedViewModelFactory ->
+                                        factory.create(
+                                            viewModelId = item.number
+                                        )
+                                    }
                                     DemoComposable(inputObject = fakeScopedVM, objectType = "FakeInjectedViewModel $item", scoped = true)
                                 }
                             }

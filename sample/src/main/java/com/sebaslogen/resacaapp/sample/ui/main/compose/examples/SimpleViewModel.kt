@@ -15,6 +15,6 @@ import com.sebaslogen.resacaapp.sample.ui.main.data.FakeScopedViewModel
  */
 @Composable
 fun DemoScopedViewModelComposable(key: String? = null) {
-    val fakeScopedVM: FakeScopedViewModel = viewModelScoped(key = key)
+    val fakeScopedVM: FakeScopedViewModel = viewModelScoped(key = key) { FakeScopedViewModel(stateSaver = it, viewModelId = 0) }
     DemoComposable(inputObject = fakeScopedVM, objectType = "FakeScopedViewModel", scoped = true)
 }

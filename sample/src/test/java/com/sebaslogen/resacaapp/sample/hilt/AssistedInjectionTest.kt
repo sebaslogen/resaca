@@ -5,7 +5,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.core.os.bundleOf
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sebaslogen.resaca.hilt.hiltViewModelScoped
 import com.sebaslogen.resacaapp.sample.ui.main.ComposeActivity
@@ -48,7 +47,9 @@ class AssistedInjectionTest : ComposeTestUtils {
         val fakeInjectedViewModelId = 555
         var fakeInjectedViewModel: FakeInjectedViewModel? = null
         composeTestRule.activity.setContent {
-            fakeInjectedViewModel = hiltViewModelScoped(defaultArguments = bundleOf(FakeInjectedViewModel.MY_ARGS_KEY to fakeInjectedViewModelId))
+            fakeInjectedViewModel = hiltViewModelScoped { factory: FakeInjectedViewModel.FakeInjectedViewModelFactory ->
+                factory.create(viewModelId = fakeInjectedViewModelId)
+            }
             DemoComposable(inputObject = fakeInjectedViewModel!!, objectType = "FakeInjectedViewModel", scoped = true)
         }
         printComposeUiTreeToLog()
@@ -66,10 +67,9 @@ class AssistedInjectionTest : ComposeTestUtils {
         var fakeInjectedViewModelIdKey by mutableStateOf(111)
         var fakeInjectedViewModel: FakeInjectedViewModel? = null
         composeTestRule.activity.setContent {
-            fakeInjectedViewModel = hiltViewModelScoped(
-                key = fakeInjectedViewModelIdKey,
-                defaultArguments = bundleOf(FakeInjectedViewModel.MY_ARGS_KEY to fakeInjectedViewModelIdKey)
-            )
+            fakeInjectedViewModel = hiltViewModelScoped(key = fakeInjectedViewModelIdKey) { factory: FakeInjectedViewModel.FakeInjectedViewModelFactory ->
+                factory.create(viewModelId = fakeInjectedViewModelIdKey)
+            }
             DemoComposable(inputObject = fakeInjectedViewModel!!, objectType = "FakeInjectedViewModel", scoped = true)
         }
         printComposeUiTreeToLog()

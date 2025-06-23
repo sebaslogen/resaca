@@ -72,7 +72,7 @@ class KeyInScopeResolverTest : ComposeTestUtils {
                                     koinViewModelScoped(
                                         key = item,
                                         keyInScopeResolver = keys,
-                                        parameters = { parametersOf(viewModelsClearedGloballySharedCounter) }
+                                        parameters = { parametersOf(viewModelsClearedGloballySharedCounter, item.number) }
                                     )
                                 DemoComposable(inputObject = fakeScopedVM, objectType = "FakeInjectedViewModel $item", scoped = true)
                             }
@@ -117,7 +117,7 @@ class KeyInScopeResolverTest : ComposeTestUtils {
                                     koinViewModelScoped(
                                         key = item,
                                         keyInScopeResolver = keys,
-                                        parameters = { parametersOf(viewModelsClearedGloballySharedCounter) }
+                                        parameters = { parametersOf(viewModelsClearedGloballySharedCounter, item.number) }
                                     )
                                 DemoComposable(inputObject = fakeScopedVM, objectType = "FakeInjectedViewModel $item", scoped = true)
                             }
@@ -167,7 +167,7 @@ class KeyInScopeResolverTest : ComposeTestUtils {
                                             koinViewModelScoped(
                                                 key = item,
                                                 keyInScopeResolver = keys,
-                                                parameters = { parametersOf(viewModelsClearedGloballySharedCounter) }
+                                                parameters = { parametersOf(viewModelsClearedGloballySharedCounter, item.number) }
                                             )
                                         DemoComposable(inputObject = fakeScopedVM, objectType = "FakeInjectedViewModel $item", scoped = true)
                                     }

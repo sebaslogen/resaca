@@ -35,9 +35,18 @@ fun ComposeScreenWithSingleViewModelScopedWithKeys(navController: NavHostControl
             text = "The list below contains one ViewModel per row that will stay in memory due to KeysInScope as long as the list and screen are displayed"
         )
         val keys = rememberKeysInScope(inputListOfKeys = listItems)
-        LazyColumn(modifier = Modifier.fillMaxHeight().testTag("LazyList")) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxHeight()
+                .testTag("LazyList")
+        ) {
             items(items = listItems, key = { it.number }) { item ->
-                val fakeScopedVM: FakeScopedViewModel = viewModelScoped(key = item, keyInScopeResolver = keys)
+                val fakeScopedVM: FakeScopedViewModel = viewModelScoped(key = item, keyInScopeResolver = keys) {
+                    FakeScopedViewModel(
+                        stateSaver = it,
+                        viewModelId = item.number
+                    )
+                }
                 DemoComposable(inputObject = fakeScopedVM, objectType = "FakeScopedViewModel $item", scoped = true)
             }
         }

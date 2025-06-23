@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.core.os.bundleOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.sebaslogen.resaca.hilt.hiltViewModelScoped
@@ -32,10 +31,15 @@ fun DemoScopedHiltInjectedViewModelComposable(key: String? = null, fakeInjectedV
             FakeInjectedViewModel(
                 stateSaver = SavedStateHandle(),
                 repository = FakeInjectedRepo(),
-                viewModelsClearedCounter = viewModelsClearedGloballySharedCounter
+                viewModelsClearedCounter = viewModelsClearedGloballySharedCounter,
+                viewModelId = fakeInjectedViewModelId
             )
         } else {
-            hiltViewModelScoped(key = key, defaultArguments = bundleOf(FakeInjectedViewModel.MY_ARGS_KEY to fakeInjectedViewModelId))
+            hiltViewModelScoped(key = key) { factory: FakeInjectedViewModel.FakeInjectedViewModelFactory ->
+                factory.create(
+                    viewModelId = fakeInjectedViewModelId
+                )
+            }
         }
     DemoComposable(inputObject = fakeInjectedVM, objectType = "Hilt FakeInjectedViewModel", scoped = true)
 }

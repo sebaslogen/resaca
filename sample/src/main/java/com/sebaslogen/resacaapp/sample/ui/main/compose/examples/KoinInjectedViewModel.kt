@@ -3,7 +3,6 @@ package com.sebaslogen.resacaapp.sample.ui.main.compose.examples
 import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.core.os.bundleOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.sebaslogen.resaca.koin.koinViewModelScoped
@@ -69,14 +68,16 @@ fun DemoScopedKoinSimpleInjectedViewModelComposable(key: String? = null) {
 @SuppressLint("ViewModelConstructorInComposable") // This is only used for previews
 @Composable
 fun DemoScopedKoinParametrizedInjectedViewModelComposable(key: String? = null) {
+    val viewModelId = 666
     val fakeScopedVM: FakeScopedViewModel =
         if (LocalInspectionMode.current) { // In Preview we can't use viewModelScoped
             FakeScopedViewModel(
-                stateSaver = SavedStateHandle(mapOf(FakeInjectedViewModel.MY_ARGS_KEY to 0))
+                stateSaver = SavedStateHandle(),
+                viewModelId = viewModelId
             )
         } else {
             viewModelScoped(key = key) { savedStateHandle: SavedStateHandle ->
-                getKoin().get() { parametersOf(savedStateHandle) }
+                getKoin().get() { parametersOf(savedStateHandle, viewModelId) }
             } // Koin assisted injection is possible using parameters: getKoin().get { parametersOf(myThing) } }
         }
     DemoComposable(inputObject = fakeScopedVM, objectType = "Koin FakeScopedViewModel", scoped = true)
@@ -100,13 +101,13 @@ fun DemoScopedKoinInjectedViewModelComposable(key: String? = null, fakeInjectedV
             FakeInjectedViewModel(
                 stateSaver = SavedStateHandle(),
                 repository = FakeInjectedRepo(),
-                viewModelsClearedCounter = viewModelsClearedGloballySharedCounter
+                viewModelsClearedCounter = viewModelsClearedGloballySharedCounter,
+                viewModelId = fakeInjectedViewModelId
             )
         } else {
             koinViewModelScoped(
                 key = key,
-                defaultArguments = bundleOf(FakeInjectedViewModel.MY_ARGS_KEY to fakeInjectedViewModelId),
-                parameters = { parametersOf(viewModelsClearedGloballySharedCounter) }
+                parameters = { parametersOf(viewModelsClearedGloballySharedCounter, fakeInjectedViewModelId) }
             )
         }
     DemoComposable(inputObject = fakeInjectedVM, objectType = "Koin FakeInjectedViewModel", scoped = true)

@@ -17,7 +17,7 @@ import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedObject
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedViewModelComposable
 
 @Composable
-fun DemoScreenInActivity(clickListener: () -> Unit) {
+fun DemoScreenInActivity(onComposeActivityClick: () -> Unit, onComposeNav3ActivityClick: () -> Unit) {
     var contentKey by rememberSaveable { mutableStateOf(false) }
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         DemoScopedObjectComposable()
@@ -25,18 +25,19 @@ fun DemoScreenInActivity(clickListener: () -> Unit) {
         Button(onClick = { contentKey = !contentKey }) {
             Text("Get a new instance of the FakeScopedViewModel")
         }
-        ComposeActivityButton(clickListener)
+        ComposeActivityButton("Click to navigate to a full Compose Activity with Compose navigation", onComposeActivityClick)
+        ComposeActivityButton("Click to navigate to a full Compose Activity with Navigation 3", onComposeNav3ActivityClick)
     }
 }
 
 @Composable
-fun ComposeActivityButton(clickListener: () -> Unit) {
+fun ComposeActivityButton(text: String, clickListener: () -> Unit) {
     Box(
         Modifier
             .padding(vertical = 12.dp, horizontal = 4.dp)
     ) {
         Button(onClick = clickListener) {
-            Text("Click to navigate to a full Compose Activity with Compose navigation")
+            Text(text)
         }
     }
 }

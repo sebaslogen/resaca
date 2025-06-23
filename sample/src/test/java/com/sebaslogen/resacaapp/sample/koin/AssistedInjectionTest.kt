@@ -2,7 +2,6 @@ package com.sebaslogen.resacaapp.sample.koin
 
 import androidx.activity.compose.setContent
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.core.os.bundleOf
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sebaslogen.resaca.koin.koinViewModelScoped
 import com.sebaslogen.resacaapp.sample.ui.main.ComposeActivity
@@ -41,8 +40,7 @@ class AssistedInjectionTest : ComposeTestUtils {
         composeTestRule.activity.setContent {
             KoinContext {
                 fakeInjectedViewModel = koinViewModelScoped(
-                    defaultArguments = bundleOf(FakeInjectedViewModel.MY_ARGS_KEY to fakeInjectedViewModelId),
-                    parameters = { parametersOf(viewModelsClearedGloballySharedCounter) })
+                    parameters = { parametersOf(viewModelsClearedGloballySharedCounter, fakeInjectedViewModelId) })
                 DemoComposable(inputObject = fakeInjectedViewModel!!, objectType = "FakeInjectedViewModel", scoped = true)
             }
         }
