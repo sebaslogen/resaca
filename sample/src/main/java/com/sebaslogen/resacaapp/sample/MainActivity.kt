@@ -52,13 +52,13 @@ class MainActivity : AppCompatActivity() {
             // This is required so the Compose Views follow the lifecycle of the Activity, not the Window
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                CreateActivityComposeContent(::navigateToComposeActivity)
+                CreateActivityComposeContent(::navigateToComposeActivity, ::navigateToComposeNav3Activity)
             }
         }
     }
 
     @Composable
-    fun CreateActivityComposeContent(clickListener: () -> Unit) {
+    fun CreateActivityComposeContent(onComposeActivityClick: () -> Unit, onComposeNav3ActivityClick: () -> Unit) {
         Surface(color = MaterialTheme.colors.background.copy(alpha = 0.5f)) {
             Column(Modifier.fillMaxWidth()) {
                 IconButton( // Recreate Activity on Refresh button pressed to test scoped objects
@@ -67,13 +67,17 @@ class MainActivity : AppCompatActivity() {
                 ) {
                     Icon(Icons.Filled.Refresh, contentDescription = "Recreate Activity")
                 }
-                DemoScreenInActivity(clickListener)
+                DemoScreenInActivity(onComposeActivityClick, onComposeNav3ActivityClick)
             }
         }
     }
 
     private fun navigateToComposeActivity() {
         startActivity(Intent(this, ComposeActivity::class.java))
+    }
+
+    private fun navigateToComposeNav3Activity() {
+        startActivity(Intent(this, InjectedViewModelsActivity::class.java))
     }
 
     fun navigateToFragmentTwo() {
