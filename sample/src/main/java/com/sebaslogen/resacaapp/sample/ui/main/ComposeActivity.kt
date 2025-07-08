@@ -117,7 +117,9 @@ fun ScreensWithNavigation(navController: NavHostController = rememberNavControll
             ComposeScreenWithSingleHiltViewModelScoped(navController)
         }
         composable(koinSingleViewModelScopedDestination) { // This destination is only used in automated tests
-            ComposeScreenWithSingleKoinViewModelScoped(navController)
+            KoinContext { // This is required to use Koin in ActivityScenario Robolectric tests, see ComposeActivityRecreationTests.kt
+                ComposeScreenWithSingleKoinViewModelScoped(navController)
+            }
         }
     }
 }
