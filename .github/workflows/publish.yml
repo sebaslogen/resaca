@@ -74,16 +74,4 @@ jobs:
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.JRELEASER_GPG_PASSPHRASE }}
           PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
           CI_FLOW: ${{ github.workflow }}
-        run: ./gradlew publish --stacktrace
-
-      - name: Finish Maven Central Release
-        env:
-          ORG_GRADLE_PROJECT_SONATYPE_NEXUS_USERNAME: ${{ secrets.MAVEN_TOKEN_USERNAME }}
-          ORG_GRADLE_PROJECT_SONATYPE_NEXUS_PASSWORD: ${{ secrets.MAVEN_TOKEN_PASSWORD }}
-          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_TOKEN_USERNAME }}
-          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_TOKEN_PASSWORD }}
-          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_SIGNING_KEY }}
-          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.JRELEASER_GPG_PASSPHRASE }}
-          PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
-          CI_FLOW: ${{ github.workflow }}
-        run: ./gradlew releaseRepository --no-daemon --stacktrace
+        run: ./gradlew publishToMavenCentral --no-configuration-cache --stacktrace
