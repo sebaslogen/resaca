@@ -1,5 +1,4 @@
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
-import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
@@ -95,7 +94,7 @@ subprojects {
     if (!project.name.contains(sampleModuleName)) {
         plugins.withId("com.vanniktech.maven.publish.base") {
             configure<MavenPublishBaseExtension> {
-                publishToMavenCentral(SonatypeHost.S01)
+                publishToMavenCentral()
                 signAllPublications()
                 pom {
                     name = project.name
