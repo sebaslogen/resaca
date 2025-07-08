@@ -16,7 +16,7 @@ navigation3 = "1.0.0-SNAPSHOT"
 lifecycleViewmodelNav3 = "1.0.0-SNAPSHOT"
 appcompat = '1.7.1'
 constraintlayout = '2.2.1'
-binary-compatibility-validator = '0.17.0'
+binary-compatibility-validator = '0.18.0'
 dokka = '2.0.0'
 maven = '0.33.0'
 # Compose Multiplatform
