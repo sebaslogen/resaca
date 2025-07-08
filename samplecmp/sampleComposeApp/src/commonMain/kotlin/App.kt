@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalTime::class)
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,8 +18,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.sebaslogen.resaca.rememberScoped
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.time.ExperimentalTime
 
 @Composable
 @Preview

@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalTime::class)
+
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Text
 import androidx.compose.runtime.CompositionLocalProvider
@@ -14,8 +16,9 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.sebaslogen.resaca.rememberScoped
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlin.test.Test
+import kotlin.time.ExperimentalTime
 
 class AppStartTests {
 
