@@ -94,7 +94,7 @@ subprojects {
     if (!project.name.contains(sampleModuleName)) {
         plugins.withId("com.vanniktech.maven.publish.base") {
             configure<MavenPublishBaseExtension> {
-                publishToMavenCentral()
+                publishToMavenCentral(automaticRelease = true)
                 signAllPublications()
                 pom {
                     name = project.name
