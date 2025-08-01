@@ -100,6 +100,7 @@ public inline fun <reified T : ViewModel, K : Any> viewModelScoped(
     val scopeKeyWithResolver: ScopeKeyWithResolver<K> = remember(key, keyInScopeResolver) { ScopeKeyWithResolver(key, keyInScopeResolver) }
     return viewModelScoped(key = scopeKeyWithResolver, defaultArguments = defaultArguments)
 }
+
 /**
  * Return a [ViewModel] provided by the default [ViewModelProvider.Factory] and a [ViewModelProvider].
  * The [ViewModel] will be kept in memory for as long as needed, and until the requester Composable is permanently gone
@@ -120,8 +121,8 @@ public inline fun <reified T : ViewModel, K : Any> viewModelScoped(
  */
 @Composable
 public inline fun <reified T : ViewModel, K : Any> viewModelScoped(
-    key: K,
     noinline keyInScopeResolver: KeyInScopeResolver<K>,
+    key: K,
 ): T {
     val scopeKeyWithResolver: ScopeKeyWithResolver<K> = remember(key, keyInScopeResolver) { ScopeKeyWithResolver(key, keyInScopeResolver) }
     return viewModelScoped(key = scopeKeyWithResolver, defaultArguments = Bundle())
