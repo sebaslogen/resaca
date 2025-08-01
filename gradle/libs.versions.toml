@@ -11,14 +11,14 @@ coroutines = '1.10.2'
 material = '1.12.0'
 materialIconsExtended = "1.7.8"
 core-ktx = '1.16.0'
-navigation = '2.9.1'
+navigation = '2.9.3'
 navigation3 = "1.0.0-SNAPSHOT"
 lifecycleViewmodelNav3 = "1.0.0-SNAPSHOT"
 appcompat = '1.7.1'
 constraintlayout = '2.2.1'
 binary-compatibility-validator = '0.18.1'
 dokka = '2.0.0'
-maven = '0.33.0'
+maven = '0.34.0'
 # Compose Multiplatform
 compose-plugin = '1.8.2'
 # Compose libs not included in multiplatform
