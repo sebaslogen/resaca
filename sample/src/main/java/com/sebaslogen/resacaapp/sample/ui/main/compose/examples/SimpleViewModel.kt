@@ -14,7 +14,7 @@ import com.sebaslogen.resacaapp.sample.ui.main.data.FakeScopedViewModel
  * In this case the [SavedStateHandle] required by [FakeScopedViewModel] will be provided by the default [SavedStateViewModelFactory]
  */
 @Composable
-fun DemoScopedViewModelComposable(key: String? = null) {
-    val fakeScopedVM: FakeScopedViewModel = viewModelScoped(key = key) { FakeScopedViewModel(stateSaver = it, viewModelId = 0) }
+fun DemoScopedViewModelComposable(key: String = "myScopedViewModel") {
+    val fakeScopedVM: FakeScopedViewModel = viewModelScoped(key) { FakeScopedViewModel(stateSaver = it, viewModelId = 0) }
     DemoComposable(inputObject = fakeScopedVM, objectType = "FakeScopedViewModel", scoped = true)
 }
