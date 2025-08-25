@@ -30,7 +30,7 @@ androidx-activity = '1.10.1'
 # Compose integration with ViewModels
 jetbrains-lifecycle = '2.9.2'
 # Hilt
-hilt = '2.57'
+hilt = '2.57.1'
 hilt-navigation-compose = '1.2.0'
 # Koin
 koin = '4.1.0'
