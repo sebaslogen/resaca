@@ -22,13 +22,13 @@ maven = '0.34.0'
 # Compose Multiplatform
 compose-plugin = '1.8.2'
 # Compose libs not included in multiplatform
-compose-ui-test-junit = '1.8.3'
-compose-ui-test-manifest = '1.8.3'
-compose-ui-toolingPreview = '1.8.3'
+compose-ui-test-junit = '1.9.0'
+compose-ui-test-manifest = '1.9.0'
+compose-ui-toolingPreview = '1.9.0'
 # Compose integration with Activities
 androidx-activity = '1.10.1'
 # Compose integration with ViewModels
-jetbrains-lifecycle = '2.9.1'
+jetbrains-lifecycle = '2.9.2'
 # Hilt
 hilt = '2.57'
 hilt-navigation-compose = '1.2.0'
