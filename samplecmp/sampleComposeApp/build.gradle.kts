@@ -56,6 +56,9 @@ kotlin {
                     }
                 }
             }
+            testTask {
+                enabled = false // Disabled due to https://youtrack.jetbrains.com/issue/CMP-4906
+            }
         }
         binaries.executable()
     }
