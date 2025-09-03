@@ -184,6 +184,12 @@ class MyViewModel @Inject constructor(private val stateSaver: SavedStateHandle) 
 ```
 </details>
 
+# Hilt versioning warning ⚠️
+
+Make sure your app uses the same version (or newer) than the Hilt version included in `resacahilt` to avoid KSP compilation errors. See this file for the latests version used: https://github.com/sebaslogen/resaca/blob/main/gradle/libs.versions.toml
+
+For more info, see original issue comment https://github.com/sebaslogen/resaca/issues/225#issuecomment-3248046031.
+
 # Assisted Injection
 
 Assisted injection is a dependency injection (DI) pattern that is used to construct an object where some parameters may be provided by the DI framework and
