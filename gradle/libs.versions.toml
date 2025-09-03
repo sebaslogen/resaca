@@ -28,7 +28,7 @@ compose-ui-toolingPreview = '1.9.0'
 # Compose integration with Activities
 androidx-activity = '1.10.1'
 # Compose integration with ViewModels
-jetbrains-lifecycle = '2.9.2'
+jetbrains-lifecycle = '2.9.3'
 # Hilt
 hilt = '2.57.1'
 hilt-navigation-compose = '1.2.0'
@@ -37,7 +37,7 @@ koin = '4.1.0'
 # Test
 junit-version = '4.13.2'
 kover = '0.9.1'
-robolectric-version = '4.15.1'
+robolectric-version = '4.16'
 espresso = '3.7.0'
 testRunner = '1.7.0'
 testRules = '1.7.0'
