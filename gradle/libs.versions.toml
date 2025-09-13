@@ -8,7 +8,7 @@ targetSdk = '36'
 minSdk = '21'
 leakcanaryAndroid = '2.14'
 coroutines = '1.10.2'
-material = '1.12.0'
+material = '1.13.0'
 materialIconsExtended = "1.7.8"
 core-ktx = '1.17.0'
 navigation = '2.9.3'
@@ -22,9 +22,9 @@ maven = '0.34.0'
 # Compose Multiplatform
 compose-plugin = '1.8.2'
 # Compose libs not included in multiplatform
-compose-ui-test-junit = '1.9.0'
-compose-ui-test-manifest = '1.9.0'
-compose-ui-toolingPreview = '1.9.0'
+compose-ui-test-junit = '1.9.1'
+compose-ui-test-manifest = '1.9.1'
+compose-ui-toolingPreview = '1.9.1'
 # Compose integration with Activities
 androidx-activity = '1.10.1'
 # Compose integration with ViewModels
