@@ -33,7 +33,7 @@ jetbrains-lifecycle = '2.9.3'
 hilt = '2.57.1'
 hilt-navigation-compose = '1.2.0'
 # Koin
-koin = '4.1.0'
+koin = '4.1.1'
 # Test
 junit-version = '4.13.2'
 kover = '0.9.1'
