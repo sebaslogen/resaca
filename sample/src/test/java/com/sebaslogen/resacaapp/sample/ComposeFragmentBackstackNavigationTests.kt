@@ -62,7 +62,7 @@ class ComposeFragmentBackstackNavigationTests : ComposeTestUtils {
                 // Given the Activity shows a screen with scoped objects
                 printComposeUiTreeToLog(fragmentComposeContainerTag)
                 // Find the NOT scoped text field and grab its text
-                val initialFakeRepoText = retrieveTextFromNodeWithTestTag(tag = "FakeRepo Not scoped", parentTestTag = fragmentComposeContainerTag)
+                val initialFakeRepoText = retrieveTextFromNodeWithTestTag(tag = "FakeRepo Not scoped")
 
                 // When I navigate to a nested fragment and back to initial screen
                 activity.navigateToFragmentTwo()
@@ -70,7 +70,7 @@ class ComposeFragmentBackstackNavigationTests : ComposeTestUtils {
                 printComposeUiTreeToLog(fragmentComposeContainerTag)
 
                 // Then the text of the NOT scoped object is different from the original one because it's a new object
-                onNodeWithTestTag(tag = "FakeRepo Not scoped", parentTestTag = fragmentComposeContainerTag)
+                onNodeWithTestTag(tag = "FakeRepo Not scoped")
                     .assert(hasTextExactly(initialFakeRepoText).not())
             }
         }
