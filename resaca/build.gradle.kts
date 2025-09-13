@@ -45,7 +45,6 @@ kotlin {
             api(libs.androidx.lifecycle.viewmodel)
             api(libs.androidx.lifecycle.viewmodel.compose)
             implementation(libs.androidx.lifecycle.runtime.compose)
-            api(libs.androidx.core.bundle)
             api(libs.coroutines.core)
         }
 

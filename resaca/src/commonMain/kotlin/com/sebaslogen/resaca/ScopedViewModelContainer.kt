@@ -3,7 +3,6 @@ package com.sebaslogen.resaca
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisallowComposableCalls
 import androidx.compose.runtime.Immutable
-import androidx.core.bundle.Bundle
 import androidx.lifecycle.HasDefaultViewModelProviderFactory
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -26,7 +25,6 @@ import kotlinx.coroutines.MainCoroutineDispatcher
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.collections.set
 import kotlin.jvm.JvmInline
 import kotlin.reflect.KClass
 
@@ -174,7 +172,6 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         modelClass: KClass<T>,
         positionalMemoizationKey: InternalKey,
         externalKey: ExternalKey,
-        defaultArguments: Bundle
     ): T {
         val owner = checkNotNull(LocalViewModelStoreOwner.current) { MISSING_VIEW_MODEL_STORE_OWNER }
         val factory = if (owner is HasDefaultViewModelProviderFactory) owner.defaultViewModelProviderFactory else DefaultViewModelProviderFactory
@@ -183,7 +180,6 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
             positionalMemoizationKey = positionalMemoizationKey,
             externalKey = externalKey,
             factory = factory,
-            defaultArguments = defaultArguments,
             viewModelStoreOwner = owner
         )
     }
@@ -197,14 +193,13 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         positionalMemoizationKey: InternalKey,
         externalKey: ExternalKey,
         factory: ViewModelProvider.Factory?,
-        defaultArguments: Bundle,
         viewModelStoreOwner: ViewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) { MISSING_VIEW_MODEL_STORE_OWNER }
     ): T = getOrBuildViewModel(
         modelClass = modelClass,
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
         factory = factory,
-        creationExtras = defaultArguments.toCreationExtras(viewModelStoreOwner),
+        creationExtras = viewModelStoreOwner.getCreationExtras(),
         viewModelStoreOwner = viewModelStoreOwner
     )
 
@@ -216,12 +211,11 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         modelClass: KClass<T>,
         positionalMemoizationKey: InternalKey,
         externalKey: ExternalKey,
-        defaultArguments: Bundle,
         builder: @DisallowComposableCalls (savedStateHandle: SavedStateHandle) -> T
     ): T {
         val viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) { MISSING_VIEW_MODEL_STORE_OWNER }
         val viewModelKey = modelClass.getCanonicalNameKey(positionalMemoizationKey + externalKey)
-        val creationExtrasWithViewModelKey = defaultArguments.toCreationExtras(viewModelStoreOwner).addViewModelKey(viewModelKey)
+        val creationExtrasWithViewModelKey = viewModelStoreOwner.getCreationExtras().addViewModelKey(viewModelKey)
         val savedStateHandle: SavedStateHandle = creationExtrasWithViewModelKey.createSavedStateHandle()
         return getOrBuildViewModel(
             modelClass = modelClass,

@@ -43,6 +43,7 @@ kotlin {
             api(project(":resaca"))
 
             api(libs.koin.core)
+            api(libs.koin.core.viewmodel)
             api(libs.koin.compose)
         }
     }

@@ -8,7 +8,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.currentCompositeKeyHash
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.core.bundle.Bundle
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -70,37 +69,6 @@ public fun <T : Any> rememberScoped(key: Any? = null, builder: @DisallowComposab
     )
 }
 
-
-/**
- * Return a [ViewModel] provided by the default [ViewModelProvider.Factory] and a [ViewModelProvider].
- * The [ViewModel] will be kept in memory for as long as needed, and until the requester Composable is permanently gone
- * and the [key] is not present anymore in [keyInScopeResolver] or the [keyInScopeResolver] itself leaves Composition.
- * This means, it retains the [ViewModel] across recompositions, during configuration changes, and
- * also when the container Fragment or Compose Navigation destination goes into the backstack.
- *
- * The [ViewModel] will be created and stored by the [ViewModelProvider] using a default [ViewModelProvider.Factory] and a [ViewModelStore].
- * The [ScopedViewModelOwner] will be the object stored in the [ScopedViewModelContainer] and
- * the [ScopedViewModelContainer] will be in charge of keeping the [ScopedViewModelOwner] and its [ViewModel] in memory for as long as needed.
- *
- * Internally, an extra key will be generated for this [ScopedViewModelOwner] in the Compose tree and if a [ScopedViewModelOwner] is present
- * for this key in the [ScopedViewModelContainer], then it will be used to invoke [ViewModelProvider] to return an existing [ViewModel],
- * instead of creating a new [ScopedViewModelOwner] that produces a new [ViewModel] instance when the keys don't match.
- *
- * @param key Key to track the version of the [ViewModel]. Changing [key] between compositions will produce and remember a new [ViewModel].
- * @param keyInScopeResolver A function that uses [key] to determine if the ViewModel should be kept in memory even after it's no longer part of the composition.
- * @param defaultArguments A [Bundle] containing all the default arguments that will be provided to the [ViewModel].
- */
-@Deprecated("Use viewModelScoped without \"defaultArguments: Bundle\" instead")
-@Composable
-public inline fun <reified T : ViewModel, K : Any> viewModelScoped(
-    key: K,
-    noinline keyInScopeResolver: KeyInScopeResolver<K>,
-    defaultArguments: Bundle
-): T {
-    val scopeKeyWithResolver: ScopeKeyWithResolver<K> = remember(key, keyInScopeResolver) { ScopeKeyWithResolver(key, keyInScopeResolver) }
-    return viewModelScoped(key = scopeKeyWithResolver, defaultArguments = defaultArguments)
-}
-
 /**
  * Return a [ViewModel] provided by the default [ViewModelProvider.Factory] and a [ViewModelProvider].
  * The [ViewModel] will be kept in memory for as long as needed, and until the requester Composable is permanently gone
@@ -125,41 +93,7 @@ public inline fun <reified T : ViewModel, K : Any> viewModelScoped(
     key: K,
 ): T {
     val scopeKeyWithResolver: ScopeKeyWithResolver<K> = remember(key, keyInScopeResolver) { ScopeKeyWithResolver(key, keyInScopeResolver) }
-    return viewModelScoped(key = scopeKeyWithResolver, defaultArguments = Bundle())
-}
-
-/**
- * Return a [ViewModel] provided by the default [ViewModelProvider.Factory] and a [ViewModelProvider].
- * The [ViewModel] will keep in memory for as long as needed, and until the requester Composable is permanently gone.
- * This means, it retains the [ViewModel] across recompositions, during configuration changes, and
- * also when the container Fragment or Compose Navigation destination goes into the backstack.
- *
- * The [ViewModel] will be created and stored by the [ViewModelProvider] using a default [ViewModelProvider.Factory] and a [ViewModelStore].
- * The [ScopedViewModelOwner] will be the object stored in the [ScopedViewModelContainer] and
- * the [ScopedViewModelContainer] will be in charge of keeping the [ScopedViewModelOwner] and its [ViewModel] in memory for as long as needed.
- *
- * Internally, an extra key will be generated for this [ScopedViewModelOwner] in the Compose tree and if a [ScopedViewModelOwner] is present
- * for this key in the [ScopedViewModelContainer], then it will be used to invoke [ViewModelProvider] to return an existing [ViewModel],
- * instead of creating a new [ScopedViewModelOwner] that produces a new [ViewModel] instance when the keys don't match.
- *
- * @param key Key to track the version of the [ViewModel]. Changing [key] between compositions will produce and remember a new [ViewModel].
- * @param defaultArguments A [Bundle] containing all the default arguments that will be provided to the [ViewModel].
- */
-@Deprecated("Use viewModelScoped without \"defaultArguments: Bundle\" instead")
-@Composable
-public inline fun <reified T : ViewModel> viewModelScoped(key: Any? = null, defaultArguments: Bundle): T {
-    require(key !is Function0<*>) { "The Key for viewModelScoped should not be a lambda" }
-
-    val (scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: InternalKey, externalKey: ExternalKey) =
-        generateKeysAndObserveLifecycle(key)
-
-    // The object will be built the first time and retrieved in next calls or recompositions
-    return scopedViewModelContainer.getOrBuildViewModel(
-        modelClass = T::class,
-        positionalMemoizationKey = positionalMemoizationKey,
-        externalKey = externalKey,
-        defaultArguments = defaultArguments
-    )
+    return viewModelScoped(key = scopeKeyWithResolver)
 }
 
 /**
@@ -190,40 +124,7 @@ public inline fun <reified T : ViewModel> viewModelScoped(key: Any? = null): T {
         modelClass = T::class,
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
-        defaultArguments = Bundle()
     )
-}
-
-/**
- * Return a [ViewModel] provided by the [builder] and a [ViewModelProvider].
- * The [ViewModel] will keep in memory for as long as needed, and until the requester Composable is permanently gone
- * and the [key] is not present anymore in [keyInScopeResolver] or the [keyInScopeResolver] itself leaves Composition.
- * This means, it retains the [ViewModel] across recompositions, during configuration changes, and
- * also when the container Fragment or Compose Navigation destination goes into the backstack.
- *
- * The [ViewModel] will be created and stored by the [ViewModelProvider] using the [builder] and a [ViewModelStore].
- * The [ScopedViewModelOwner] will be the object stored in the [ScopedViewModelContainer] and
- * the [ScopedViewModelContainer] will be in charge of keeping the [ScopedViewModelOwner] and its [ViewModel] in memory for as long as needed.
- *
- * Internally, an extra key will be generated for this [ScopedViewModelOwner] in the Compose tree and if a [ScopedViewModelOwner] is present
- * for this key in the [ScopedViewModelContainer], then it will be used to invoke [ViewModelProvider] to return an existing [ViewModel],
- * instead of creating a new [ScopedViewModelOwner] that produces a new [ViewModel] instance when the keys don't match.
- *
- * @param key Key to track the version of the [ViewModel]. Changing [key] between compositions will produce and remember a new [ViewModel].
- * @param keyInScopeResolver A function that uses [key] to determine if the ViewModel should be kept in memory even after it's no longer part of the composition.
- * @param defaultArguments A [Bundle] containing all the default arguments that will be provided to the [ViewModel].
- * @param builder Factory function to produce a new [ViewModel] that will be remembered.
- */
-@Deprecated("Use viewModelScoped without \"defaultArguments: Bundle\" instead")
-@Composable
-public inline fun <reified T : ViewModel, K : Any> viewModelScoped(
-    key: K,
-    noinline keyInScopeResolver: KeyInScopeResolver<K>,
-    defaultArguments: Bundle,
-    noinline builder: @DisallowComposableCalls (savedStateHandle: SavedStateHandle) -> T
-): T {
-    val scopeKeyWithResolver: ScopeKeyWithResolver<K> = remember(key, keyInScopeResolver) { ScopeKeyWithResolver(key, keyInScopeResolver) }
-    return viewModelScoped(key = scopeKeyWithResolver, defaultArguments = defaultArguments, builder = builder)
 }
 
 /**
@@ -252,47 +153,7 @@ public inline fun <reified T : ViewModel, K : Any> viewModelScoped(
     noinline builder: @DisallowComposableCalls (savedStateHandle: SavedStateHandle) -> T
 ): T {
     val scopeKeyWithResolver: ScopeKeyWithResolver<K> = remember(key, keyInScopeResolver) { ScopeKeyWithResolver(key, keyInScopeResolver) }
-    return viewModelScoped(key = scopeKeyWithResolver, defaultArguments = Bundle(), builder = builder)
-}
-
-/**
- * Return a [ViewModel] provided by the [builder] and a [ViewModelProvider].
- * The [ViewModel] will keep in memory for as long as needed, and until the requester Composable is permanently gone.
- * This means, it retains the [ViewModel] across recompositions, during configuration changes, and
- * also when the container Fragment or Compose Navigation destination goes into the backstack.
- *
- * The [ViewModel] will be created and stored by the [ViewModelProvider] using the [builder] and a [ViewModelStore].
- * The [ScopedViewModelOwner] will be the object stored in the [ScopedViewModelContainer] and
- * the [ScopedViewModelContainer] will be in charge of keeping the [ScopedViewModelOwner] and its [ViewModel] in memory for as long as needed.
- *
- * Internally, an extra key will be generated for this [ScopedViewModelOwner] in the Compose tree and if a [ScopedViewModelOwner] is present
- * for this key in the [ScopedViewModelContainer], then it will be used to invoke [ViewModelProvider] to return an existing [ViewModel],
- * instead of creating a new [ScopedViewModelOwner] that produces a new [ViewModel] instance when the keys don't match.
- *
- * @param key Key to track the version of the [ViewModel]. Changing [key] between compositions will produce and remember a new [ViewModel].
- * @param defaultArguments A [Bundle] containing all the default arguments that will be provided to the [ViewModel].
- * @param builder Factory function to produce a new [ViewModel] that will be remembered. The factory also creates the [SavedStateHandle] for the [ViewModel].
- */
-@Deprecated("Use viewModelScoped without \"defaultArguments: Bundle\" instead")
-@Composable
-public inline fun <reified T : ViewModel> viewModelScoped(
-    key: Any? = null,
-    defaultArguments: Bundle,
-    noinline builder: @DisallowComposableCalls (savedStateHandle: SavedStateHandle) -> T
-): T {
-    require(key !is Function0<*>) { "The Key for viewModelScoped should not be a lambda" }
-
-    val (scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: InternalKey, externalKey: ExternalKey) =
-        generateKeysAndObserveLifecycle(key)
-
-    // The object will be built the first time and retrieved in next calls or recompositions
-    return scopedViewModelContainer.getOrBuildViewModel(
-        modelClass = T::class,
-        positionalMemoizationKey = positionalMemoizationKey,
-        externalKey = externalKey,
-        defaultArguments = defaultArguments,
-        builder = builder
-    )
+    return viewModelScoped(key = scopeKeyWithResolver, builder = builder)
 }
 
 /**
@@ -327,7 +188,6 @@ public inline fun <reified T : ViewModel> viewModelScoped(
         modelClass = T::class,
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
-        defaultArguments = Bundle(),
         builder = builder
     )
 }

@@ -2,7 +2,6 @@
 agp = "8.13.0"
 kotlin = '2.2.20'
 ksp = '2.2.20-2.0.3'
-core-bundle = '1.0.1'
 compileSdk = '36'
 targetSdk = '36'
 minSdk = '23'
@@ -58,7 +57,6 @@ androidx-lifecycle-runtime-compose = { module = 'org.jetbrains.androidx.lifecycl
 androidx-activity-compose = { module = 'androidx.activity:activity-compose', version.ref = 'androidx-activity' }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-navigation-compose = { module = 'androidx.navigation:navigation-compose', version.ref = 'navigation' }
-androidx-core-bundle = { module = "org.jetbrains.androidx.core:core-bundle", version.ref = "core-bundle" }
 androidx-tracing = { module = "androidx.tracing:tracing", version.ref = "tracing" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanaryAndroid" }
@@ -81,6 +79,7 @@ dagger-hilt-android-testing = { module = 'com.google.dagger:hilt-android-testing
 dagger-hilt-navigation-compose = { module = 'androidx.hilt:hilt-navigation-compose', version.ref = 'hilt-navigation-compose' }
 
 koin-core = { module = 'io.insert-koin:koin-core', version.ref = 'koin' }
+koin-core-viewmodel = { module = 'io.insert-koin:koin-core-viewmodel', version.ref = 'koin' }
 koin-compose = { module = 'io.insert-koin:koin-compose', version.ref = 'koin' }
 koin-android = { module = 'io.insert-koin:koin-android', version.ref = 'koin' }
 koin-android-test = { module = 'io.insert-koin:koin-android-test', version.ref = 'koin' }
