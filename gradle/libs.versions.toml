@@ -1,7 +1,7 @@
 [versions]
 agp = "8.13.0"
-kotlin = '2.2.10'
-ksp = '2.2.10-2.0.2'
+kotlin = '2.2.20'
+ksp = '2.2.20-2.0.3'
 core-bundle = '1.0.1'
 compileSdk = '36'
 targetSdk = '36'
