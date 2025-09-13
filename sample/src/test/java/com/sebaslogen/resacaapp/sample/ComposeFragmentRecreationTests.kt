@@ -40,7 +40,7 @@ class ComposeFragmentRecreationTests : ComposeTestUtils {
                     retrieveTextFromNodeWithTestTag(tag = "FakeScopedViewModel Scoped", parentTestTag = fragmentComposeContainerTag)
 
                 // When we recreate the activity
-                activity.recreate()
+                scenario.recreate()
                 printComposeUiTreeToLog(fragmentComposeContainerTag)
 
                 // Then the scoped objects on the first screen are still the same
@@ -60,14 +60,14 @@ class ComposeFragmentRecreationTests : ComposeTestUtils {
                 // Given the Activity shows a screen with scoped objects inside a Fragment
                 printComposeUiTreeToLog(fragmentComposeContainerTag)
                 // Find the NOT scoped text field and grab its text
-                val initialFakeRepoText = retrieveTextFromNodeWithTestTag(tag = "FakeRepo Not scoped", parentTestTag = fragmentComposeContainerTag)
+                val initialFakeRepoText = retrieveTextFromNodeWithTestTag(tag = "FakeRepo Not scoped")
 
                 // When we recreate the activity
-                activity.recreate()
+                scenario.recreate()
                 printComposeUiTreeToLog(fragmentComposeContainerTag)
 
                 // Then the text of the NOT scoped object is different from the original one because it's a new object
-                onNodeWithTestTag(tag = "FakeRepo Not scoped", parentTestTag = fragmentComposeContainerTag)
+                onNodeWithTestTag(tag = "FakeRepo Not scoped")
                     .assert(hasTextExactly(initialFakeRepoText).not())
             }
         }
