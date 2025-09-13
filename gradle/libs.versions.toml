@@ -43,7 +43,7 @@ testRunner = '1.7.0'
 testRules = '1.7.0'
 junitKtx = '1.3.0'
 tracing = '1.3.0'
-kotlinxDatetime = "0.7.1"
+kotlinxDatetime = "0.7.1-0.6.x-compat"
 
 
 [libraries]
