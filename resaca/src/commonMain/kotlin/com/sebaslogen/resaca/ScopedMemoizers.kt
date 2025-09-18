@@ -5,9 +5,10 @@ package com.sebaslogen.resaca
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisallowComposableCalls
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.currentCompositeKeyHash
+import androidx.compose.runtime.currentCompositeKeyHashCode
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.toString
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -210,7 +211,7 @@ public fun generateKeysAndObserveLifecycle(key: Any?): Triple<ScopedViewModelCon
             // If there is no better key, then use the currentCompositeKeyHash as the internal key in combination with rememberSaveable, in this case:
             // - the object will be recreated when used in lazy lists and the Activity is recreated
             // - different objects will be returned when requesting the object on different places in the composition (e.g. when no key is provided)
-            currentCompositeKeyHash.toString(36) + "-internalResacaKey"
+            currentCompositeKeyHashCode.toString(36) + "-internalResacaKey"
         }
     val positionalMemoizationKey = InternalKey(rememberSaveable { internalKey })
     // The external key will be used to track and store new versions of the object, based on [key] input parameter
