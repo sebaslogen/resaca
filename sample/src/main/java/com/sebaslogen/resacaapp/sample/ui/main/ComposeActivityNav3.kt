@@ -15,11 +15,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
-import androidx.navigation3.runtime.entry
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
+import androidx.navigation3.scene.rememberSceneSetupNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import com.sebaslogen.resaca.hilt.hiltViewModelScoped
 import com.sebaslogen.resacaapp.sample.ui.main.ui.theme.ResacaAppTheme
 import dagger.assisted.Assisted
