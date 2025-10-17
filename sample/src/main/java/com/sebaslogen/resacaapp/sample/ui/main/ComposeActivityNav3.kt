@@ -16,8 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
-import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
-import androidx.navigation3.scene.rememberSceneSetupNavEntryDecorator
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.sebaslogen.resaca.hilt.hiltViewModelScoped
 import com.sebaslogen.resacaapp.sample.ui.main.ui.theme.ResacaAppTheme
@@ -56,8 +55,7 @@ class InjectedViewModelsActivity : ComponentActivity() {
                         backStack = backStack,
                         onBack = { backStack.removeLastOrNull() },
                         entryDecorators = listOf(
-                            rememberSceneSetupNavEntryDecorator(),
-                            rememberSavedStateNavEntryDecorator(),
+                            rememberSaveableStateHolderNavEntryDecorator(),
                             rememberViewModelStoreNavEntryDecorator()
                         ),
                         entryProvider = entryProvider {
