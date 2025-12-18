@@ -89,7 +89,6 @@ fun DemoScopedKoinParametrizedInjectedViewModelComposable(key: String? = null) {
  * Resaca handle the lifecycle of the provided [ViewModel].
  *
  * Assisted Injection is out-of-the-box supported by Koin using parameters.
- * In addition, Resaca provides optional [defaultArguments] to pass arguments to the [ViewModel] using [SavedStateHandle]
  *
  * Note: [koinViewModelScoped] is required for [FakeInjectedViewModel] because it depends on the [SavedStateHandle].
  */

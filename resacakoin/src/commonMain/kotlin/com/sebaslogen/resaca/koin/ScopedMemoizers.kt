@@ -4,12 +4,9 @@ package com.sebaslogen.resaca.koin
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
-import androidx.lifecycle.createSavedStateHandle
-import androidx.lifecycle.viewmodel.CreationExtras
 import com.sebaslogen.resaca.KeyInScopeResolver
 import com.sebaslogen.resaca.ScopeKeyWithResolver
 import com.sebaslogen.resaca.ScopedViewModelContainer
@@ -21,11 +18,9 @@ import com.sebaslogen.resaca.utils.ResacaPackagePrivate
 import org.koin.compose.getKoin
 import org.koin.core.annotation.KoinInternalApi
 import org.koin.core.parameter.ParametersDefinition
-import org.koin.core.parameter.ParametersHolder
 import org.koin.core.qualifier.Qualifier
 import org.koin.core.scope.Scope
 import org.koin.viewmodel.factory.KoinViewModelFactory
-import kotlin.reflect.KClass
 
 /**
  * Return a [ViewModel] provided by a Koin [ViewModelProvider.Factory] and a [ViewModelProvider].
@@ -111,26 +106,4 @@ public inline fun <reified T : ViewModel> koinViewModelScoped(
             params = parameters
         ),
     )
-}
-
-@Suppress("UNCHECKED_CAST")
-@PublishedApi
-internal class KoinParametersHolder(
-    initialValues: ParametersDefinition? = null,
-    private val extras: CreationExtras,
-) : ParametersHolder(initialValues?.invoke()?.values?.toMutableList() ?: mutableListOf()) {
-
-    override fun <T> elementAt(i: Int, clazz: KClass<*>): T {
-        return createSavedStateHandleOrElse(clazz) { super.elementAt(i, clazz) }
-    }
-
-    override fun <T> getOrNull(clazz: KClass<*>): T? {
-        return createSavedStateHandleOrElse(clazz) { super.getOrNull(clazz) }
-    }
-
-    private fun <T> createSavedStateHandleOrElse(clazz: KClass<*>, block: () -> T): T {
-        return if (clazz == SavedStateHandle::class) {
-            extras.createSavedStateHandle() as T
-        } else block()
-    }
 }
