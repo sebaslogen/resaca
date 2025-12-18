@@ -20,8 +20,8 @@ import com.sebaslogen.resacaapp.sample.viewModelsClearedGloballySharedCounter
  * Resaca handle the lifecycle of the provided [ViewModel].
  *
  * Assisted Injection (i.e. provide some dependencies manually to the [ViewModel] constructor and let Hilt provide the rest)
- * is supported using the [hiltViewModelScoped] defaultArguments parameter and a [Bundle] of parameters,
- * for more info and instructions see https://github.com/sebaslogen/resaca/blob/main/resacahilt/README.md#pseudo-assisted-injection-support
+ * is supported using the [hiltViewModelScoped] and creationCallback with the [@AssistedFactory],
+ * for more info and instructions see https://github.com/sebaslogen/resaca/blob/main/resacahilt/README.md#hilt
  */
 @SuppressLint("ViewModelConstructorInComposable") // This is only used for previews
 @Composable
