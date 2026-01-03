@@ -95,6 +95,14 @@ public final class com/sebaslogen/resaca/ScopedViewModelOwner {
 	public fun <init> (Ljava/lang/String;Lkotlin/reflect/KClass;)V
 }
 
+public final class com/sebaslogen/resaca/ViewModelCreationExtrasKt {
+	public static final fun addViewModelKey (Landroidx/lifecycle/viewmodel/CreationExtras;Ljava/lang/String;)Landroidx/lifecycle/viewmodel/CreationExtras;
+}
+
+public final class com/sebaslogen/resaca/utils/ClassNameKt {
+	public static final fun getCanonicalNameKey-1GS41r4 (Lkotlin/reflect/KClass;Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/String;
+}
+
 public abstract interface annotation class com/sebaslogen/resaca/utils/ResacaPackagePrivate : java/lang/annotation/Annotation {
 }
 
