@@ -110,6 +110,20 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     private val scopedObjectsContainer: MutableMap<InternalKey, Any> = mutableMapOf()
 
     /**
+     * Container of SavedStateHandle objects associated with the key for their scoped objects
+     */
+    private val scopedObjectsSavedStateHandlers: MutableMap<InternalKey, SavedStateHandleContainer> = mutableMapOf()
+
+    /**
+     * Stores the default keys present in a [SavedStateHandle] along with the [SavedStateHandle] itself.
+     * The [defaultKeys] will be used to clean up only the keys that were added after creation of the [SavedStateHandle], i.e. by the user.
+     */
+    internal data class SavedStateHandleContainer(
+        val defaultKeys: List<Any>,
+        val savedStateHandle: SavedStateHandle
+    )
+
+    /**
      * List of [Job]s associated with an object (through its key) that is scheduled to be disposed very soon, unless
      * the object is requested again (and [cancelDisposal] is triggered) or
      * the container of this [ScopedViewModelContainer] class goes to the background (making [isInForeground] false)
@@ -160,6 +174,9 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
             scopedObjectKeys[positionalMemoizationKey] = externalKey // Set the external key used to track and store the new object version
             scopedObjectsContainer.remove(positionalMemoizationKey) // Remove in case key changed
                 ?.also { clearLastDisposedObject(it) } // Old object may need to be cleared before it's forgotten
+            scopedObjectsSavedStateHandlers.remove(positionalMemoizationKey)?.also { savedStateHandleContainer ->
+                clearSavedStateHandle(savedStateHandleContainer)
+            }
             buildAndStoreObject()
         }
     }
@@ -194,14 +211,17 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         externalKey: ExternalKey,
         factory: ViewModelProvider.Factory?,
         viewModelStoreOwner: ViewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) { MISSING_VIEW_MODEL_STORE_OWNER }
-    ): T = getOrBuildViewModel(
-        modelClass = modelClass,
-        positionalMemoizationKey = positionalMemoizationKey,
-        externalKey = externalKey,
-        factory = factory,
-        creationExtras = viewModelStoreOwner.getCreationExtras(),
-        viewModelStoreOwner = viewModelStoreOwner
-    )
+    ): T {
+        val viewModelKey = modelClass.getCanonicalNameKey(positionalMemoizationKey, externalKey)
+        return getOrBuildViewModel(
+            modelClass = modelClass,
+            positionalMemoizationKey = positionalMemoizationKey,
+            externalKey = externalKey,
+            factory = factory,
+            creationExtras = viewModelStoreOwner.getCreationExtras().addViewModelKey(viewModelKey),
+            viewModelStoreOwner = viewModelStoreOwner
+        )
+    }
 
     /**
      * Restore or build a [ViewModel] using the provided [builder] as the factory
@@ -214,7 +234,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         builder: @DisallowComposableCalls (savedStateHandle: SavedStateHandle) -> T
     ): T {
         val viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) { MISSING_VIEW_MODEL_STORE_OWNER }
-        val viewModelKey = modelClass.getCanonicalNameKey(positionalMemoizationKey + externalKey)
+        val viewModelKey = modelClass.getCanonicalNameKey(positionalMemoizationKey, externalKey)
         val creationExtrasWithViewModelKey = viewModelStoreOwner.getCreationExtras().addViewModelKey(viewModelKey)
         val savedStateHandle: SavedStateHandle = creationExtrasWithViewModelKey.createSavedStateHandle()
         return getOrBuildViewModel(
@@ -246,6 +266,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         viewModelStoreOwner = viewModelStoreOwner,
         creationExtras = creationExtras,
         scopedObjectsContainer = scopedObjectsContainer,
+        scopedObjectsSavedStateHandlers = scopedObjectsSavedStateHandlers,
         scopedObjectKeys = scopedObjectKeys,
         cancelDisposal = ::cancelDisposal,
         clearLastDisposedViewModel = ::clearLastDisposedObject
@@ -334,6 +355,9 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
                             markedForDisposal.remove(key)
                             scopedObjectKeys.remove(key)
                             scopedObjectsContainer.remove(key)?.also { clearLastDisposedObject(it) }
+                            scopedObjectsSavedStateHandlers.remove(key)?.also { savedStateHandleContainer ->
+                                clearSavedStateHandle(savedStateHandleContainer)
+                            }
                         }
                     }
                     disposingJobs.remove(key)
@@ -341,6 +365,17 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
             }
         }
         disposingJobs[key] = newDisposingJob
+    }
+
+    /**
+     * Clear only the keys that were added after creation of the [SavedStateHandle], i.e. by the user.
+     */
+    private fun clearSavedStateHandle(savedStateHandleContainer: SavedStateHandleContainer) {
+        val savedStateHandle = savedStateHandleContainer.savedStateHandle
+        savedStateHandle
+            .keys().forEach { key ->
+                if (key !in savedStateHandleContainer.defaultKeys) savedStateHandle.remove<Any>(key) // Clear only user-added keys
+            }
     }
 
     /**
@@ -373,6 +408,10 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         }
         scopedObjectKeys.clear() // Clear all keys
         scopedObjectsContainer.clear() // Clear just in case this VM is leaked
+        scopedObjectsSavedStateHandlers.forEach { (_, savedStateHandleContainer) ->
+            clearSavedStateHandle(savedStateHandleContainer)
+        }
+        scopedObjectsSavedStateHandlers.clear() // Clear all keys
         super.onCleared()
     }
 

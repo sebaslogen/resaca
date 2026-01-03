@@ -25,6 +25,19 @@ class FakeInjectedViewModel @AssistedInject constructor(
     @Assisted val viewModelId: Int
 ) : ViewModel() {
 
+    /**
+     * Saved viewModelId to verify state restoration after process death simulation
+     * This should not be restored when a new ViewModel is created after key change or new ViewModel instance (e.g. dialog closed & opened)
+     */
+    var savedId: Int? = stateSaver["viewModelId"]
+
+    init {
+        if (savedId == null) { // Only save the viewModelId if it is not restored from saved state
+            stateSaver["viewModelId"] = viewModelId
+            savedId = viewModelId
+        }
+    }
+
     override fun onCleared() {
         println("FakeInjectedViewModel.onCleared() with SSH: $stateSaver")
         viewModelsClearedCounter.incrementAndGet()

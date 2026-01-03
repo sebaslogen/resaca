@@ -4,13 +4,17 @@ package com.sebaslogen.resaca
 
 import androidx.annotation.MainThread
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.sebaslogen.resaca.ScopedViewModelContainer.ExternalKey
 import com.sebaslogen.resaca.ScopedViewModelContainer.InternalKey
+import com.sebaslogen.resaca.ScopedViewModelContainer.SavedStateHandleContainer
 import com.sebaslogen.resaca.utils.ResacaPackagePrivate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
@@ -41,6 +45,7 @@ internal object ScopedViewModelUtils {
         viewModelStoreOwner: ViewModelStoreOwner,
         creationExtras: CreationExtras,
         scopedObjectsContainer: MutableMap<InternalKey, Any>,
+        scopedObjectsSavedStateHandlers: MutableMap<InternalKey, SavedStateHandleContainer>,
         scopedObjectKeys: MutableMap<InternalKey, ExternalKey>,
         cancelDisposal: (InternalKey) -> Unit,
         clearLastDisposedViewModel: (Any, List<Any>) -> Unit
@@ -61,16 +66,50 @@ internal object ScopedViewModelUtils {
                     ?.also { // Old object may need to be cleared before it's forgotten
                         clearLastDisposedViewModel(it, scopedObjectsContainer.values.toList())
                     }
+                // Remove in case key changed
+                scopedObjectsSavedStateHandlers.remove(positionalMemoizationKey)?.also { savedStateHandleContainer ->
+                    savedStateHandleContainer.savedStateHandle.let {
+                        it.keys().forEach { key ->
+                            if (key !in savedStateHandleContainer.defaultKeys) it.remove<Any>(key)
+                        }
+                    }
+                }
                 scopedObjectKeys[positionalMemoizationKey] = externalKey // Set the new external key used to track and store the new object version
                 val newScopedViewModelOwner = ScopedViewModelOwner(
                     key = positionalMemoizationKey + externalKey, // Both keys needed to handle recreation by ViewModelProvider when any of these keys changes
                     modelClass = modelClass
                 )
                 scopedObjectsContainer[positionalMemoizationKey] = newScopedViewModelOwner
+                scopedSavedStateHandleForCleanup(creationExtras, positionalMemoizationKey, scopedObjectsSavedStateHandlers)
                 newScopedViewModelOwner.getViewModel(factory, viewModelStoreOwner, creationExtras)
             }
 
         return viewModel
+    }
+
+    /**
+     * Store the [SavedStateHandle] created from the given [creationExtras] for the object identified by [positionalMemoizationKey]
+     * to be able to clean it up when the scoped object is removed from the [ScopedViewModelContainer], i.e. when the ViewModel is cleared.
+     * The clean up consists of removing any extra keys added to the [SavedStateHandle] during the lifetime of the scoped object (i.e. by the user),
+     * keeping only the default keys that were present when the [SavedStateHandle] was created.
+     */
+    @Suppress("ComposableNaming")
+    @Composable
+    internal inline fun scopedSavedStateHandleForCleanup(
+        creationExtras: CreationExtras,
+        positionalMemoizationKey: InternalKey,
+        scopedObjectsSavedStateHandlers: MutableMap<InternalKey, SavedStateHandleContainer>
+    ) {
+        // Get the state handle to trigger its creation early and clear it when the VM is cleared
+        val stateHandle: SavedStateHandle = try {
+            creationExtras.createSavedStateHandle()
+        } catch (e: IllegalArgumentException) {
+            // SavedStateHandle is not needed for this object, e.g. ViewModel with no parameters
+            return
+        }
+        val defaultStateHandleKeys = rememberSaveable(positionalMemoizationKey) { stateHandle.keys().toList() }
+        scopedObjectsSavedStateHandlers[positionalMemoizationKey] =
+            SavedStateHandleContainer(defaultKeys = defaultStateHandleKeys, savedStateHandle = stateHandle)
     }
 
     /**
