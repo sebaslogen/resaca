@@ -23,6 +23,7 @@ import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoScreenInActivity
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeRepo
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeScopedViewModel
 import com.sebaslogen.resacaapp.sample.ui.main.navigateToFragmentTwo
+import dagger.hilt.android.AndroidEntryPoint
 import java.io.Closeable
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
@@ -37,6 +38,7 @@ val closeableClosedGloballySharedCounter: AtomicLong = AtomicLong(0)
  */
 val viewModelsClearedGloballySharedCounter: AtomicInteger = AtomicInteger(0)
 
+@AndroidEntryPoint // This annotation is required for Hilt to work anywhere inside this Activity
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

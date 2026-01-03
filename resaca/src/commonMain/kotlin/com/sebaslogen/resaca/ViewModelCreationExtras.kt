@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider.Companion.VIEW_MODEL_KEY
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.MutableCreationExtras
+import com.sebaslogen.resaca.utils.ResacaPackagePrivate
 
 
 internal fun ViewModelStoreOwner.getCreationExtras(
@@ -19,7 +20,8 @@ internal fun ViewModelStoreOwner.getCreationExtras(
  * This is a helper function to add the [viewModelKey] to the [CreationExtras] if it is not already present.
  * The [viewModelKey] is, among others, used to create a [SavedStateHandle] for the [ViewModel].
  */
-internal fun CreationExtras.addViewModelKey(viewModelKey: String): CreationExtras =
+@ResacaPackagePrivate
+public fun CreationExtras.addViewModelKey(viewModelKey: String): CreationExtras =
     MutableCreationExtras(this).apply {
         if (get(VIEW_MODEL_KEY) == null) {
             set(VIEW_MODEL_KEY, viewModelKey)

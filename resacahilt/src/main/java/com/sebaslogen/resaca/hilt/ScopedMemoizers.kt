@@ -20,8 +20,10 @@ import com.sebaslogen.resaca.ScopedViewModelContainer
 import com.sebaslogen.resaca.ScopedViewModelContainer.ExternalKey
 import com.sebaslogen.resaca.ScopedViewModelContainer.InternalKey
 import com.sebaslogen.resaca.ScopedViewModelOwner
+import com.sebaslogen.resaca.addViewModelKey
 import com.sebaslogen.resaca.generateKeysAndObserveLifecycle
 import com.sebaslogen.resaca.utils.ResacaPackagePrivate
+import com.sebaslogen.resaca.utils.getCanonicalNameKey
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.hilt.android.AndroidEntryPoint
@@ -198,7 +200,8 @@ public inline fun <reified VM : ViewModel, reified VMF> hiltViewModelScoped(key:
 
     val defaultCreationExtras =
         if (viewModelStoreOwner is HasDefaultViewModelProviderFactory) viewModelStoreOwner.defaultViewModelCreationExtras else CreationExtras.Empty
-    val creationExtras = defaultCreationExtras.withCreationCallback(creationCallback)
+    val viewModelKey = VM::class.getCanonicalNameKey(positionalMemoizationKey, externalKey)
+    val creationExtrasWithViewModelKey = defaultCreationExtras.withCreationCallback(creationCallback).addViewModelKey(viewModelKey)
 
     // The object will be built the first time and retrieved in next calls or recompositions
     return scopedViewModelContainer.getOrBuildViewModel(
@@ -207,7 +210,7 @@ public inline fun <reified VM : ViewModel, reified VMF> hiltViewModelScoped(key:
         externalKey = externalKey,
         factory = createHiltViewModelFactory(viewModelStoreOwner),
         viewModelStoreOwner = viewModelStoreOwner,
-        creationExtras = creationExtras
+        creationExtras = creationExtrasWithViewModelKey
     )
 }
 
