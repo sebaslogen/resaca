@@ -11,7 +11,9 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.platform.testTag
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.sebaslogen.resaca.hilt.hiltViewModelScoped
@@ -126,6 +128,7 @@ fun DemoDialogWithRandomIdHiltViewModel() {
                 }
 
             AlertDialog(
+                modifier = Modifier.testTag("AlertDialogWithHiltRandomIDViewModel"),
                 onDismissRequest = { showDialog = false },
                 title = { Text("Dialog with saved Random ID: ${fakeInjectedVM.savedId}") },
                 text = {
@@ -136,7 +139,9 @@ fun DemoDialogWithRandomIdHiltViewModel() {
                     )
                 },
                 confirmButton = {
-                    Button(onClick = { showDialog = false }) {
+                    Button(onClick = {
+                        showDialog = false
+                    }) {
                         Text("Close")
                     }
                 }

@@ -8,11 +8,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sebaslogen.resacaapp.sample.ui.main.ComposeActivity
 import com.sebaslogen.resacaapp.sample.ui.main.ScreensWithNavigation
+import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoDialogWithRandomIdHiltViewModel
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedHiltInjectedViewModelComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedSecondHiltInjectedViewModelComposable
 import com.sebaslogen.resacaapp.sample.ui.main.emptyDestination
@@ -225,6 +227,61 @@ class ClearScopedViewModelTests : ComposeTestUtils {
         assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 1) {
             "The amount of FakeScopedViewModels that were cleared after key change ($finalAmountOfViewModelsCleared) " +
                     "was not two numbers higher that the amount before the key change ($initialAmountOfViewModelsCleared)"
+        }
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    // Scenarios to test SavedStateHandle cleanup after ViewModel disposal //
+    //////////////////////////////////////////////////////////////////////////
+
+    @Test
+    fun `when dialog is closed and reopened, then the Hilt ViewModel has a new random ID because SavedState is cleared`() = runTest {
+
+        // Given the starting screen with the dialog button from DemoDialogWithRandomIdHiltViewModel
+        composeTestRule.activity.setContent {
+            Column {
+                DemoDialogWithRandomIdHiltViewModel()
+            }
+        }
+        printComposeUiTreeToLog()
+
+        // When I open the dialog for the first time
+        composeTestRule.onNodeWithText("Open Dialog with Random ID ViewModel").performClick()
+        advanceTimeBy(100) // Advance time to allow dialog to appear
+        printComposeUiTreeToLog(testTag = "AlertDialogWithHiltRandomIDViewModel")
+
+        // Get the first random ID from the dialog title
+        val firstDialogTitleNode = composeTestRule.onNodeWithText("Dialog with saved Random ID:", substring = true, useUnmergedTree = true)
+        firstDialogTitleNode.assertExists()
+        val firstDialogTitle = firstDialogTitleNode.fetchSemanticsNode().config
+            .first { it.key.name == "Text" }
+            .value.toString()
+        val firstRandomId = firstDialogTitle.substringAfter("Dialog with saved Random ID:").trim()
+            .removeSuffix("]").trim()
+
+        // And close the dialog
+        composeTestRule.onNodeWithText("Close").performClick()
+        printComposeUiTreeToLog()
+        advanceTimeBy(100) // Advance time to allow clear call on ScopedViewModelContainer to be processed before requesting a new dialog
+
+        // And open the dialog again (which will generate a new random ID)
+        composeTestRule.onNodeWithText("Open Dialog with Random ID ViewModel").performClick()
+        printComposeUiTreeToLog(testTag = "AlertDialogWithHiltRandomIDViewModel")
+
+        // Get the second random ID from the dialog title
+        val secondDialogTitleNode = composeTestRule.onNodeWithText("Dialog with saved Random ID:", substring = true, useUnmergedTree = true)
+        secondDialogTitleNode.assertExists()
+        val secondDialogTitle = secondDialogTitleNode.fetchSemanticsNode().config
+            .first { it.key.name == "Text" }
+            .value.toString()
+        val secondRandomId = secondDialogTitle.substringAfter("Dialog with saved Random ID:").trim()
+            .removeSuffix("]").trim()
+
+        // Then the random IDs should be different because SavedStateHandle was cleaned up
+        assert(firstRandomId != secondRandomId) {
+            "The random ID in the dialog should be different after closing and reopening, " +
+                    "but both were the same: first=$firstRandomId, second=$secondRandomId. " +
+                    "This indicates SavedStateHandle was not properly cleaned up."
         }
     }
 }
