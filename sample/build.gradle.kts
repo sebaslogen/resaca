@@ -75,6 +75,7 @@ dependencies {
     // Hilt dependencies
     implementation(libs.dagger.hilt)
     ksp(libs.dagger.hilt.compiler)
+    ksp(libs.kotlin.metadata.jvm)
 
     implementation(libs.koin.android)
 
