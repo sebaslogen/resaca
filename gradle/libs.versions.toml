@@ -36,7 +36,7 @@ koin = '4.1.1'
 # Test
 junit-version = '4.13.2'
 kover = '0.9.4'
-robolectric-version = '4.16'
+robolectric-version = '4.16.1'
 espresso = '3.7.0'
 testRunner = '1.7.0'
 testRules = '1.7.0'
