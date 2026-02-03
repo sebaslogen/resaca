@@ -25,7 +25,7 @@ compose-ui-test-junit = '1.10.1'
 compose-ui-test-manifest = '1.10.1'
 compose-ui-toolingPreview = '1.10.1'
 # Compose integration with Activities
-androidx-activity = '1.12.2'
+androidx-activity = '1.12.3'
 # Compose integration with ViewModels
 jetbrains-lifecycle = '2.9.6'
 # Hilt
