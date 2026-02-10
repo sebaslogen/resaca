@@ -22,7 +22,7 @@ maven = '0.36.0'
 compose-plugin = '1.10.0'
 # Compose libs not included in multiplatform
 compose-ui-test-junit = '1.10.1'
-compose-ui-test-manifest = '1.10.1'
+compose-ui-test-manifest = '1.10.2'
 compose-ui-toolingPreview = '1.10.1'
 # Compose integration with Activities
 androidx-activity = '1.12.3'
