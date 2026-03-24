@@ -29,6 +29,7 @@ import dagger.assisted.AssistedFactory
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.lifecycle.withCreationCallback
+import kotlin.time.Duration
 
 
 /**
@@ -49,14 +50,16 @@ import dagger.hilt.android.lifecycle.withCreationCallback
  *
  * @param key Key to track the version of the [ViewModel]. Changing [key] between compositions will produce and store a new [ViewModel].
  * @param keyInScopeResolver A function that uses [key] to determine if the ViewModel should be kept in memory even after it's no longer part of the composition.
+ * @param clearDelay The delay after which the [ViewModel] will be cleared from memory.
  */
 @Composable
 public inline fun <reified T : ViewModel, K : Any> hiltViewModelScoped(
     key: K,
     noinline keyInScopeResolver: KeyInScopeResolver<K>,
+    clearDelay: Duration? = null,
 ): T {
     val scopeKeyWithResolver: ScopeKeyWithResolver<K> = remember(key, keyInScopeResolver) { ScopeKeyWithResolver(key, keyInScopeResolver) }
-    return hiltViewModelScoped(key = scopeKeyWithResolver)
+    return hiltViewModelScoped(key = scopeKeyWithResolver, clearDelay = clearDelay)
 }
 
 /**
@@ -75,9 +78,13 @@ public inline fun <reified T : ViewModel, K : Any> hiltViewModelScoped(
  * instead of creating a new [ScopedViewModelOwner] that produces a new [ViewModel] instance when the keys don't match.
  *
  * @param key Key to track the version of the [ViewModel]. Changing [key] between compositions will produce and store a new [ViewModel].
+ * @param clearDelay The delay after which the [ViewModel] will be cleared from memory.
  */
 @Composable
-public inline fun <reified T : ViewModel> hiltViewModelScoped(key: Any? = null): T {
+public inline fun <reified T : ViewModel> hiltViewModelScoped(
+    key: Any? = null,
+    clearDelay: Duration? = null
+): T {
     val (scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: InternalKey, externalKey: ExternalKey) =
         generateKeysAndObserveLifecycle(key = key)
 
@@ -90,6 +97,7 @@ public inline fun <reified T : ViewModel> hiltViewModelScoped(key: Any? = null):
         modelClass = T::class,
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
+        clearDelay = clearDelay,
         factory = createHiltViewModelFactory(viewModelStoreOwner),
         viewModelStoreOwner = viewModelStoreOwner,
     )
@@ -126,12 +134,14 @@ public inline fun <reified T : ViewModel> hiltViewModelScoped(key: Any? = null):
  *
  * @param key Key to track the version of the [ViewModel]. Changing [key] between compositions will produce and store a new [ViewModel].
  * @param keyInScopeResolver A function that uses [key] to determine if the ViewModel should be kept in memory even after it's no longer part of the composition.
+ * @param clearDelay The delay after which the [ViewModel] will be cleared from memory.
  * @param creationCallback A callback to pass [ViewModel] creation [Assisted] parameters to Hilt using your [AssistedFactory].
  */
 @Composable
 public inline fun <reified VM : ViewModel, reified VMF, K : Any> hiltViewModelScoped(
     key: K,
     noinline keyInScopeResolver: KeyInScopeResolver<K>,
+    clearDelay: Duration? = null,
     noinline creationCallback: (VMF) -> VM
 ): VM {
 
@@ -153,6 +163,7 @@ public inline fun <reified VM : ViewModel, reified VMF, K : Any> hiltViewModelSc
         modelClass = VM::class,
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
+        clearDelay = clearDelay,
         factory = createHiltViewModelFactory(viewModelStoreOwner),
         viewModelStoreOwner = viewModelStoreOwner,
         creationExtras = creationExtras
@@ -187,10 +198,15 @@ public inline fun <reified VM : ViewModel, reified VMF, K : Any> hiltViewModelSc
  *             }
  *
  * @param key Key to track the version of the [ViewModel]. Changing [key] between compositions will produce and store a new [ViewModel].
+ * @param clearDelay The delay after which the [ViewModel] will be cleared from memory.
  * @param creationCallback A callback to pass [ViewModel] creation [Assisted] parameters to Hilt using your [AssistedFactory].
  */
 @Composable
-public inline fun <reified VM : ViewModel, reified VMF> hiltViewModelScoped(key: Any? = null, noinline creationCallback: (VMF) -> VM): VM {
+public inline fun <reified VM : ViewModel, reified VMF> hiltViewModelScoped(
+    key: Any? = null,
+    clearDelay: Duration? = null,
+    noinline creationCallback: (VMF) -> VM
+): VM {
     val (scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: InternalKey, externalKey: ExternalKey) =
         generateKeysAndObserveLifecycle(key = key)
 
@@ -208,6 +224,7 @@ public inline fun <reified VM : ViewModel, reified VMF> hiltViewModelScoped(key:
         modelClass = VM::class,
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
+        clearDelay = clearDelay,
         factory = createHiltViewModelFactory(viewModelStoreOwner),
         viewModelStoreOwner = viewModelStoreOwner,
         creationExtras = creationExtrasWithViewModelKey

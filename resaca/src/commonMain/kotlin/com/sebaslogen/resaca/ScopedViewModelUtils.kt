@@ -20,6 +20,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
+import kotlin.time.Duration
 
 
 /**
@@ -41,11 +42,13 @@ internal object ScopedViewModelUtils {
         modelClass: KClass<T>,
         positionalMemoizationKey: InternalKey,
         externalKey: ExternalKey,
+        clearDelay: Duration? = null,
         factory: ViewModelProvider.Factory?,
         viewModelStoreOwner: ViewModelStoreOwner,
         creationExtras: CreationExtras,
         scopedObjectsContainer: MutableMap<InternalKey, Any>,
         scopedObjectsSavedStateHandlers: MutableMap<InternalKey, SavedStateHandleContainer>,
+        scopedObjectsClearDelays: MutableMap<InternalKey, Duration>,
         scopedObjectKeys: MutableMap<InternalKey, ExternalKey>,
         cancelDisposal: (InternalKey) -> Unit,
         clearLastDisposedViewModel: (Any, List<Any>) -> Unit
@@ -75,6 +78,7 @@ internal object ScopedViewModelUtils {
                     }
                 }
                 scopedObjectKeys[positionalMemoizationKey] = externalKey // Set the new external key used to track and store the new object version
+                clearDelay?.let { scopedObjectsClearDelays[positionalMemoizationKey] = it }
                 val newScopedViewModelOwner = ScopedViewModelOwner(
                     key = positionalMemoizationKey + externalKey, // Both keys needed to handle recreation by ViewModelProvider when any of these keys changes
                     modelClass = modelClass

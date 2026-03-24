@@ -19,6 +19,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebaslogen.resaca.ScopedViewModelContainer.ExternalKey
 import com.sebaslogen.resaca.ScopedViewModelContainer.InternalKey
 import com.sebaslogen.resaca.utils.ResacaPackagePrivate
+import kotlin.time.Duration
 
 
 /**
@@ -34,12 +35,18 @@ import com.sebaslogen.resaca.utils.ResacaPackagePrivate
  *
  * @param key Key to track the version of the stored object. Changing [key] between compositions will produce and remember a new value by calling [builder].
  * @param keyInScopeResolver A function that uses [key] to determine if the object should be kept in memory even after it's no longer part of the composition.
+ * @param clearDelay The delay after which the object will be cleared from the [ScopedViewModelContainer].
  * @param builder Factory function to produce a new value that will be remembered.
  */
 @Composable
-public fun <T : Any, K : Any> rememberScoped(key: K, keyInScopeResolver: KeyInScopeResolver<K>, builder: @DisallowComposableCalls () -> T): T {
+public fun <T : Any, K : Any> rememberScoped(
+    key: K,
+    keyInScopeResolver: KeyInScopeResolver<K>,
+    clearDelay: Duration? = null,
+    builder: @DisallowComposableCalls () -> T
+): T {
     val scopeKeyWithResolver: ScopeKeyWithResolver<K> = remember(key, keyInScopeResolver) { ScopeKeyWithResolver(key, keyInScopeResolver) }
-    return rememberScoped(key = scopeKeyWithResolver, builder = builder)
+    return rememberScoped(key = scopeKeyWithResolver, clearDelay = clearDelay, builder = builder)
 }
 
 /**
@@ -53,10 +60,15 @@ public fun <T : Any, K : Any> rememberScoped(key: K, keyInScopeResolver: KeyInSc
  * for this key in the [ScopedViewModelContainer], then it will be returned instead of calling the [builder].
  *
  * @param key Key to track the version of the stored object. Changing [key] between compositions will produce and remember a new value by calling [builder].
+ * @param clearDelay The delay after which the object will be cleared from the [ScopedViewModelContainer].
  * @param builder Factory function to produce a new value that will be remembered.
  */
 @Composable
-public fun <T : Any> rememberScoped(key: Any? = null, builder: @DisallowComposableCalls () -> T): T {
+public fun <T : Any> rememberScoped(
+    key: Any? = null,
+    clearDelay: Duration? = null,
+    builder: @DisallowComposableCalls () -> T
+): T {
     require(key !is Function0<*>) { "The Key for rememberScoped should not be a lambda" }
 
     val (scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: InternalKey, externalKey: ExternalKey) =
@@ -66,6 +78,7 @@ public fun <T : Any> rememberScoped(key: Any? = null, builder: @DisallowComposab
     return scopedViewModelContainer.getOrBuildObject(
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
+        clearDelay = clearDelay,
         builder = builder
     )
 }
@@ -87,14 +100,16 @@ public fun <T : Any> rememberScoped(key: Any? = null, builder: @DisallowComposab
  *
  * @param key Key to track the version of the [ViewModel]. Changing [key] between compositions will produce and remember a new [ViewModel].
  * @param keyInScopeResolver A function that uses [key] to determine if the ViewModel should be kept in memory even after it's no longer part of the composition.
+ * @param clearDelay The delay after which the [ViewModel] will be cleared from the [ScopedViewModelContainer].
  */
 @Composable
 public inline fun <reified T : ViewModel, K : Any> viewModelScoped(
     noinline keyInScopeResolver: KeyInScopeResolver<K>,
     key: K,
+    clearDelay: Duration? = null,
 ): T {
     val scopeKeyWithResolver: ScopeKeyWithResolver<K> = remember(key, keyInScopeResolver) { ScopeKeyWithResolver(key, keyInScopeResolver) }
-    return viewModelScoped(key = scopeKeyWithResolver)
+    return viewModelScoped(key = scopeKeyWithResolver, clearDelay = clearDelay)
 }
 
 /**
@@ -112,9 +127,13 @@ public inline fun <reified T : ViewModel, K : Any> viewModelScoped(
  * instead of creating a new [ScopedViewModelOwner] that produces a new [ViewModel] instance when the keys don't match.
  *
  * @param key Key to track the version of the [ViewModel]. Changing [key] between compositions will produce and remember a new [ViewModel].
+ * @param clearDelay The delay after which the [ViewModel] will be cleared from the [ScopedViewModelContainer].
  */
 @Composable
-public inline fun <reified T : ViewModel> viewModelScoped(key: Any? = null): T {
+public inline fun <reified T : ViewModel> viewModelScoped(
+    key: Any? = null,
+    clearDelay: Duration? = null
+): T {
     require(key !is Function0<*>) { "The Key for viewModelScoped should not be a lambda" }
 
     val (scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: InternalKey, externalKey: ExternalKey) =
@@ -125,6 +144,7 @@ public inline fun <reified T : ViewModel> viewModelScoped(key: Any? = null): T {
         modelClass = T::class,
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
+        clearDelay = clearDelay,
     )
 }
 
@@ -145,16 +165,18 @@ public inline fun <reified T : ViewModel> viewModelScoped(key: Any? = null): T {
  *
  * @param key Key to track the version of the [ViewModel]. Changing [key] between compositions will produce and remember a new [ViewModel].
  * @param keyInScopeResolver A function that uses [key] to determine if the ViewModel should be kept in memory even after it's no longer part of the composition.
+ * @param clearDelay The delay after which the [ViewModel] will be cleared from the [ScopedViewModelContainer].
  * @param builder Factory function to produce a new [ViewModel] that will be remembered.
  */
 @Composable
 public inline fun <reified T : ViewModel, K : Any> viewModelScoped(
     key: K,
     noinline keyInScopeResolver: KeyInScopeResolver<K>,
+    clearDelay: Duration? = null,
     noinline builder: @DisallowComposableCalls (savedStateHandle: SavedStateHandle) -> T
 ): T {
     val scopeKeyWithResolver: ScopeKeyWithResolver<K> = remember(key, keyInScopeResolver) { ScopeKeyWithResolver(key, keyInScopeResolver) }
-    return viewModelScoped(key = scopeKeyWithResolver, builder = builder)
+    return viewModelScoped(key = scopeKeyWithResolver, clearDelay = clearDelay, builder = builder)
 }
 
 /**
@@ -172,11 +194,13 @@ public inline fun <reified T : ViewModel, K : Any> viewModelScoped(
  * instead of creating a new [ScopedViewModelOwner] that produces a new [ViewModel] instance when the keys don't match.
  *
  * @param key Key to track the version of the [ViewModel]. Changing [key] between compositions will produce and remember a new [ViewModel].
+ * @param clearDelay The delay after which the [ViewModel] will be cleared from the [ScopedViewModelContainer].
  * @param builder Factory function to produce a new [ViewModel] that will be remembered. The factory also creates the [SavedStateHandle] for the [ViewModel].
  */
 @Composable
 public inline fun <reified T : ViewModel> viewModelScoped(
     key: Any? = null,
+    clearDelay: Duration? = null,
     noinline builder: @DisallowComposableCalls (savedStateHandle: SavedStateHandle) -> T
 ): T {
     require(key !is Function0<*>) { "The Key for viewModelScoped should not be a lambda" }
@@ -189,6 +213,7 @@ public inline fun <reified T : ViewModel> viewModelScoped(
         modelClass = T::class,
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
+        clearDelay = clearDelay,
         builder = builder
     )
 }

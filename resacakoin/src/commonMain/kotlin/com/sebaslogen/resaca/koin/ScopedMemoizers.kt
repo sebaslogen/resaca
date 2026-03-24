@@ -21,6 +21,7 @@ import org.koin.core.parameter.ParametersDefinition
 import org.koin.core.qualifier.Qualifier
 import org.koin.core.scope.Scope
 import org.koin.viewmodel.factory.KoinViewModelFactory
+import kotlin.time.Duration
 
 /**
  * Return a [ViewModel] provided by a Koin [ViewModelProvider.Factory] and a [ViewModelProvider].
@@ -42,6 +43,7 @@ import org.koin.viewmodel.factory.KoinViewModelFactory
  * @param keyInScopeResolver A function that uses [key] to determine if the ViewModel should be kept in memory even after it's no longer part of the composition.
  * @param qualifier Koin qualifier to help qualify a component, like named qualifiers.
  * @param scope Koin scope.
+ * @param clearDelay The delay after which the [ViewModel] will be cleared from memory.
  * @param parameters for instance building injection. These can be used for assisted injection.
  */
 @OptIn(KoinInternalApi::class)
@@ -51,6 +53,7 @@ public inline fun <reified T : ViewModel, K : Any> koinViewModelScoped(
     noinline keyInScopeResolver: KeyInScopeResolver<K>,
     qualifier: Qualifier? = null,
     scope: Scope = getKoin().scopeRegistry.rootScope,
+    clearDelay: Duration? = null,
     noinline parameters: ParametersDefinition? = null,
 ): T {
     val scopeKeyWithResolver: ScopeKeyWithResolver<K> = remember(key, keyInScopeResolver) { ScopeKeyWithResolver(key, keyInScopeResolver) }
@@ -58,6 +61,7 @@ public inline fun <reified T : ViewModel, K : Any> koinViewModelScoped(
         key = scopeKeyWithResolver,
         qualifier = qualifier,
         scope = scope,
+        clearDelay = clearDelay,
         parameters = parameters
     )
 }
@@ -80,6 +84,7 @@ public inline fun <reified T : ViewModel, K : Any> koinViewModelScoped(
  * @param key Key to track the version of the [ViewModel]. Changing [key] between compositions will produce and store a new [ViewModel].
  * @param qualifier Koin qualifier to help qualify a component, like named qualifiers.
  * @param scope Koin scope.
+ * @param clearDelay The delay after which the [ViewModel] will be cleared from memory.
  * @param parameters for instance building injection. These can be used for assisted injection.
  */
 @OptIn(KoinInternalApi::class)
@@ -88,6 +93,7 @@ public inline fun <reified T : ViewModel> koinViewModelScoped(
     key: Any? = null,
     qualifier: Qualifier? = null,
     scope: Scope = getKoin().scopeRegistry.rootScope,
+    clearDelay: Duration? = null,
     noinline parameters: ParametersDefinition? = null,
 ): T {
 
@@ -99,6 +105,7 @@ public inline fun <reified T : ViewModel> koinViewModelScoped(
         modelClass = T::class,
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
+        clearDelay = clearDelay,
         factory = KoinViewModelFactory(
             kClass = T::class,
             scope = scope,
