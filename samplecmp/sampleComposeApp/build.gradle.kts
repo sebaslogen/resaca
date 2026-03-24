@@ -1,24 +1,20 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.application)
+    id("com.android.kotlin.multiplatform.library")
     alias(libs.plugins.jetbrains.compose)
     alias(libs.plugins.compose.compiler)
 }
 
 kotlin {
-    androidTarget {
-        compilerOptions {
-            jvmTarget = JvmTarget.JVM_17
-        }
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
+    androidLibrary {
+        namespace = "com.sebaslogen.resacaapp.samplecmp.shared"
+        compileSdk = libs.versions.compileSdk.get().toInt()
+        minSdk = libs.versions.minSdk.get().toInt()
     }
 
     listOf(
@@ -32,7 +28,11 @@ kotlin {
         }
     }
 
-    jvm("desktop")
+    jvm("desktop") {
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_17
+        }
+    }
 
     js {
         browser {
@@ -69,10 +69,6 @@ kotlin {
             // Dependency required to run the tests without org.jetbrains.skiko.LibraryLoadException
             implementation(compose.desktop.currentOs)
         }
-        androidMain.dependencies {
-            implementation(compose.preview)
-            implementation(libs.androidx.activity.compose)
-        }
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -91,56 +87,6 @@ kotlin {
             implementation(compose.uiTest)
             implementation(libs.androidx.lifecycle.runtime.compose)
         }
-    }
-}
-
-android {
-    namespace = "com.sebaslogen.resacaapp.samplecmp"
-    compileSdk = libs.versions.compileSdk.get().toInt()
-
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    sourceSets["main"].res.srcDirs("src/androidMain/res")
-    sourceSets["main"].resources.srcDirs("src/commonMain/resources")
-
-    defaultConfig {
-        applicationId = "com.sebaslogen.resacaapp.cmp"
-        minSdk = libs.versions.minSdk.get().toInt()
-        targetSdk = libs.versions.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-    packaging {
-        resources {
-            excludes += setOf(
-                // Exclude consumer proguard files
-                "META-INF/proguard/*",
-                // Exclude the Firebase/Fabric/other random properties files
-                "/*.properties",
-                "fabric/*.properties",
-                "META-INF/*.properties",
-                "/META-INF/{AL2.0,LGPL2.1}",
-                "/META-INF/INDEX.LIST",
-            )
-        }
-    }
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
-        }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    buildFeatures {
-        compose = true
-    }
-    dependencies {
-        androidTestImplementation(libs.compose.ui.test.junit)
-        debugImplementation(libs.androidx.tracing)
-        debugImplementation(libs.compose.ui.test.manifest)
-        debugImplementation(compose.uiTooling)
     }
 }
 
@@ -163,16 +109,4 @@ tasks.withType<AbstractTestTask> {
             println("Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)")
         }
     }))
-
-    // Disable unit tests for release build type (Robolectric limitations)
-    if (name.contains("testReleaseUnitTest")) {
-        enabled = false
-    }
-}
-
-tasks.whenTaskAdded {
-    // We need to disable this test task because the CMP tests can't run as unit tests, they run as connectedAndroidTest and iosSimulatorArm64Test
-    if (name == "testDebugUnitTest" || name == "testReleaseUnitTest") {
-        enabled = false
-    }
 }
