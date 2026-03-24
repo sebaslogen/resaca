@@ -117,6 +117,23 @@ class MyViewModel @Inject constructor(private val stateSaver: SavedStateHandle) 
 ```
 </details>
 
+<details>
+  <summary>Scope a ViewModel injected by Hilt with a clear delay to a Composable</summary>
+  
+```kotlin
+@Composable
+fun DemoInjectedViewModelWithClearDelay() {
+    // The ViewModel will be kept in memory for 5 seconds after the Composable is disposed,
+    // giving it a chance to be reused if the Composable returns to composition (e.g. quick navigation back and forth)
+    val myInjectedViewModel: MyViewModel = hiltViewModelScoped(clearDelay = 5.seconds)
+    DemoComposable(viewModel = myInjectedViewModel)
+}
+
+@HiltViewModel
+class MyViewModel @Inject constructor(private val stateSaver: SavedStateHandle) : ViewModel()
+```
+</details>
+
 Once you use the `hiltViewModelScoped` function, the same object will be restored as long as the Composable is part of the composition, even if it _temporarily_
 leaves composition on configuration change (e.g. screen rotation, change to dark mode, etc.) or while being in the backstack.
 
@@ -174,6 +191,38 @@ fun DemoManyInjectedViewModelsScopedOutsideTheLazyColumn(listItems: List<Int> = 
     LazyColumn() {
         items(items = listItems, key = { it }) { item ->
             val myScopedVM: MyViewModel = hiltViewModelScoped(key = item, keyInScopeResolver = keys)
+            DemoComposable(inputObject = myScopedVM)
+        }
+    }
+}
+
+@HiltViewModel
+class MyViewModel @Inject constructor(private val stateSaver: SavedStateHandle) : ViewModel()
+```
+</details>
+
+<details>
+  <summary>Combine `clearDelay` with `keyInScopeResolver` in a Lazy* list</summary>
+
+You can use `clearDelay` alongside `keyInScopeResolver` in the same Lazy* list. This is useful when some items need a grace period before being cleared (e.g. the first item uses `clearDelay` for a smoother experience) while others should stay in memory as long as they are in the list (via `keyInScopeResolver`).
+
+> 💡 Note: `clearDelay` and `keyInScopeResolver` are independent mechanisms. An item using `clearDelay` without `keyInScopeResolver` will be cleared after the delay, regardless of whether it is still in the list. An item using `keyInScopeResolver` without `clearDelay` will be kept alive as long as its key is present in the list.
+
+🏷️ Example of a LazyColumn where the first item uses `clearDelay` and the rest use `keyInScopeResolver`
+
+```kotlin
+@Composable
+fun DemoMixedScopingInLazyColumn(listItems: List<Int> = (1..1000).toList()) {
+    val keys = rememberKeysInScope(inputListOfKeys = listItems)
+    LazyColumn() {
+        items(items = listItems, key = { it }) { item ->
+            val myScopedVM: MyViewModel = if (item == 1) {
+                // This item's ViewModel will be cleared 5 seconds after scrolling away
+                hiltViewModelScoped(key = item, clearDelay = 5.seconds)
+            } else {
+                // These items' ViewModels stay alive as long as the item is in the list
+                hiltViewModelScoped(key = item, keyInScopeResolver = keys)
+            }
             DemoComposable(inputObject = myScopedVM)
         }
     }
