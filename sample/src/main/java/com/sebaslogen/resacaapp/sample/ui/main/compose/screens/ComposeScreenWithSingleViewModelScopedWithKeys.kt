@@ -19,6 +19,7 @@ import com.sebaslogen.resacaapp.sample.ui.main.NavigationButtons
 import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoComposable
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeScopedViewModel
 import com.sebaslogen.resacaapp.sample.ui.main.data.NumberContainer
+import kotlin.time.Duration.Companion.seconds
 
 
 private val listItems = (1..1000).toList().map { NumberContainer(it) }
@@ -32,7 +33,7 @@ fun ComposeScreenWithSingleViewModelScopedWithKeys(navController: NavHostControl
         NavigationButtons(navController)
         Text(
             modifier = Modifier.padding(8.dp),
-            text = "The list below contains one ViewModel per row that will stay in memory due to KeysInScope as long as the list and screen are displayed"
+            text = "The list below contains one ViewModel per row that will stay in memory due to KeysInScope as long as the list and screen are displayed. Only first item will clear after 5 seconds of not being used"
         )
         val keys = rememberKeysInScope(inputListOfKeys = listItems)
         LazyColumn(
@@ -41,11 +42,20 @@ fun ComposeScreenWithSingleViewModelScopedWithKeys(navController: NavHostControl
                 .testTag("LazyList")
         ) {
             items(items = listItems, key = { it.number }) { item ->
-                val fakeScopedVM: FakeScopedViewModel = viewModelScoped(key = item, keyInScopeResolver = keys) {
-                    FakeScopedViewModel(
-                        stateSaver = it,
-                        viewModelId = item.number
-                    )
+                val fakeScopedVM: FakeScopedViewModel = if (item.number == 1) {
+                    viewModelScoped(key = item, clearDelay = 5.seconds) {
+                        FakeScopedViewModel(
+                            stateSaver = it,
+                            viewModelId = item.number
+                        )
+                    }
+                } else {
+                    viewModelScoped(key = item, keyInScopeResolver = keys) {
+                        FakeScopedViewModel(
+                            stateSaver = it,
+                            viewModelId = item.number
+                        )
+                    }
                 }
                 DemoComposable(inputObject = fakeScopedVM, objectType = "FakeScopedViewModel $item", scoped = true)
             }
