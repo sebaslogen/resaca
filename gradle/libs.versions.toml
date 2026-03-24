@@ -23,7 +23,7 @@ compose-plugin = '1.10.1'
 # Compose libs not included in multiplatform
 compose-ui-test-junit = '1.10.4'
 compose-ui-test-manifest = '1.10.3'
-compose-ui-toolingPreview = '1.10.1'
+compose-ui-toolingPreview = '1.10.5'
 # Compose integration with Activities
 androidx-activity = '1.13.0'
 # Compose integration with ViewModels
