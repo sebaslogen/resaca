@@ -16,6 +16,7 @@ import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoNotScopedObjectCompos
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoDialogWithRandomIdHiltViewModel
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedHiltAssistedInjectionViewModelComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedHiltInjectedViewModelComposable
+import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedHiltInjectedViewModelWithClearDelayComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedObjectComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedSecondHiltInjectedViewModelComposable
 import com.sebaslogen.resacaapp.sample.ui.main.showSingleScopedViewModel
@@ -35,6 +36,7 @@ fun ComposeScreenWithHiltViewModelScoped(navController: NavHostController) {
         // The Hilt Injected ViewModel is only shown in light mode, to demo how the ViewModel is properly garbage collected in a different config (dark mode)
         if (showSingleScopedViewModel ?: !isSystemInDarkTheme()) {
             DemoScopedHiltInjectedViewModelComposable()
+            DemoScopedHiltInjectedViewModelWithClearDelayComposable()
         }
         DemoScopedSecondHiltInjectedViewModelComposable()
         DemoScopedHiltAssistedInjectionViewModelComposable()

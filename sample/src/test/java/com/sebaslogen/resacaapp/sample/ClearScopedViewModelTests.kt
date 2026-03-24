@@ -52,7 +52,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Test
-    fun `when I navigate to nested screen and back, then the 2 scoped ViewModels of the second screen are cleared`() = runTest {
+    fun `when I navigate to nested screen and back, then the 3 scoped ViewModels of the second screen are cleared`() = runTest {
 
         // Given the starting screen with scoped ViewModels
         composeTestRule.setContent {
@@ -72,10 +72,11 @@ class ClearScopedViewModelTests : ComposeTestUtils {
         }
         val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
 
-        // Then the scoped ViewModel from the second screen is cleared
-        assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 2) {
+        // Then the scoped ViewModels from the second screen are cleared (including the one with clearDelay, because
+        // the whole ScopedViewModelContainer is cleared when the screen is popped)
+        assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 3) {
             "The amount of FakeScopedViewModels that were cleared after back navigation ($finalAmountOfViewModelsCleared) " +
-                    "was not two numbers higher that the amount before navigating ($initialAmountOfViewModelsCleared)"
+                    "was not three numbers higher that the amount before navigating ($initialAmountOfViewModelsCleared)"
         }
     }
 

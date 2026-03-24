@@ -24,6 +24,8 @@ import com.sebaslogen.resacaapp.sample.ui.main.data.FakeInjectedViewModel
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeSecondInjectedViewModel
 import com.sebaslogen.resacaapp.sample.viewModelsClearedGloballySharedCounter
 import kotlin.random.Random
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Create a [ViewModel] with resaca's [hiltViewModelScoped] function to let
@@ -148,4 +150,33 @@ fun DemoDialogWithRandomIdHiltViewModel() {
             )
         }
     }
+}
+
+/**
+ * Create a [ViewModel] with resaca's [hiltViewModelScoped] function with a [clearDelay].
+ * The [ViewModel] will only be cleared after the [clearDelay] has passed since the Composable was disposed.
+ */
+@SuppressLint("ViewModelConstructorInComposable") // This is only used for previews
+@Composable
+fun DemoScopedHiltInjectedViewModelWithClearDelayComposable(
+    key: String? = null,
+    clearDelay: Duration = 5.seconds,
+    fakeInjectedViewModelId: Int = 666
+) {
+    val fakeInjectedVM: FakeInjectedViewModel =
+        if (LocalInspectionMode.current) { // In Preview we can't use hiltViewModelScoped
+            FakeInjectedViewModel(
+                stateSaver = SavedStateHandle(),
+                repository = FakeInjectedRepo(),
+                viewModelsClearedCounter = viewModelsClearedGloballySharedCounter,
+                viewModelId = fakeInjectedViewModelId
+            )
+        } else {
+            hiltViewModelScoped(key = key, clearDelay = clearDelay) { factory: FakeInjectedViewModel.FakeInjectedViewModelFactory ->
+                factory.create(
+                    viewModelId = fakeInjectedViewModelId
+                )
+            }
+        }
+    DemoComposable(inputObject = fakeInjectedVM, objectType = "Hilt FakeInjectedViewModel with clearDelay", scoped = true)
 }

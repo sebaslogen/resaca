@@ -17,6 +17,8 @@ import com.sebaslogen.resacaapp.sample.ui.main.data.FakeSimpleInjectedViewModel
 import com.sebaslogen.resacaapp.sample.viewModelsClearedGloballySharedCounter
 import org.koin.core.parameter.parametersOf
 import org.koin.mp.KoinPlatform.getKoin
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Create a [FakeInjectedRepo] object with Resaca's [rememberScoped] function to let
@@ -134,4 +136,33 @@ fun DemoScopedSecondKoinInjectedViewModelComposable() {
             koinViewModelScoped()
         }
     DemoComposable(inputObject = fakeSecondInjectedVM, objectType = "Koin FakeSecondInjectedViewModel", scoped = true)
+}
+
+/**
+ * Create a [ViewModel] with Resaca's [koinViewModelScoped] function with a [clearDelay].
+ * The [ViewModel] will only be cleared after the [clearDelay] has passed since the Composable was disposed.
+ */
+@SuppressLint("ViewModelConstructorInComposable") // This is only used for previews
+@Composable
+fun DemoScopedKoinInjectedViewModelWithClearDelayComposable(
+    key: String? = null,
+    clearDelay: Duration = 5.seconds,
+    fakeInjectedViewModelId: Int = 666
+) {
+    val fakeInjectedVM: FakeInjectedViewModel =
+        if (LocalInspectionMode.current) { // In Preview we can't use viewModelScoped
+            FakeInjectedViewModel(
+                stateSaver = SavedStateHandle(),
+                repository = FakeInjectedRepo(),
+                viewModelsClearedCounter = viewModelsClearedGloballySharedCounter,
+                viewModelId = fakeInjectedViewModelId
+            )
+        } else {
+            koinViewModelScoped(
+                key = key,
+                clearDelay = clearDelay,
+                parameters = { parametersOf(viewModelsClearedGloballySharedCounter, fakeInjectedViewModelId) }
+            )
+        }
+    DemoComposable(inputObject = fakeInjectedVM, objectType = "Koin FakeInjectedViewModel with clearDelay", scoped = true)
 }
