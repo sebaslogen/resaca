@@ -23,10 +23,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainCoroutineDispatcher
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.jvm.JvmInline
 import kotlin.reflect.KClass
+import kotlin.time.Duration
 
 
 internal const val MISSING_VIEW_MODEL_STORE_OWNER = "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
@@ -115,6 +117,11 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     private val scopedObjectsSavedStateHandlers: MutableMap<InternalKey, SavedStateHandleContainer> = mutableMapOf()
 
     /**
+     * Container of the delay to clear the scoped object after it's marked for disposal, associated with the key for their scoped objects
+     */
+    private val scopedObjectsClearDelays: MutableMap<InternalKey, Duration> = mutableMapOf()
+
+    /**
      * Stores the default keys present in a [SavedStateHandle] along with the [SavedStateHandle] itself.
      * The [defaultKeys] will be used to clean up only the keys that were added after creation of the [SavedStateHandle], i.e. by the user.
      */
@@ -160,6 +167,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     internal fun <T : Any> getOrBuildObject(
         positionalMemoizationKey: InternalKey,
         externalKey: ExternalKey,
+        clearDelay: Duration? = null,
         builder: @DisallowComposableCalls () -> T
     ): T {
         @Composable
@@ -172,6 +180,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
             originalObject as? T ?: buildAndStoreObject()
         } else { // First time object creation or externalKey changed
             scopedObjectKeys[positionalMemoizationKey] = externalKey // Set the external key used to track and store the new object version
+            clearDelay?.let { scopedObjectsClearDelays[positionalMemoizationKey] = it }
             scopedObjectsContainer.remove(positionalMemoizationKey) // Remove in case key changed
                 ?.also { clearLastDisposedObject(it) } // Old object may need to be cleared before it's forgotten
             scopedObjectsSavedStateHandlers.remove(positionalMemoizationKey)?.also { savedStateHandleContainer ->
@@ -188,6 +197,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     public fun <T : ViewModel> getOrBuildViewModel(
         modelClass: KClass<T>,
         positionalMemoizationKey: InternalKey,
+        clearDelay: Duration? = null,
         externalKey: ExternalKey,
     ): T {
         val owner = checkNotNull(LocalViewModelStoreOwner.current) { MISSING_VIEW_MODEL_STORE_OWNER }
@@ -196,6 +206,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
             modelClass = modelClass,
             positionalMemoizationKey = positionalMemoizationKey,
             externalKey = externalKey,
+            clearDelay = clearDelay,
             factory = factory,
             viewModelStoreOwner = owner
         )
@@ -209,6 +220,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         modelClass: KClass<T>,
         positionalMemoizationKey: InternalKey,
         externalKey: ExternalKey,
+        clearDelay: Duration? = null,
         factory: ViewModelProvider.Factory?,
         viewModelStoreOwner: ViewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) { MISSING_VIEW_MODEL_STORE_OWNER }
     ): T {
@@ -217,6 +229,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
             modelClass = modelClass,
             positionalMemoizationKey = positionalMemoizationKey,
             externalKey = externalKey,
+            clearDelay = clearDelay,
             factory = factory,
             creationExtras = viewModelStoreOwner.getCreationExtras().addViewModelKey(viewModelKey),
             viewModelStoreOwner = viewModelStoreOwner
@@ -231,6 +244,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         modelClass: KClass<T>,
         positionalMemoizationKey: InternalKey,
         externalKey: ExternalKey,
+        clearDelay: Duration? = null,
         builder: @DisallowComposableCalls (savedStateHandle: SavedStateHandle) -> T
     ): T {
         val viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) { MISSING_VIEW_MODEL_STORE_OWNER }
@@ -241,6 +255,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
             modelClass = modelClass,
             positionalMemoizationKey = positionalMemoizationKey,
             externalKey = externalKey,
+            clearDelay = clearDelay,
             factory = ScopedViewModelOwner.viewModelFactoryFor(savedStateHandle, builder),
             creationExtras = creationExtrasWithViewModelKey,
             viewModelStoreOwner = viewModelStoreOwner
@@ -255,6 +270,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         modelClass: KClass<T>,
         positionalMemoizationKey: InternalKey,
         externalKey: ExternalKey,
+        clearDelay: Duration? = null,
         factory: ViewModelProvider.Factory?,
         creationExtras: CreationExtras,
         viewModelStoreOwner: ViewModelStoreOwner
@@ -262,11 +278,13 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         modelClass = modelClass,
         positionalMemoizationKey = positionalMemoizationKey,
         externalKey = externalKey,
+        clearDelay = clearDelay,
         factory = factory,
         viewModelStoreOwner = viewModelStoreOwner,
         creationExtras = creationExtras,
         scopedObjectsContainer = scopedObjectsContainer,
         scopedObjectsSavedStateHandlers = scopedObjectsSavedStateHandlers,
+        scopedObjectsClearDelays = scopedObjectsClearDelays,
         scopedObjectKeys = scopedObjectKeys,
         cancelDisposal = ::cancelDisposal,
         clearLastDisposedViewModel = ::clearLastDisposedObject
@@ -345,6 +363,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     private fun scheduleToDispose(key: InternalKey) {
         if (disposingJobs.containsKey(key)) return // Already disposing, quit
         val newDisposingJob = viewModelScope.launch {
+            scopedObjectsClearDelays[key]?.let { delay(it) } // Wait for the provided delay before clearing the object, if any
             platformLifecycleHandler.awaitBeforeDisposing(isInForeground) // Android: Wait for next frame when the Activity is resumed. No-op in other platforms
             threadSafeRunnerOnMain {
                 withContext(NonCancellable) { // We treat the disposal/remove/clear block as an atomic transaction
@@ -354,6 +373,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
                         if (objectExternalKeyNotInScope) { // If the key is not in scope, then the object is not needed anymore
                             markedForDisposal.remove(key)
                             scopedObjectKeys.remove(key)
+                            scopedObjectsClearDelays.remove(key)
                             scopedObjectsContainer.remove(key)?.also { clearLastDisposedObject(it) }
                             scopedObjectsSavedStateHandlers.remove(key)?.also { savedStateHandleContainer ->
                                 clearSavedStateHandle(savedStateHandleContainer)
@@ -407,6 +427,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
             clearLastDisposedObject(lastObject, objectsToClear)
         }
         scopedObjectKeys.clear() // Clear all keys
+        scopedObjectsClearDelays.clear() // Clear all delays
         scopedObjectsContainer.clear() // Clear just in case this VM is leaked
         scopedObjectsSavedStateHandlers.forEach { (_, savedStateHandleContainer) ->
             clearSavedStateHandle(savedStateHandleContainer)
