@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.dagger.hilt.android)
     alias(libs.plugins.kover)
@@ -13,7 +12,7 @@ android {
     compileSdk = libs.versions.compileSdk.get().toInt()
     defaultConfig {
         applicationId = "com.sebaslogen.resacaapp"
-        minSdk = 23 // Because Nav3 test lib has a minSDK of 23
+        minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
