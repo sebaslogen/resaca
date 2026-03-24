@@ -132,6 +132,32 @@ fun DemoKoinInjectedViewModelWithDependency() {
 </details>
 
 <details>
+  <summary>Scope a ViewModel with a clear delay to a Composable</summary>
+  
+```kotlin
+@Composable
+fun DemoScopedViewModelWithClearDelay() {
+    // The ViewModel will be kept in memory for 5 seconds after the Composable is disposed,
+    // giving it a chance to be reused if the Composable returns to composition (e.g. quick navigation back and forth)
+    val myScopedVM: MyViewModel = viewModelScoped(clearDelay = 5.seconds)
+    DemoComposable(inputObject = myScopedVM)
+}
+```
+</details>
+
+<details>
+  <summary>Scope an object with a clear delay to a Composable</summary>
+  
+```kotlin
+@Composable
+fun DemoScopedObjectWithClearDelay() {
+    val myRepository: MyRepository = rememberScoped(clearDelay = 5.seconds) { MyRepository() }
+    DemoComposable(inputObject = myRepository)
+}
+```
+</details>
+
+<details>
   <summary>Use a different ViewModel for each item in a LazyColumn and scope them to the Composable that contains the LazyColumn</summary>
   
 ```kotlin
@@ -156,6 +182,11 @@ ViewModel's `onCleared` method will be automatically called.
 
 > 💡 _Optional key_: a key can be provided to the call, `rememberScoped(key) { ... }` or `viewModelScoped(key) { ... }`. This makes possible to forget an old
 object when there is new input data during a recomposition (e.g. a new input id for your ViewModel).
+
+> 💡 _Optional clearDelay_: a `clearDelay` can be provided to delay the disposal of the scoped object after the Composable is removed from composition.
+This is useful when a Composable might briefly leave composition and return (e.g. quick navigation back and forth), and you want to avoid recreating expensive objects.
+Usage: `rememberScoped(clearDelay = 5.seconds) { ... }` or `viewModelScoped(clearDelay = 5.seconds)`.
+If the Composable returns to composition before the delay expires, the disposal is cancelled and the same object is reused.
 
 > ⚠️ Note that ViewModels remembered with `viewModelScoped` **should not be created** using any of the Compose `viewModel()` or `ViewModelProviders` factories,
 otherwise they will be retained in the scope of the screen regardless of `viewModelScoped`. Also, if a ViewModel is remembered with `rememberScoped`, instead of `viewModelScoped`, then its
@@ -250,6 +281,35 @@ fun DemoManyViewModelsScopedOutsideTheLazyColumn(listItems: List<Int> = (1..1000
     LazyColumn() {
         items(items = listItems, key = { it }) { item ->
             val myScopedVM: MyViewModel = viewModelScoped(key = item, keyInScopeResolver = keys)
+            DemoComposable(inputObject = myScopedVM)
+        }
+    }
+}
+```
+</details>
+
+<details>
+  <summary>Combine `clearDelay` with `keyInScopeResolver` in a Lazy* list</summary>
+
+You can use `clearDelay` alongside `keyInScopeResolver` in the same Lazy* list. This is useful when some items need a grace period before being cleared (e.g. the first item uses `clearDelay` for a smoother experience) while others should stay in memory as long as they are in the list (via `keyInScopeResolver`).
+
+> 💡 Note: `clearDelay` and `keyInScopeResolver` are independent mechanisms. An item using `clearDelay` without `keyInScopeResolver` will be cleared after the delay, regardless of whether it is still in the list. An item using `keyInScopeResolver` without `clearDelay` will be kept alive as long as its key is present in the list.
+
+🏷️ Example of a LazyColumn where the first item uses `clearDelay` and the rest use `keyInScopeResolver`
+
+```kotlin
+@Composable
+fun DemoMixedScopingInLazyColumn(listItems: List<Int> = (1..1000).toList()) {
+    val keys = rememberKeysInScope(inputListOfKeys = listItems)
+    LazyColumn() {
+        items(items = listItems, key = { it }) { item ->
+            val myScopedVM: MyViewModel = if (item == 1) {
+                // This item's ViewModel will be cleared 5 seconds after scrolling away
+                viewModelScoped(key = item, clearDelay = 5.seconds)
+            } else {
+                // These items' ViewModels stay alive as long as the item is in the list
+                viewModelScoped(key = item, keyInScopeResolver = keys)
+            }
             DemoComposable(inputObject = myScopedVM)
         }
     }
