@@ -15,6 +15,7 @@ import com.sebaslogen.resacaapp.sample.ui.main.NavigationButtons
 import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoNotScopedObjectComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedKoinInjectedObjectComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedKoinInjectedViewModelComposable
+import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedKoinInjectedViewModelWithClearDelayComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedKoinParametrizedInjectedViewModelComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedKoinSimpleInjectedViewModelComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedObjectComposable
@@ -39,6 +40,7 @@ fun ComposeScreenWithKoinViewModelScoped(navController: NavHostController) {
         // The Koin Injected ViewModel is only shown in light mode, to demo how the ViewModel is properly garbage collected in a different config (dark mode)
         if (showSingleScopedViewModel ?: !isSystemInDarkTheme()) {
             DemoScopedKoinInjectedViewModelComposable()
+            DemoScopedKoinInjectedViewModelWithClearDelayComposable()
         }
         DemoScopedSecondKoinInjectedViewModelComposable()
         NavigationButtons(navController)

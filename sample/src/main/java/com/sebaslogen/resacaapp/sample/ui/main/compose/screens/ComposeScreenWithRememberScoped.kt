@@ -1,5 +1,6 @@
 package com.sebaslogen.resacaapp.sample.ui.main.compose.screens
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -10,8 +11,11 @@ import androidx.navigation.NavHostController
 import com.sebaslogen.resacaapp.sample.ui.main.NavigationButtons
 import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoNotScopedObjectComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedObjectComposable
+import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedObjectWithClearDelayComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedParametrizedViewModelComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedViewModelComposable
+import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedViewModelWithClearDelayComposable
+import com.sebaslogen.resacaapp.sample.ui.main.showSingleScopedViewModel
 
 @Composable
 fun ComposeScreenWithRememberScoped(navController: NavHostController) {
@@ -23,6 +27,10 @@ fun ComposeScreenWithRememberScoped(navController: NavHostController) {
         DemoScopedObjectComposable()
         DemoScopedViewModelComposable()
         DemoScopedParametrizedViewModelComposable()
+        if (showSingleScopedViewModel ?: !isSystemInDarkTheme()) {
+            DemoScopedObjectWithClearDelayComposable()
+            DemoScopedViewModelWithClearDelayComposable()
+        }
         NavigationButtons(navController)
     }
 }
