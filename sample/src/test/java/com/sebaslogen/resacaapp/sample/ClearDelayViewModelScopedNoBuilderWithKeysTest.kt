@@ -87,7 +87,68 @@ class ClearDelayViewModelScopedNoBuilderWithKeysTest : ComposeTestUtils {
         }
     }
 
+    /**
+     * Sets up a LazyColumn where each item uses `viewModelScoped(keyInScopeResolver, key)` (no builder, no clearDelay).
+     * This exercises the default `clearDelay = null` parameter on the no-builder overload.
+     */
+    @Composable
+    private fun TestLazyColumnWithDefaultFactoryNoClearDelayAndKeys(
+        items: SnapshotStateList<NumberContainer>,
+        height: Dp
+    ) {
+        Box(modifier = Modifier.size(width = 200.dp, height = height)) {
+            val listItems: SnapshotStateList<NumberContainer> = remember { items }
+            val keys = rememberKeysInScope(inputListOfKeys = listItems)
+            LazyColumn(modifier = Modifier.fillMaxHeight()) {
+                items(items = listItems, key = { it.number }) { item ->
+                    Box(modifier = Modifier.size(width = 200.dp, height = 100.dp)) {
+                        val simpleVM: FakeSimpleViewModel = viewModelScoped(
+                            keyInScopeResolver = keys,
+                            key = item
+                        )
+                        DemoComposable(inputObject = simpleVM, objectType = "FakeSimpleViewModel $item", scoped = true)
+                    }
+                }
+            }
+        }
+    }
+
     // endregion
+
+    // region Tests for viewModelScoped(keyInScopeResolver, key) without clearDelay (exercises clearDelay = null default)
+
+    @Test
+    fun `when item with default-factory and keyInScope but no clearDelay scrolls off-screen, its VM is NOT cleared`() = runTest {
+        // Given a LazyColumn where all items use viewModelScoped(keyInScopeResolver, key) with no builder and no clearDelay
+        val listItems = (1..10).toList().map { NumberContainer(it) }.toMutableStateList()
+        var height by mutableStateOf(1000.dp)
+        val textTitle = "Test text no delay"
+        composeTestRule.setContent {
+            Column {
+                Text(textTitle)
+                TestLazyColumnWithDefaultFactoryNoClearDelayAndKeys(listItems, height)
+            }
+        }
+        printComposeUiTreeToLog()
+
+        // When height shrinks so only item 1 is visible
+        val initialAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+        height = 100.dp
+        onNodeWithTestTag("FakeSimpleViewModel 1 Scoped").assertExists()
+        advanceTimeBy(1000) // Advance time to allow disposal processing
+        printComposeUiTreeToLog()
+        val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+
+        // Then no ViewModels are cleared — keyInScopeResolver keeps them alive
+        assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared) {
+            "Expected 0 ViewModels cleared (keyInScopeResolver keeps items alive), but " +
+                    "cleared count changed from $initialAmountOfViewModelsCleared to $finalAmountOfViewModelsCleared"
+        }
+    }
+
+    // endregion
+
+    // region Tests for viewModelScoped(keyInScopeResolver, key, clearDelay) with explicit clearDelay
 
     @Test
     fun `when item with default-factory clearDelay and keyInScope scrolls off-screen, its VM is NOT cleared`() = runTest {
