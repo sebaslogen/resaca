@@ -1,17 +1,33 @@
 package com.sebaslogen.resacaapp.sample.hilt
 
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.sebaslogen.resaca.hilt.hiltViewModelScoped
+import com.sebaslogen.resaca.rememberKeysInScope
 import com.sebaslogen.resacaapp.sample.ui.main.ComposeActivity
+import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedHiltInjectedViewModelWithClearDelayComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedSecondHiltInjectedViewModelWithClearDelayComposable
+import com.sebaslogen.resacaapp.sample.ui.main.data.FakeInjectedViewModel
+import com.sebaslogen.resacaapp.sample.ui.main.data.FakeSecondInjectedViewModel
+import com.sebaslogen.resacaapp.sample.ui.main.data.NumberContainer
 import com.sebaslogen.resacaapp.sample.utils.ComposeTestUtils
 import com.sebaslogen.resacaapp.sample.utils.MainDispatcherRule
 import com.sebaslogen.resacaapp.sample.viewModelsClearedGloballySharedCounter
@@ -246,6 +262,96 @@ class ClearDelayScopedViewModelTests : ComposeTestUtils {
         assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 1) {
             "The amount of ViewModels cleared ($finalAmountOfViewModelsCleared) " +
                     "was not higher than before disposal ($initialAmountOfViewModelsCleared)"
+        }
+    }
+
+    // endregion
+
+    // region hiltViewModelScoped(key, keyInScopeResolver, clearDelay) — non-assisted overload
+
+    @Test
+    fun `when Hilt VM with keyInScopeResolver and clearDelay scrolls off-screen, it is NOT cleared because keyInScope keeps it alive`() = runTest {
+        // Given a LazyColumn where items use hiltViewModelScoped(key, keyInScopeResolver, clearDelay) — non-assisted overload
+        val listItems = (1..10).toList().map { NumberContainer(it) }.toMutableStateList()
+        var height by mutableStateOf(1000.dp)
+        composeTestRule.activity.setContent {
+            Box(modifier = Modifier.size(width = 200.dp, height = height)) {
+                val items: SnapshotStateList<NumberContainer> = remember { listItems }
+                val keys = rememberKeysInScope(inputListOfKeys = items)
+                LazyColumn(modifier = Modifier.fillMaxHeight()) {
+                    items(items = items, key = { it.number }) { item ->
+                        Box(modifier = Modifier.size(width = 200.dp, height = 100.dp)) {
+                            val vm: FakeSecondInjectedViewModel = hiltViewModelScoped(
+                                key = item,
+                                keyInScopeResolver = keys,
+                                clearDelay = 5.seconds
+                            )
+                            DemoComposable(inputObject = vm, objectType = "Hilt FakeSecondInjectedViewModel $item", scoped = true)
+                        }
+                    }
+                }
+            }
+        }
+        printComposeUiTreeToLog()
+
+        // When height shrinks so only item 1 is visible
+        val initialAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+        height = 100.dp
+        onNodeWithTestTag("Hilt FakeSecondInjectedViewModel 1 Scoped").assertExists()
+        advanceTimeBy(10_000) // Wait a very long time
+        printComposeUiTreeToLog()
+        val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+
+        // Then no ViewModels are cleared — keyInScopeResolver keeps them alive
+        assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared) {
+            "Expected 0 ViewModels cleared (keyInScopeResolver keeps items alive), but " +
+                    "cleared count changed from $initialAmountOfViewModelsCleared to $finalAmountOfViewModelsCleared"
+        }
+    }
+
+    // endregion
+
+    // region hiltViewModelScoped(key, keyInScopeResolver, clearDelay, creationCallback) — assisted + keyInScope + clearDelay
+
+    @Test
+    fun `when Hilt assisted VM with keyInScopeResolver and clearDelay scrolls off-screen, it is NOT cleared`() = runTest {
+        // Given a LazyColumn where items use hiltViewModelScoped(key, keyInScopeResolver, clearDelay, creationCallback)
+        val listItems = (1..10).toList().map { NumberContainer(it) }.toMutableStateList()
+        var height by mutableStateOf(1000.dp)
+        composeTestRule.activity.setContent {
+            Box(modifier = Modifier.size(width = 200.dp, height = height)) {
+                val items: SnapshotStateList<NumberContainer> = remember { listItems }
+                val keys = rememberKeysInScope(inputListOfKeys = items)
+                LazyColumn(modifier = Modifier.fillMaxHeight()) {
+                    items(items = items, key = { it.number }) { item ->
+                        Box(modifier = Modifier.size(width = 200.dp, height = 100.dp)) {
+                            val vm: FakeInjectedViewModel = hiltViewModelScoped(
+                                key = item,
+                                keyInScopeResolver = keys,
+                                clearDelay = 5.seconds
+                            ) { factory: FakeInjectedViewModel.FakeInjectedViewModelFactory ->
+                                factory.create(viewModelId = item.number)
+                            }
+                            DemoComposable(inputObject = vm, objectType = "Hilt FakeInjectedViewModel $item", scoped = true)
+                        }
+                    }
+                }
+            }
+        }
+        printComposeUiTreeToLog()
+
+        // When height shrinks so only item 1 is visible
+        val initialAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+        height = 100.dp
+        onNodeWithTestTag("Hilt FakeInjectedViewModel 1 Scoped").assertExists()
+        advanceTimeBy(10_000) // Wait a very long time
+        printComposeUiTreeToLog()
+        val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+
+        // Then no ViewModels are cleared — keyInScopeResolver keeps them alive
+        assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared) {
+            "Expected 0 ViewModels cleared (keyInScopeResolver keeps items alive), but " +
+                    "cleared count changed from $initialAmountOfViewModelsCleared to $finalAmountOfViewModelsCleared"
         }
     }
 
