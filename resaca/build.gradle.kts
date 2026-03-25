@@ -48,6 +48,11 @@ kotlin {
             api(libs.coroutines.core)
         }
 
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlin.coroutines.test)
+        }
+
         val desktopMain by getting
         desktopMain.dependencies {
             implementation(compose.desktop.common)
