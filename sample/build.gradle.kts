@@ -153,6 +153,7 @@ kover {
             excludes {
                 androidGeneratedClasses()
                 annotatedBy("androidx.compose.ui.tooling.preview.Preview") // Exclude Previews from code coverage
+                packages("com.sebaslogen.resacaapp.sample.ui.main")
             }
         }
         variant("debug") {
