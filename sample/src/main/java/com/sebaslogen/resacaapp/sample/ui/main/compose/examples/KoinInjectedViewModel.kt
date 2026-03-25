@@ -166,3 +166,26 @@ fun DemoScopedKoinInjectedViewModelWithClearDelayComposable(
         }
     DemoComposable(inputObject = fakeInjectedVM, objectType = "Koin FakeInjectedViewModel with clearDelay", scoped = true)
 }
+
+/**
+ * Create a [ViewModel] with Resaca's simple [koinViewModelScoped] function (no parameters) with a [clearDelay].
+ * This exercises the `koinViewModelScoped<T>(key, clearDelay)` overload that uses the default Koin factory.
+ * The [ViewModel] will only be cleared after the [clearDelay] has passed since the Composable was disposed.
+ */
+@SuppressLint("ViewModelConstructorInComposable") // This is only used for previews
+@Composable
+fun DemoScopedSecondKoinInjectedViewModelWithClearDelayComposable(
+    key: String? = null,
+    clearDelay: Duration = 5.seconds,
+) {
+    val fakeSecondInjectedVM: FakeSecondInjectedViewModel =
+        if (LocalInspectionMode.current) { // In Preview we can't use viewModelScoped
+            FakeSecondInjectedViewModel(
+                stateSaver = SavedStateHandle(),
+                viewModelsClearedCounter = viewModelsClearedGloballySharedCounter
+            )
+        } else {
+            koinViewModelScoped(key = key, clearDelay = clearDelay)
+        }
+    DemoComposable(inputObject = fakeSecondInjectedVM, objectType = "Koin FakeSecondInjectedViewModel with clearDelay", scoped = true)
+}

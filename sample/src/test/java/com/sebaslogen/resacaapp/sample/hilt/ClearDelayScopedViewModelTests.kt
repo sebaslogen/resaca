@@ -11,6 +11,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sebaslogen.resacaapp.sample.ui.main.ComposeActivity
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedHiltInjectedViewModelWithClearDelayComposable
+import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedSecondHiltInjectedViewModelWithClearDelayComposable
 import com.sebaslogen.resacaapp.sample.utils.ComposeTestUtils
 import com.sebaslogen.resacaapp.sample.utils.MainDispatcherRule
 import com.sebaslogen.resacaapp.sample.viewModelsClearedGloballySharedCounter
@@ -181,4 +182,72 @@ class ClearDelayScopedViewModelTests : ComposeTestUtils {
                     "was not higher than the amount before key change ($initialAmountOfViewModelsCleared)"
         }
     }
+
+    // region Simple hiltViewModelScoped(key, clearDelay) — no assisted injection
+
+    @Test
+    fun `when simple Hilt VM with clearDelay is disposed, the ViewModel is NOT cleared before delay expires`() = runTest {
+
+        // Given the starting screen with a simple Hilt ViewModel with clearDelay (no assisted injection)
+        var composablesShown by mutableStateOf(true)
+        val textTitle = "Test text"
+        composeTestRule.activity.setContent {
+            Column {
+                Text(textTitle)
+                if (composablesShown) {
+                    DemoScopedSecondHiltInjectedViewModelWithClearDelayComposable(clearDelay = 2.seconds)
+                }
+            }
+        }
+        printComposeUiTreeToLog()
+
+        // When the Composable is disposed
+        val initialAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+        composablesShown = false
+        printComposeUiTreeToLog()
+        onNodeWithTestTag("Hilt FakeSecondInjectedViewModel with clearDelay Scoped", assertDisplayed = false).assertDoesNotExist()
+        advanceTimeBy(100) // Advance time but NOT past the clearDelay
+        printComposeUiTreeToLog()
+        val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+
+        // Then the scoped Hilt ViewModel is NOT yet cleared
+        assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared) {
+            "The amount of ViewModels cleared ($finalAmountOfViewModelsCleared) " +
+                    "should be the same as before disposal ($initialAmountOfViewModelsCleared) because clearDelay has not expired"
+        }
+    }
+
+    @Test
+    fun `when simple Hilt VM with clearDelay is disposed, the ViewModel IS cleared after delay expires`() = runTest {
+
+        // Given the starting screen with a simple Hilt ViewModel with clearDelay (no assisted injection)
+        var composablesShown by mutableStateOf(true)
+        val textTitle = "Test text"
+        composeTestRule.activity.setContent {
+            Column {
+                Text(textTitle)
+                if (composablesShown) {
+                    DemoScopedSecondHiltInjectedViewModelWithClearDelayComposable(clearDelay = 2.seconds)
+                }
+            }
+        }
+        printComposeUiTreeToLog()
+
+        // When the Composable is disposed
+        val initialAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+        composablesShown = false
+        printComposeUiTreeToLog()
+        onNodeWithTestTag("Hilt FakeSecondInjectedViewModel with clearDelay Scoped", assertDisplayed = false).assertDoesNotExist()
+        advanceTimeBy(2100) // Advance time past the clearDelay
+        printComposeUiTreeToLog()
+        val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+
+        // Then the scoped Hilt ViewModel IS cleared
+        assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 1) {
+            "The amount of ViewModels cleared ($finalAmountOfViewModelsCleared) " +
+                    "was not higher than before disposal ($initialAmountOfViewModelsCleared)"
+        }
+    }
+
+    // endregion
 }

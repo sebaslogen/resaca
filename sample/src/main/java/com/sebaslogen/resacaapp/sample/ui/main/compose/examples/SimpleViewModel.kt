@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import com.sebaslogen.resaca.viewModelScoped
 import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoComposable
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeScopedViewModel
+import com.sebaslogen.resacaapp.sample.ui.main.data.FakeSimpleViewModel
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
@@ -32,4 +33,18 @@ fun DemoScopedViewModelWithClearDelayComposable(
 ) {
     val fakeScopedVM: FakeScopedViewModel = viewModelScoped(key, clearDelay = clearDelay) { FakeScopedViewModel(stateSaver = it, viewModelId = 0) }
     DemoComposable(inputObject = fakeScopedVM, objectType = "FakeScopedViewModel with clearDelay", scoped = true)
+}
+
+/**
+ * Create a simple [ViewModel] with resaca's [viewModelScoped] function with a [clearDelay] and no builder.
+ * This exercises the default [ViewModelProvider.Factory] path.
+ * The [ViewModel] will only be cleared after the [clearDelay] has passed since the Composable was disposed.
+ */
+@Composable
+fun DemoScopedSimpleViewModelWithClearDelayComposable(
+    key: String = "mySimpleVMWithClearDelay",
+    clearDelay: Duration = 5.seconds
+) {
+    val simpleVM: FakeSimpleViewModel = viewModelScoped(key = key, clearDelay = clearDelay)
+    DemoComposable(inputObject = simpleVM, objectType = "FakeSimpleViewModel with clearDelay", scoped = true)
 }
