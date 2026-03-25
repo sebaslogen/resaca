@@ -93,6 +93,35 @@ class ClearDelayWithKeysInScopeTest : ComposeTestUtils {
 
     // endregion
 
+    /**
+     * Sets up a LazyColumn where all items use `viewModelScoped(key, keyInScopeResolver, clearDelay, builder)`.
+     * This exercises the combined clearDelay + keyInScopeResolver overload.
+     */
+    @Composable
+    private fun TestLazyColumnWithCombinedClearDelayAndKeys(
+        items: SnapshotStateList<NumberContainer>,
+        height: Dp
+    ) {
+        Box(modifier = Modifier.size(width = 200.dp, height = height)) {
+            val listItems: SnapshotStateList<NumberContainer> = remember { items }
+            val keys = rememberKeysInScope(inputListOfKeys = listItems)
+            LazyColumn(modifier = Modifier.fillMaxHeight()) {
+                items(items = listItems, key = { it.number }) { item ->
+                    Box(modifier = Modifier.size(width = 200.dp, height = 100.dp)) {
+                        val fakeScopedVM: FakeScopedViewModel = viewModelScoped(
+                            key = item,
+                            keyInScopeResolver = keys,
+                            clearDelay = 5.seconds
+                        ) {
+                            FakeScopedViewModel(stateSaver = it, viewModelId = item.number)
+                        }
+                        DemoComposable(inputObject = fakeScopedVM, objectType = "FakeScopedViewModel $item", scoped = true)
+                    }
+                }
+            }
+        }
+    }
+
     @Test
     fun `when item 1 with clearDelay is removed from list, its ViewModel is NOT cleared before 5 seconds`() = runTest {
         // Given a LazyColumn where item 1 uses clearDelay=5s
@@ -263,4 +292,107 @@ class ClearDelayWithKeysInScopeTest : ComposeTestUtils {
                     "cleared count changed from $initialAmountOfViewModelsCleared to $finalAmountOfViewModelsCleared"
         }
     }
+
+    // region Combined clearDelay + keyInScopeResolver tests (viewModelScoped overload with both parameters)
+
+    @Test
+    fun `when item with combined clearDelay and keyInScope scrolls off-screen, its VM is NOT cleared because keyInScope keeps it alive`() = runTest {
+        // Given a LazyColumn where all items use viewModelScoped(key, keyInScopeResolver, clearDelay, builder)
+        val listItems = (1..10).toList().map { NumberContainer(it) }.toMutableStateList()
+        var height by mutableStateOf(1000.dp) // All items visible initially
+        val textTitle = "Test text"
+        composeTestRule.setContent {
+            Column {
+                Text(textTitle)
+                TestLazyColumnWithCombinedClearDelayAndKeys(listItems, height)
+            }
+        }
+        printComposeUiTreeToLog()
+
+        // When height shrinks so only item 1 is visible (items 2+ go off-screen)
+        val initialAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+        height = 100.dp // Only item 1 fits
+        onNodeWithTestTag("FakeScopedViewModel 1 Scoped").assertExists() // Trigger recomposition
+        advanceTimeBy(10_000) // Wait a very long time past any clearDelay
+        printComposeUiTreeToLog()
+        val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+
+        // Then no ViewModels are cleared because keyInScopeResolver keeps them alive
+        assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared) {
+            "Expected 0 ViewModels cleared (keyInScopeResolver keeps items alive), but " +
+                    "cleared count changed from $initialAmountOfViewModelsCleared to $finalAmountOfViewModelsCleared"
+        }
+    }
+
+    @Test
+    fun `when item is removed from list with combined clearDelay and keyInScope, its VM is cleared after delay expires`() = runTest {
+        // Given a LazyColumn where all items use viewModelScoped(key, keyInScopeResolver, clearDelay, builder)
+        val items = (1..5).toList().map { NumberContainer(it) }.toMutableStateList()
+        val textTitle = "Test text"
+        composeTestRule.setContent {
+            Column {
+                Text(textTitle)
+                TestLazyColumnWithCombinedClearDelayAndKeys(items, height = 500.dp)
+            }
+        }
+        printComposeUiTreeToLog()
+
+        // When item 1 is removed from the list (key no longer in scope)
+        val initialAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+        items.removeAt(0) // Remove NumberContainer(1)
+        onNodeWithTestTag("FakeScopedViewModel 2 Scoped").assertExists() // Trigger recomposition
+
+        // Before clearDelay expires, VM should NOT be cleared
+        advanceTimeBy(3000)
+        printComposeUiTreeToLog()
+        val midAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+        assert(midAmountOfViewModelsCleared == initialAmountOfViewModelsCleared) {
+            "Expected no VMs cleared before delay expires, but " +
+                    "cleared count changed from $initialAmountOfViewModelsCleared to $midAmountOfViewModelsCleared"
+        }
+
+        // After clearDelay expires, VM should be cleared
+        advanceTimeBy(2100) // Total 5100ms > 5s clearDelay
+        printComposeUiTreeToLog()
+        val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+        assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 1) {
+            "Expected 1 ViewModel cleared after clearDelay expired, but " +
+                    "cleared count changed from $initialAmountOfViewModelsCleared to $finalAmountOfViewModelsCleared"
+        }
+    }
+
+    @Test
+    fun `when entire list with combined clearDelay and keyInScope is disposed, all VMs are cleared`() = runTest {
+        // Given a LazyColumn where all items use viewModelScoped(key, keyInScopeResolver, clearDelay, builder)
+        val totalItems = 5
+        val items = (1..totalItems).toList().map { NumberContainer(it) }.toMutableStateList()
+        var shown by mutableStateOf(true)
+        val textTitle = "Test text"
+        composeTestRule.setContent {
+            Column {
+                Text(textTitle)
+                if (shown) {
+                    TestLazyColumnWithCombinedClearDelayAndKeys(items, height = 500.dp)
+                }
+            }
+        }
+        printComposeUiTreeToLog()
+
+        // When the entire list is disposed
+        val initialAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+        shown = false
+        composeTestRule.onNodeWithText(textTitle).assertExists()
+        // keyInScopeResolver leaves composition too, so items will be disposed
+        advanceTimeBy(5100) // Wait past the clearDelay
+        printComposeUiTreeToLog()
+        val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+
+        // Then all VMs are cleared
+        assert(finalAmountOfViewModelsCleared >= initialAmountOfViewModelsCleared + totalItems) {
+            "Expected all $totalItems ViewModels cleared after list disposed, but " +
+                    "cleared count changed from $initialAmountOfViewModelsCleared to $finalAmountOfViewModelsCleared"
+        }
+    }
+
+    // endregion
 }

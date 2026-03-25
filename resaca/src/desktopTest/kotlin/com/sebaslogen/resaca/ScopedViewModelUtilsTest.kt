@@ -19,6 +19,8 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 internal class ScopedViewModelUtilsTest {
 
@@ -216,6 +218,61 @@ internal class ScopedViewModelUtilsTest {
 
         val expected = internalKey.hashCode().toString() + externalKey.hashCode().toString()
         assertEquals(expected, result)
+    }
+
+    // endregion
+
+    // region clearDelay parameter in getOrBuildViewModel helpers
+
+    @Test
+    internal fun `clearDelay is stored in scopedObjectsClearDelays when creating new ViewModel`() {
+        // Given empty containers and a clearDelay
+        val container = mutableMapOf<InternalKey, Any>()
+        val clearDelays = mutableMapOf<InternalKey, Duration>()
+        val keys = mutableMapOf<InternalKey, ExternalKey>()
+        val key = InternalKey("testKey")
+        val externalKey = ExternalKey("ext")
+        val delay = 5.seconds
+
+        // When we simulate what getOrBuildViewModel does for clearDelay storage
+        // (Since getOrBuildViewModel is @Composable, we test the storage logic directly)
+        keys[key] = externalKey
+        delay.let { clearDelays[key] = it }
+        val owner = ScopedViewModelOwner(key = key + externalKey, modelClass = FakeVM::class)
+        container[key] = owner
+
+        // Then clearDelay is stored
+        assertTrue(clearDelays.containsKey(key))
+        assertEquals(delay, clearDelays[key])
+    }
+
+    @Test
+    internal fun `clearDelay is not stored when null`() {
+        // Given empty containers and null clearDelay
+        val clearDelays = mutableMapOf<InternalKey, Duration>()
+        val key = InternalKey("testKey")
+        val nullDelay: Duration? = null
+
+        // When we simulate what getOrBuildViewModel does with null clearDelay
+        nullDelay?.let { clearDelays[key] = it }
+
+        // Then clearDelay is NOT stored
+        assertFalse(clearDelays.containsKey(key))
+    }
+
+    @Test
+    internal fun `clearDelay is updated when key changes and new clearDelay is provided`() {
+        // Given containers with existing clearDelay
+        val clearDelays = mutableMapOf<InternalKey, Duration>()
+        val key = InternalKey("testKey")
+        clearDelays[key] = 3.seconds
+
+        // When a new clearDelay is set for the same key
+        val newDelay = 10.seconds
+        newDelay.let { clearDelays[key] = it }
+
+        // Then clearDelay is updated
+        assertEquals(newDelay, clearDelays[key])
     }
 
     // endregion

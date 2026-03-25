@@ -180,3 +180,26 @@ fun DemoScopedHiltInjectedViewModelWithClearDelayComposable(
         }
     DemoComposable(inputObject = fakeInjectedVM, objectType = "Hilt FakeInjectedViewModel with clearDelay", scoped = true)
 }
+
+/**
+ * Create a [ViewModel] with resaca's simple [hiltViewModelScoped] function (no assisted injection) with a [clearDelay].
+ * This exercises the `hiltViewModelScoped<T>(key, clearDelay)` overload that uses the default Hilt factory.
+ * The [ViewModel] will only be cleared after the [clearDelay] has passed since the Composable was disposed.
+ */
+@SuppressLint("ViewModelConstructorInComposable") // This is only used for previews
+@Composable
+fun DemoScopedSecondHiltInjectedViewModelWithClearDelayComposable(
+    key: String? = null,
+    clearDelay: Duration = 5.seconds,
+) {
+    val fakeSecondInjectedVM: FakeSecondInjectedViewModel =
+        if (LocalInspectionMode.current) { // In Preview we can't use hiltViewModelScoped
+            FakeSecondInjectedViewModel(
+                stateSaver = SavedStateHandle(),
+                viewModelsClearedCounter = viewModelsClearedGloballySharedCounter
+            )
+        } else {
+            hiltViewModelScoped(key = key, clearDelay = clearDelay)
+        }
+    DemoComposable(inputObject = fakeSecondInjectedVM, objectType = "Hilt FakeSecondInjectedViewModel with clearDelay", scoped = true)
+}

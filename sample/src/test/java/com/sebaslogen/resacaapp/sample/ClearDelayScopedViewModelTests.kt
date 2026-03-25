@@ -8,6 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedSimpleViewModelWithClearDelayComposable
 import com.sebaslogen.resacaapp.sample.ui.main.compose.examples.DemoScopedViewModelWithClearDelayComposable
 import com.sebaslogen.resacaapp.sample.utils.ComposeTestUtils
 import com.sebaslogen.resacaapp.sample.utils.MainDispatcherRule
@@ -168,4 +169,70 @@ class ClearDelayScopedViewModelTests : ComposeTestUtils {
                     "was not higher than the amount before key change ($initialAmountOfViewModelsCleared)"
         }
     }
+
+    // region viewModelScoped with no builder (default factory) + clearDelay
+
+    @Test
+    fun `when composable with clearDelay and no builder is disposed, the scoped ViewModel is NOT cleared before delay expires`() = runTest {
+
+        // Given the starting screen with a scoped ViewModel using default factory + clearDelay
+        var composablesShown by mutableStateOf(true)
+        val textTitle = "Test text"
+        composeTestRule.setContent {
+            Column {
+                Text(textTitle)
+                if (composablesShown) {
+                    DemoScopedSimpleViewModelWithClearDelayComposable(clearDelay = 2.seconds)
+                }
+            }
+        }
+        printComposeUiTreeToLog()
+
+        // When the Composable is disposed
+        val initialAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+        composablesShown = false
+        composeTestRule.onNodeWithText(textTitle).assertExists()
+        advanceTimeBy(100) // Advance time but NOT past the clearDelay
+        printComposeUiTreeToLog()
+        val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+
+        // Then the scoped ViewModel is NOT yet cleared
+        assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared) {
+            "The amount of ViewModels cleared ($finalAmountOfViewModelsCleared) " +
+                    "should be the same as before disposal ($initialAmountOfViewModelsCleared) because clearDelay has not expired"
+        }
+    }
+
+    @Test
+    fun `when composable with clearDelay and no builder is disposed, the scoped ViewModel IS cleared after delay expires`() = runTest {
+
+        // Given the starting screen with a scoped ViewModel using default factory + clearDelay
+        var composablesShown by mutableStateOf(true)
+        val textTitle = "Test text"
+        composeTestRule.setContent {
+            Column {
+                Text(textTitle)
+                if (composablesShown) {
+                    DemoScopedSimpleViewModelWithClearDelayComposable(clearDelay = 2.seconds)
+                }
+            }
+        }
+        printComposeUiTreeToLog()
+
+        // When the Composable is disposed
+        val initialAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+        composablesShown = false
+        composeTestRule.onNodeWithText(textTitle).assertExists()
+        advanceTimeBy(2100) // Advance time past the clearDelay
+        printComposeUiTreeToLog()
+        val finalAmountOfViewModelsCleared = viewModelsClearedGloballySharedCounter.get()
+
+        // Then the scoped ViewModel IS cleared
+        assert(finalAmountOfViewModelsCleared == initialAmountOfViewModelsCleared + 1) {
+            "The amount of ViewModels cleared ($finalAmountOfViewModelsCleared) " +
+                    "was not higher than before disposal ($initialAmountOfViewModelsCleared)"
+        }
+    }
+
+    // endregion
 }
