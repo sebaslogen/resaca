@@ -2,6 +2,7 @@ import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
@@ -46,13 +47,17 @@ subprojects {
     /**
      * Enable Strict API to force the library modules to explicitly declare visibility of function and classes in the API
      */
-    tasks.withType<KotlinJvmCompile>().configureEach {
+    tasks.withType<KotlinCompilationTask<*>>().configureEach {
         compilerOptions {
-            jvmTarget = JvmTarget.JVM_17
             freeCompilerArgs.add("-Xexpect-actual-classes")
             if (!project.name.contains(sampleModuleName)) {
                 freeCompilerArgs.add("-Xexplicit-api=strict")
             }
+        }
+    }
+    tasks.withType<KotlinJvmCompile>().configureEach {
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_17
         }
     }
     pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {

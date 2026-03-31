@@ -99,7 +99,7 @@ internal object ScopedViewModelUtils {
      */
     @Suppress("ComposableNaming")
     @Composable
-    internal inline fun scopedSavedStateHandleForCleanup(
+    internal fun scopedSavedStateHandleForCleanup(
         creationExtras: CreationExtras,
         positionalMemoizationKey: InternalKey,
         scopedObjectsSavedStateHandlers: MutableMap<InternalKey, SavedStateHandleContainer>

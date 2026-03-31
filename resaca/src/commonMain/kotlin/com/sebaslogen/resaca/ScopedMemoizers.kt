@@ -248,8 +248,7 @@ public fun generateKeysAndObserveLifecycle(key: Any?): Triple<ScopedViewModelCon
 }
 
 @Composable
-@PublishedApi
-internal inline fun ObserveLifecycles(scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: InternalKey) {
+internal fun ObserveLifecycles(scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: InternalKey) {
     // Observe this destination's lifecycle to detect screen resumed/paused/destroyed
     // and remember or forget this object correctly from the container (so it can be garbage collected when needed)
     ObserveLifecycleWithScopedViewModelContainer(scopedViewModelContainer)
@@ -264,8 +263,7 @@ internal inline fun ObserveLifecycles(scopedViewModelContainer: ScopedViewModelC
  * and then this observer is remembered to connect the observer's callbacks to the lifecycle of this Composable
  */
 @Composable
-@PublishedApi
-internal inline fun ObserveComposableDisposal(
+internal fun ObserveComposableDisposal(
     positionalMemoizationKey: InternalKey,
     scopedViewModelContainer: ScopedViewModelContainer
 ) {
