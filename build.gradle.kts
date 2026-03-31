@@ -1,5 +1,4 @@
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
-import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
@@ -69,14 +68,13 @@ subprojects {
     }
 }
 
-tasks.withType<DokkaMultiModuleTask>().configureEach {
-    outputDirectory = layout.projectDirectory.dir("docs/api")
-}
-
 // Must be afterEvaluate or else com.vanniktech.maven.publish will overwrite our
 // dokka and version configuration.
 afterEvaluate {
     dokka {
+        dokkaPublications.configureEach {
+            outputDirectory.set(layout.projectDirectory.dir("docs/api"))
+        }
         dokkaSourceSets.configureEach {
             jdkVersion = 17
             skipDeprecated = true
