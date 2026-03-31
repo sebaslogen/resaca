@@ -68,6 +68,18 @@ compose-ui-toolingPreview = { module = 'androidx.compose.ui:ui-tooling-preview',
 compose-ui-test-junit = { module = 'androidx.compose.ui:ui-test-junit4', version.ref = 'compose-ui-test-junit' }
 compose-ui-test-manifest = { module = 'androidx.compose.ui:ui-test-manifest', version.ref = 'compose-ui-test-manifest' }
 
+# JetBrains Compose Multiplatform libraries
+jetbrains-compose-runtime = { module = 'org.jetbrains.compose.runtime:runtime', version.ref = 'compose-plugin' }
+jetbrains-compose-foundation = { module = 'org.jetbrains.compose.foundation:foundation', version.ref = 'compose-plugin' }
+jetbrains-compose-material = { module = 'org.jetbrains.compose.material:material', version.ref = 'compose-plugin' }
+jetbrains-compose-ui = { module = 'org.jetbrains.compose.ui:ui', version.ref = 'compose-plugin' }
+jetbrains-compose-ui-test = { module = 'org.jetbrains.compose.ui:ui-test', version.ref = 'compose-plugin' }
+jetbrains-compose-ui-tooling = { module = 'org.jetbrains.compose.ui:ui-tooling', version.ref = 'compose-plugin' }
+jetbrains-compose-ui-tooling-preview = { module = 'org.jetbrains.compose.ui:ui-tooling-preview', version.ref = 'compose-plugin' }
+jetbrains-compose-desktop-common = { module = 'org.jetbrains.compose.desktop:desktop', version.ref = 'compose-plugin' }
+jetbrains-compose-components-resources = { module = 'org.jetbrains.compose.components:components-resources', version.ref = 'compose-plugin' }
+jetbrains-compose-components-ui-tooling-preview = { module = 'org.jetbrains.compose.components:components-ui-tooling-preview', version.ref = 'compose-plugin' }
+
 coroutines-core = { module = 'org.jetbrains.kotlinx:kotlinx-coroutines-core', version.ref = 'coroutines' }
 coroutines-android = { module = 'org.jetbrains.kotlinx:kotlinx-coroutines-android', version.ref = 'coroutines' }
 coroutines-swing = { module = 'org.jetbrains.kotlinx:kotlinx-coroutines-swing', version.ref = 'coroutines' }

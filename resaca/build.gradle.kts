@@ -41,7 +41,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(compose.runtime)
+            implementation(libs.jetbrains.compose.runtime)
             api(libs.androidx.lifecycle.viewmodel)
             api(libs.androidx.lifecycle.viewmodel.compose)
             implementation(libs.androidx.lifecycle.runtime.compose)
@@ -55,7 +55,7 @@ kotlin {
 
         val desktopMain by getting
         desktopMain.dependencies {
-            implementation(compose.desktop.common)
+            implementation(libs.jetbrains.compose.desktop.common)
             implementation(libs.coroutines.swing)
         }
 
