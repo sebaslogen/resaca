@@ -8,10 +8,10 @@
 
 # Resaca Metro 🍹🚇
 
-Short lived View Models provided by [**Metro**](https://zacsweers.dev/metro/) with the right scope in
+Short lived View Models provided by [**Metro**](https://zacsweers.github.io/metro/) with the right scope in
 Android [Compose](https://developer.android.com/jetpack/compose) and [Compose Multiplatform](https://www.jetbrains.com/compose-multiplatform/).
 
-[Metro](https://zacsweers.dev/metro/) is a Kotlin-first dependency injection framework by Zac Sweers that uses a compiler plugin for compile-time dependency graph validation and code generation.
+[Metro](https://zacsweers.github.io/metro/) is a Kotlin-first dependency injection framework by Zac Sweers that uses a compiler plugin for compile-time dependency graph validation and code generation.
 
 # Why
 
@@ -190,7 +190,7 @@ To use the `metroViewModelScoped` function you need to follow these steps:
 3. Create a `ViewModelProvider.Factory` that uses your Metro graph to instantiate ViewModels. [See example here](https://github.com/sebaslogen/resaca/blob/main/sample/src/main/java/com/sebaslogen/resacaapp/sample/di/metro/MetroSampleViewModelFactory.kt).
 4. Initialize the Metro graph (e.g. in your Application's `onCreate` using `createGraph<MyGraph>()`). [See example here](https://github.com/sebaslogen/resaca/blob/main/sample/src/main/java/com/sebaslogen/resacaapp/sample/ResacaSampleApp.kt).
 
-For a complete guide to Metro check the [official documentation](https://zacsweers.dev/metro/).
+For a complete guide to Metro check the [official documentation](https://zacsweers.github.io/metro/).
 
 # Sample use cases
 

@@ -275,7 +275,7 @@ Usage example: `val viewModel: MyViewModel = viewModelScoped(myId) { getKoin().g
 <details>
   <summary>Metro details</summary>
 
-[Metro](https://zacsweers.dev/metro/) is a Kotlin-first dependency injection framework that uses a compiler plugin for compile-time dependency graph validation and code generation.
+[Metro](https://zacsweers.github.io/metro/) is a Kotlin-first dependency injection framework that uses a compiler plugin for compile-time dependency graph validation and code generation.
 Metro is supported through the small extension library [**resaca-metro**](https://github.com/sebaslogen/resaca/tree/main/resacametro/).
 
 Usage example:
