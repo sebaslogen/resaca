@@ -132,6 +132,18 @@ fun DemoKoinInjectedViewModelWithDependency() {
 </details>
 
 <details>
+  <summary>Scope a ViewModel with a dependency injected with Metro to a Composable</summary>
+  
+```kotlin
+@Composable
+fun DemoMetroInjectedViewModelScoped() {
+    val myInjectedScopedVM: MyViewModel = metroViewModelScoped(factory = myMetroViewModelFactory)
+    DemoComposable(inputObject = myInjectedScopedVM)
+}
+```
+</details>
+
+<details>
   <summary>Scope a ViewModel with a clear delay to a Composable</summary>
   
 ```kotlin
@@ -235,7 +247,7 @@ you can look at the solutions provided in the first comments of this ticket http
 
 This library does not influence how your app provides or creates objects so it's dependency injection strategy and framework agnostic.
 
-Nevertheless, this library supports two of the main **dependency injection frameworks**:
+Nevertheless, this library supports three of the main **dependency injection frameworks**:
 
 ## Hilt 🗡️
 <details>
@@ -257,6 +269,31 @@ Instead of using the `getViewModel` or `koinViewModel` functions from Koin, you 
 Usage example: `val viewModel: MyViewModel = viewModelScoped(myId) { getKoin().get { parametersOf(myId) } }`
 
 > **Note**: if you plan to use a ViewModel with a [SavedStateHandle](https://developer.android.com/topic/libraries/architecture/viewmodel/viewmodel-savedstate), then you need to use the `koinViewModelScoped` function from the small extension library [**resaca-koin**](https://github.com/sebaslogen/resaca/blob/main/resacakoin/Readme.md).
+</details>
+
+## Metro 🚇
+<details>
+  <summary>Metro details</summary>
+
+[Metro](https://zacsweers.dev/metro/) is a Kotlin-first dependency injection framework that uses a compiler plugin for compile-time dependency graph validation and code generation.
+Metro is supported through the small extension library [**resaca-metro**](https://github.com/sebaslogen/resaca/tree/main/resacametro/).
+
+Usage example:
+```kotlin
+val viewModel: MyViewModel = metroViewModelScoped(factory = myMetroViewModelFactory)
+```
+
+Where `myMetroViewModelFactory` is a `ViewModelProvider.Factory` backed by your Metro `@DependencyGraph`.
+
+Metro's assisted injection is also supported:
+```kotlin
+val viewModel: MyViewModel = metroViewModelScoped(
+    key = myId,
+    factory = createAssistedFactory(metroGraph, myId)
+)
+```
+
+[Documentation and installation instructions are available here](https://github.com/sebaslogen/resaca/tree/main/resacametro/README.md).
 </details>
 
 # Scoping in a LazyColumn, LazyRow, etc
