@@ -33,5 +33,6 @@ if (ci == null || !ci.contains("Maven")) { // Remove the sample app from Maven p
 include(
     ":resaca",
     ":resacahilt",
-    ":resacakoin"
+    ":resacakoin",
+    ":resacametro"
 )

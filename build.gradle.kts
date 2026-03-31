@@ -16,6 +16,7 @@ plugins {
     alias(libs.plugins.maven) apply false
     alias(libs.plugins.dokka)
     alias(libs.plugins.compose.compiler) apply false
+    alias(libs.plugins.metro) apply false
 }
 
 val sampleModuleName = "sample"

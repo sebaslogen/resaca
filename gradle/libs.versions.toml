@@ -33,6 +33,8 @@ hilt = '2.59.2'
 hilt-navigation-compose = '1.3.0'
 # Koin
 koin = '4.2.0'
+# Metro
+metro = '0.12.1'
 # Test
 junit-version = '4.13.2'
 kover = '0.9.8'
@@ -113,3 +115,4 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 # Compose Multiplatform plugins
 jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+metro = { id = "dev.zacsweers.metro", version.ref = "metro" }

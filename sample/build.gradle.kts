@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kover)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.jetbrains.compose)
+    alias(libs.plugins.metro)
 }
 
 android {
@@ -62,6 +63,7 @@ android {
 dependencies {
     implementation(project(":resacahilt"))
     implementation(project(":resacakoin"))
+    implementation(project(":resacametro"))
 
     implementation(libs.coroutines.android)
 
@@ -144,6 +146,7 @@ dependencies {
     kover(project(":resaca"))
     kover(project(":resacahilt"))
     kover(project(":resacakoin"))
+    kover(project(":resacametro"))
 }
 
 kover {
