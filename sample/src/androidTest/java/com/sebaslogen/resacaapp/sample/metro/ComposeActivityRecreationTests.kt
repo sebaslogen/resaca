@@ -4,6 +4,8 @@ import android.content.Intent
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -65,6 +67,7 @@ class ComposeActivityRecreationTests : ComposeTestUtils {
         composeTestRule.waitForIdle()
         // Find the scoped text fields and grab their texts
         val initialFakeScopedRepoText = retrieveTextFromNodeWithTestTag("FakeRepo Scoped")
+        composeTestRule.onNodeWithTag("Metro FakeMetroSecondInjectedViewModel Scoped").performScrollTo() // Scroll to the node that might be off-screen
         val initialMetroFakeScopedViewModelText = retrieveTextFromNodeWithTestTag("Metro FakeMetroSecondInjectedViewModel Scoped")
         printComposeUiTreeToLog()
 
@@ -74,7 +77,9 @@ class ComposeActivityRecreationTests : ComposeTestUtils {
         printComposeUiTreeToLog()
 
         // Then the scoped objects are still the same
-        onNodeWithTestTag("FakeRepo Scoped").assertIsDisplayed().assertTextEquals(initialFakeScopedRepoText)
+        composeTestRule.onNodeWithTag("Metro FakeMetroSecondInjectedViewModel Scoped").performScrollTo() // Scroll to the node that might be off-screen
+        onNodeWithTestTag("FakeRepo Scoped", assertDisplayed = false) // After scrolling down, FakeRepo might be off-screen now
+            .assertTextEquals(initialFakeScopedRepoText)
         onNodeWithTestTag("Metro FakeMetroSecondInjectedViewModel Scoped").assertIsDisplayed().assertTextEquals(initialMetroFakeScopedViewModelText)
     }
 
