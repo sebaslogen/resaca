@@ -43,7 +43,7 @@ jobs:
           disk-size: 6000M
           heap-size: 600M
           force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none -metrics-collection
           script: ./gradlew connectedDebugAndroidTest --daemon
           
       - name: Upload Test Report
