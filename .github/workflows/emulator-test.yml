@@ -33,18 +33,6 @@ jobs:
 
       - name: Gradle cache
         uses: gradle/actions/setup-gradle@v3
-
-      - name: Create AVD and generate snapshot for caching
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 32
-          arch: x86_64
-          disable-animations: true
-          disk-size: 6000M
-          heap-size: 600M
-          force-avd-creation: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          script: echo "Generated AVD snapshot for caching."
           
       - name: Build projects and run instrumentation tests
         uses: reactivecircus/android-emulator-runner@v2
@@ -55,7 +43,7 @@ jobs:
           disk-size: 6000M
           heap-size: 600M
           force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
           script: ./gradlew connectedDebugAndroidTest --daemon
           
       - name: Upload Test Report
