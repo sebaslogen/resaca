@@ -70,12 +70,12 @@ kotlin {
             implementation(compose.desktop.currentOs)
         }
         commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
+            implementation(libs.jetbrains.compose.runtime)
+            implementation(libs.jetbrains.compose.foundation)
+            implementation(libs.jetbrains.compose.material)
+            implementation(libs.jetbrains.compose.ui)
+            implementation(libs.jetbrains.compose.components.resources)
+            implementation(libs.jetbrains.compose.components.ui.tooling.preview)
             implementation(project(":resaca")) // Depend on local resaca multiplatform library
 
             implementation(libs.kotlinx.datetime) // Add kotlinx-datetime dependency just for testing purposes
@@ -83,8 +83,7 @@ kotlin {
 
         commonTest.dependencies {
             implementation(kotlin("test"))
-            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-            implementation(compose.uiTest)
+            implementation(libs.jetbrains.compose.ui.test)
             implementation(libs.androidx.lifecycle.runtime.compose)
         }
     }

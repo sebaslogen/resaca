@@ -49,15 +49,15 @@ dependencies {
     implementation(project(":samplecmp:sampleComposeApp"))
 
     implementation(libs.androidx.activity.compose)
-    implementation(compose.runtime)
-    implementation(compose.foundation)
-    implementation(compose.material)
-    implementation(compose.ui)
-    implementation(compose.preview)
+    implementation(libs.jetbrains.compose.runtime)
+    implementation(libs.jetbrains.compose.foundation)
+    implementation(libs.jetbrains.compose.material)
+    implementation(libs.jetbrains.compose.ui)
+    implementation(libs.jetbrains.compose.ui.tooling.preview)
 
     // Test dependencies
     androidTestImplementation(libs.compose.ui.test.junit)
     debugImplementation(libs.androidx.tracing)
     debugImplementation(libs.compose.ui.test.manifest)
-    debugImplementation(compose.uiTooling)
+    debugImplementation(libs.jetbrains.compose.ui.tooling)
 }

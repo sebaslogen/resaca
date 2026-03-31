@@ -109,14 +109,14 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
 
     // Compose dependencies
-    implementation(compose.runtime)
-    implementation(compose.ui)
+    implementation(libs.jetbrains.compose.runtime)
+    implementation(libs.jetbrains.compose.ui)
     // Tooling support (Previews, etc.)
     implementation(libs.compose.ui.toolingPreview)
     // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
-    implementation(compose.foundation)
+    implementation(libs.jetbrains.compose.foundation)
     // Material Design
-    implementation(compose.material)
+    implementation(libs.jetbrains.compose.material)
     implementation(libs.androidx.material.icons.extended)
     // Navigation 3 libs
     implementation(libs.androidx.navigation3.runtime)
