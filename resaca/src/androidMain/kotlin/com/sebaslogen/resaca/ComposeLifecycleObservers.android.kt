@@ -1,9 +1,4 @@
 @file:OptIn(ResacaPackagePrivate::class)
-@file:Suppress( // This is required to access internal androidx.navigation.NavControllerViewModel
-    "CANNOT_OVERRIDE_INVISIBLE_MEMBER",
-    "INVISIBLE_MEMBER",
-    "INVISIBLE_REFERENCE",
-)
 
 package com.sebaslogen.resaca
 
@@ -15,7 +10,6 @@ import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavControllerViewModel
 import com.sebaslogen.resaca.utils.ResacaPackagePrivate
 import java.lang.reflect.Field
 
@@ -101,10 +95,10 @@ private fun getViewModelStores(navBackEntry: NavBackStackEntry): Map<String, Vie
     try {
         val navViewModelStoreProviderField: Field = navBackEntry.javaClass.getDeclaredField("viewModelStoreProvider")
         navViewModelStoreProviderField.isAccessible = true // Make the field accessible to read
-        val navControllerViewModel: NavControllerViewModel = navViewModelStoreProviderField.get(navBackEntry) as? NavControllerViewModel ?: return null
-        val viewModelStoresField: Field = navControllerViewModel.javaClass.getDeclaredField("viewModelStores")
+        val viewModelStoreProvider: Any = navViewModelStoreProviderField.get(navBackEntry) ?: return null // Access a androidx.navigation.NavControllerViewModel
+        val viewModelStoresField: Field = viewModelStoreProvider.javaClass.getDeclaredField("viewModelStores")
         viewModelStoresField.isAccessible = true // Make the field accessible to read
-        return viewModelStoresField.get(navControllerViewModel) as? Map<String, ViewModelStore>
+        return viewModelStoresField.get(viewModelStoreProvider) as? Map<String, ViewModelStore>
     } catch (_: Exception) {
         return null
     }
