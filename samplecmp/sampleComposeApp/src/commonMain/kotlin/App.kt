@@ -19,11 +19,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.sebaslogen.resaca.rememberScoped
 import kotlin.time.Clock
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.time.ExperimentalTime
 
 @Composable
-@Preview
 fun App() {
     MaterialTheme {
         Scaffold { paddingValues ->
