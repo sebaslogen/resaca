@@ -9,6 +9,7 @@ import com.sebaslogen.resaca.koin.koinViewModelScoped
 import com.sebaslogen.resaca.rememberScoped
 import com.sebaslogen.resaca.viewModelScoped
 import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoComposable
+import com.sebaslogen.resacaapp.sample.ui.main.compose.savedStateHandleForPreviewsTesting
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeInjectedRepo
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeInjectedViewModel
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeScopedViewModel
@@ -74,7 +75,7 @@ fun DemoScopedKoinParametrizedInjectedViewModelComposable(key: String? = null) {
     val fakeScopedVM: FakeScopedViewModel =
         if (LocalInspectionMode.current) { // In Preview we can't use viewModelScoped
             FakeScopedViewModel(
-                stateSaver = SavedStateHandle(),
+                stateSaver = savedStateHandleForPreviewsTesting(),
                 viewModelId = viewModelId
             )
         } else {
@@ -100,7 +101,7 @@ fun DemoScopedKoinInjectedViewModelComposable(key: String? = null, fakeInjectedV
     val fakeInjectedVM: FakeInjectedViewModel =
         if (LocalInspectionMode.current) { // In Preview we can't use viewModelScoped
             FakeInjectedViewModel(
-                stateSaver = SavedStateHandle(),
+                stateSaver = savedStateHandleForPreviewsTesting(),
                 repository = FakeInjectedRepo(),
                 viewModelsClearedCounter = viewModelsClearedGloballySharedCounter,
                 viewModelId = fakeInjectedViewModelId
@@ -129,7 +130,7 @@ fun DemoScopedSecondKoinInjectedViewModelComposable() {
     val fakeSecondInjectedVM: FakeSecondInjectedViewModel =
         if (LocalInspectionMode.current) { // In Preview we can't use viewModelScoped
             FakeSecondInjectedViewModel(
-                stateSaver = SavedStateHandle(),
+                stateSaver = savedStateHandleForPreviewsTesting(),
                 viewModelsClearedCounter = viewModelsClearedGloballySharedCounter
             )
         } else {
@@ -152,7 +153,7 @@ fun DemoScopedKoinInjectedViewModelWithClearDelayComposable(
     val fakeInjectedVM: FakeInjectedViewModel =
         if (LocalInspectionMode.current) { // In Preview we can't use viewModelScoped
             FakeInjectedViewModel(
-                stateSaver = SavedStateHandle(),
+                stateSaver = savedStateHandleForPreviewsTesting(),
                 repository = FakeInjectedRepo(),
                 viewModelsClearedCounter = viewModelsClearedGloballySharedCounter,
                 viewModelId = fakeInjectedViewModelId
@@ -181,7 +182,7 @@ fun DemoScopedSecondKoinInjectedViewModelWithClearDelayComposable(
     val fakeSecondInjectedVM: FakeSecondInjectedViewModel =
         if (LocalInspectionMode.current) { // In Preview we can't use viewModelScoped
             FakeSecondInjectedViewModel(
-                stateSaver = SavedStateHandle(),
+                stateSaver = savedStateHandleForPreviewsTesting(),
                 viewModelsClearedCounter = viewModelsClearedGloballySharedCounter
             )
         } else {

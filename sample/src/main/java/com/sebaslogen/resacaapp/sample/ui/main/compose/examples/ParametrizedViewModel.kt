@@ -1,10 +1,10 @@
 package com.sebaslogen.resacaapp.sample.ui.main.compose.examples
 
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.sebaslogen.resaca.viewModelScoped
 import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoComposable
+import com.sebaslogen.resacaapp.sample.ui.main.compose.savedStateHandleForPreviewsTesting
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeScopedViewModel
 
 /**
@@ -14,7 +14,7 @@ import com.sebaslogen.resacaapp.sample.ui.main.data.FakeScopedViewModel
  */
 @Composable
 fun DemoScopedParametrizedViewModelComposable(
-    viewModelInstance: FakeScopedViewModel = FakeScopedViewModel(stateSaver = SavedStateHandle(), viewModelId = 0),
+    viewModelInstance: FakeScopedViewModel = FakeScopedViewModel(stateSaver = savedStateHandleForPreviewsTesting(), viewModelId = 0),
     key: String? = null
 ) {
     val fakeScopedParametrizedVM: FakeScopedViewModel = viewModelScoped(key = key) { viewModelInstance }

@@ -14,10 +14,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.testTag
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.sebaslogen.resaca.hilt.hiltViewModelScoped
 import com.sebaslogen.resacaapp.sample.ui.main.compose.DemoComposable
+import com.sebaslogen.resacaapp.sample.ui.main.compose.savedStateHandleForPreviewsTesting
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeAssistedInjectionViewModel
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeInjectedRepo
 import com.sebaslogen.resacaapp.sample.ui.main.data.FakeInjectedViewModel
@@ -42,7 +42,7 @@ fun DemoScopedHiltInjectedViewModelComposable(key: String? = null, fakeInjectedV
     val fakeInjectedVM: FakeInjectedViewModel =
         if (LocalInspectionMode.current) { // In Preview we can't use hiltViewModelScoped
             FakeInjectedViewModel(
-                stateSaver = SavedStateHandle(),
+                stateSaver = savedStateHandleForPreviewsTesting(),
                 repository = FakeInjectedRepo(),
                 viewModelsClearedCounter = viewModelsClearedGloballySharedCounter,
                 viewModelId = fakeInjectedViewModelId
@@ -63,7 +63,7 @@ fun DemoScopedSecondHiltInjectedViewModelComposable() {
     val fakeSecondInjectedVM: FakeSecondInjectedViewModel =
         if (LocalInspectionMode.current) { // In Preview we can't use hiltViewModelScoped
             FakeSecondInjectedViewModel(
-                stateSaver = SavedStateHandle(),
+                stateSaver = savedStateHandleForPreviewsTesting(),
                 viewModelsClearedCounter = viewModelsClearedGloballySharedCounter
             )
         } else {
@@ -78,7 +78,7 @@ fun DemoScopedHiltAssistedInjectionViewModelComposable(key: String? = null, fake
     val fakeInjectedVM: FakeAssistedInjectionViewModel =
         if (LocalInspectionMode.current) { // In Preview we can't use hiltViewModelScoped
             FakeAssistedInjectionViewModel(
-                stateSaver = SavedStateHandle(),
+                stateSaver = savedStateHandleForPreviewsTesting(),
                 repository = FakeInjectedRepo(),
                 viewModelsClearedCounter = viewModelsClearedGloballySharedCounter,
                 viewModelId = fakeInjectedViewModelId
@@ -116,7 +116,7 @@ fun DemoDialogWithRandomIdHiltViewModel() {
             val fakeInjectedVM: FakeInjectedViewModel =
                 if (LocalInspectionMode.current) { // In Preview we can't use hiltViewModelScoped
                     FakeInjectedViewModel(
-                        stateSaver = SavedStateHandle(),
+                        stateSaver = savedStateHandleForPreviewsTesting(),
                         repository = FakeInjectedRepo(),
                         viewModelsClearedCounter = viewModelsClearedGloballySharedCounter,
                         viewModelId = dialogId
@@ -166,7 +166,7 @@ fun DemoScopedHiltInjectedViewModelWithClearDelayComposable(
     val fakeInjectedVM: FakeInjectedViewModel =
         if (LocalInspectionMode.current) { // In Preview we can't use hiltViewModelScoped
             FakeInjectedViewModel(
-                stateSaver = SavedStateHandle(),
+                stateSaver = savedStateHandleForPreviewsTesting(),
                 repository = FakeInjectedRepo(),
                 viewModelsClearedCounter = viewModelsClearedGloballySharedCounter,
                 viewModelId = fakeInjectedViewModelId
@@ -195,7 +195,7 @@ fun DemoScopedSecondHiltInjectedViewModelWithClearDelayComposable(
     val fakeSecondInjectedVM: FakeSecondInjectedViewModel =
         if (LocalInspectionMode.current) { // In Preview we can't use hiltViewModelScoped
             FakeSecondInjectedViewModel(
-                stateSaver = SavedStateHandle(),
+                stateSaver = savedStateHandleForPreviewsTesting(),
                 viewModelsClearedCounter = viewModelsClearedGloballySharedCounter
             )
         } else {
