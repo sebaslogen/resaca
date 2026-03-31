@@ -33,8 +33,9 @@ class AssistedInjectionTest : ComposeTestUtils {
         val fakeScopedViewModelId = 555
         var fakeScopedViewModel: FakeScopedViewModel? = null
         composeTestRule.setContent {
-            fakeScopedViewModel = viewModelScoped { FakeScopedViewModel(stateSaver = it, viewModelId = fakeScopedViewModelId) }
-            DemoComposable(inputObject = fakeScopedViewModel!!, objectType = "FakeScopedViewModel", scoped = true)
+            val vm = viewModelScoped { FakeScopedViewModel(stateSaver = it, viewModelId = fakeScopedViewModelId) }
+            fakeScopedViewModel = vm
+            DemoComposable(inputObject = vm, objectType = "FakeScopedViewModel", scoped = true)
         }
         printComposeUiTreeToLog()
 

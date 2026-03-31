@@ -3,6 +3,7 @@ package com.sebaslogen.resacaapp.sample.metro
 import com.sebaslogen.resacaapp.sample.di.metro.MetroAppGraph
 import dev.zacsweers.metro.createGraph
 import org.junit.Test
+import kotlin.test.assertNotNull
 
 class DependencyGraphTest {
 
@@ -12,13 +13,13 @@ class DependencyGraphTest {
         val graph = createGraph<MetroAppGraph>()
         // Verify that graph accessors work
         val simpleVM = graph.simpleInjectedViewModel
-        assert(simpleVM != null) { "simpleInjectedViewModel should not be null" }
+        assertNotNull(simpleVM, "simpleInjectedViewModel should not be null")
 
         val secondVM = graph.secondInjectedViewModel
-        assert(secondVM != null) { "secondInjectedViewModel should not be null" }
+        assertNotNull(secondVM, "secondInjectedViewModel should not be null")
 
         val factory = graph.injectedViewModelFactory
-        assert(factory != null) { "injectedViewModelFactory should not be null" }
+        assertNotNull(factory, "injectedViewModelFactory should not be null")
 
         val assistedVM = factory.create(viewModelId = 42)
         assert(assistedVM.viewModelId == 42) { "Assisted injection should pass viewModelId correctly" }

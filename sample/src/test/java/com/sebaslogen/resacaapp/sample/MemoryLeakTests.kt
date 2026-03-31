@@ -66,6 +66,6 @@ class MemoryLeakTests : ComposeTestUtils {
         val polledReferenceQueue = referenceQueue.poll()
         assertNotNull(polledReferenceQueue, "The object is still alive (or GC hasn't run yet).")
         assertNotNull(weakActivityReference, "WeakReference container for initial ComposeActivity should not be null because it was created")
-        assertNull(weakActivityReference?.get(), "Initial ComposeActivity should have been garbage collected but it wasn't, so it's leaking")
+        assertNull(weakActivityReference.get(), "Initial ComposeActivity should have been garbage collected but it wasn't, so it's leaking")
     }
 }

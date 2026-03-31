@@ -57,6 +57,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
     fun `when I navigate to nested screen and back, then the Koin scoped ViewModels of the second screen are cleared`() = runTest {
         // Given the starting screen with Koin injected ViewModel scoped
         composeTestRule.activity.setContent {
+            @Suppress("DEPRECATION")
             KoinContext {
                 navController = rememberNavController()
                 ScreensWithNavigation(navController = navController, startDestination = emptyDestination)
@@ -96,6 +97,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
         var composablesShown by mutableStateOf(true)
         val textTitle = "Test text"
         composeTestRule.activity.setContent {
+            @Suppress("DEPRECATION")
             KoinContext {
                 Column {
                     Text(textTitle)
@@ -131,6 +133,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
             var composablesShown by mutableStateOf(true)
             val textTitle = "Test text"
             composeTestRule.activity.setContent {
+                @Suppress("DEPRECATION")
                 KoinContext {
                     Column {
                         Text(textTitle)
@@ -166,6 +169,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
             var composablesShown by mutableStateOf(true)
             val textTitle = "Test text"
             composeTestRule.activity.setContent {
+                @Suppress("DEPRECATION")
                 KoinContext {
                     Column {
                         Text(textTitle)
@@ -204,6 +208,7 @@ class ClearScopedViewModelTests : ComposeTestUtils {
         var viewModelKey by mutableStateOf("initial key")
         val textTitle = "Test text"
         composeTestRule.activity.setContent {
+            @Suppress("DEPRECATION")
             KoinContext {
                 Column {
                     Text(textTitle)

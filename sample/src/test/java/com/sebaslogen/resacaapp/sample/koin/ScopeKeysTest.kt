@@ -48,6 +48,7 @@ class ScopeKeysTest : ComposeTestUtils {
 
         // Given the starting screen with scoped object that uses a key
         composeTestRule.activity.setContent {
+            @Suppress("DEPRECATION")
             KoinContext {
                 var myKey by remember { mutableStateOf(false) }
                 val fakeInjectedViewModel: FakeInjectedViewModel =

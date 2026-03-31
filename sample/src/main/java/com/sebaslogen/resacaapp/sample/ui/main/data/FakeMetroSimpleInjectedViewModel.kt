@@ -11,7 +11,8 @@ import java.util.concurrent.atomic.AtomicInteger
  * @param repository Sample of a common dependency on a project's object created by a DI framework
  * @param viewModelsClearedCounter Is a counter to inform the providers of this parameter that this ViewModel has been correctly cleared
  */
-class FakeMetroSimpleInjectedViewModel @Inject constructor(
+@Inject
+class FakeMetroSimpleInjectedViewModel(
     private val repository: FakeInjectedRepo,
     private val viewModelsClearedCounter: AtomicInteger
 ) : ViewModel() {

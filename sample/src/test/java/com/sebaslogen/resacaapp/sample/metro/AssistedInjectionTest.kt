@@ -37,10 +37,11 @@ class AssistedInjectionTest : ComposeTestUtils {
         val fakeInjectedViewModelId = 555
         var fakeInjectedViewModel: FakeMetroInjectedViewModel? = null
         composeTestRule.activity.setContent {
-            fakeInjectedViewModel = metroViewModelScoped(
+            val vm: FakeMetroInjectedViewModel = metroViewModelScoped(
                 factory = createMetroAssistedFactory(ResacaSampleApp.metroGraph, fakeInjectedViewModelId)
             )
-            DemoComposable(inputObject = fakeInjectedViewModel!!, objectType = "FakeMetroInjectedViewModel", scoped = true)
+            fakeInjectedViewModel = vm
+            DemoComposable(inputObject = vm, objectType = "FakeMetroInjectedViewModel", scoped = true)
         }
         printComposeUiTreeToLog()
 

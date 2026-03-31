@@ -9,7 +9,8 @@ import java.util.concurrent.atomic.AtomicInteger
  *
  * @param viewModelsClearedCounter Is a counter to inform the providers of this parameter that this ViewModel has been correctly cleared
  */
-class FakeMetroSecondInjectedViewModel @Inject constructor(
+@Inject
+class FakeMetroSecondInjectedViewModel(
     private val viewModelsClearedCounter: AtomicInteger
 ) : ViewModel() {
 

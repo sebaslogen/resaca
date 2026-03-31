@@ -50,6 +50,7 @@ class ClearDelayScopedViewModelTests : ComposeTestUtils {
         var composablesShown by mutableStateOf(true)
         val textTitle = "Test text"
         composeTestRule.activity.setContent {
+            @Suppress("DEPRECATION")
             KoinContext {
                 Column {
                     Text(textTitle)
@@ -84,6 +85,7 @@ class ClearDelayScopedViewModelTests : ComposeTestUtils {
         var composablesShown by mutableStateOf(true)
         val textTitle = "Test text"
         composeTestRule.activity.setContent {
+            @Suppress("DEPRECATION")
             KoinContext {
                 Column {
                     Text(textTitle)
@@ -118,6 +120,7 @@ class ClearDelayScopedViewModelTests : ComposeTestUtils {
         var composablesShown by mutableStateOf(true)
         val textTitle = "Test text"
         composeTestRule.activity.setContent {
+            @Suppress("DEPRECATION")
             KoinContext {
                 Column {
                     Text(textTitle)
@@ -157,6 +160,7 @@ class ClearDelayScopedViewModelTests : ComposeTestUtils {
         var viewModelKey by mutableStateOf("initial key")
         val textTitle = "Test text"
         composeTestRule.activity.setContent {
+            @Suppress("DEPRECATION")
             KoinContext {
                 Column {
                     Text(textTitle)
@@ -192,6 +196,7 @@ class ClearDelayScopedViewModelTests : ComposeTestUtils {
         var composablesShown by mutableStateOf(true)
         val textTitle = "Test text"
         composeTestRule.activity.setContent {
+            @Suppress("DEPRECATION")
             KoinContext {
                 Column {
                     Text(textTitle)
@@ -226,6 +231,7 @@ class ClearDelayScopedViewModelTests : ComposeTestUtils {
         var composablesShown by mutableStateOf(true)
         val textTitle = "Test text"
         composeTestRule.activity.setContent {
+            @Suppress("DEPRECATION")
             KoinContext {
                 Column {
                     Text(textTitle)

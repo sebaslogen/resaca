@@ -38,10 +38,12 @@ class AssistedInjectionTest : ComposeTestUtils {
         val fakeInjectedViewModelId = 555
         var fakeInjectedViewModel: FakeInjectedViewModel? = null
         composeTestRule.activity.setContent {
+            @Suppress("DEPRECATION")
             KoinContext {
-                fakeInjectedViewModel = koinViewModelScoped(
+                val vm: FakeInjectedViewModel = koinViewModelScoped(
                     parameters = { parametersOf(viewModelsClearedGloballySharedCounter, fakeInjectedViewModelId) })
-                DemoComposable(inputObject = fakeInjectedViewModel!!, objectType = "FakeInjectedViewModel", scoped = true)
+                fakeInjectedViewModel = vm
+                DemoComposable(inputObject = vm, objectType = "FakeInjectedViewModel", scoped = true)
             }
         }
         printComposeUiTreeToLog()

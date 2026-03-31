@@ -47,10 +47,11 @@ class AssistedInjectionTest : ComposeTestUtils {
         val fakeInjectedViewModelId = 555
         var fakeInjectedViewModel: FakeInjectedViewModel? = null
         composeTestRule.activity.setContent {
-            fakeInjectedViewModel = hiltViewModelScoped { factory: FakeInjectedViewModel.FakeInjectedViewModelFactory ->
+            val vm = hiltViewModelScoped { factory: FakeInjectedViewModel.FakeInjectedViewModelFactory ->
                 factory.create(viewModelId = fakeInjectedViewModelId)
             }
-            DemoComposable(inputObject = fakeInjectedViewModel!!, objectType = "FakeInjectedViewModel", scoped = true)
+            fakeInjectedViewModel = vm
+            DemoComposable(inputObject = vm, objectType = "FakeInjectedViewModel", scoped = true)
         }
         printComposeUiTreeToLog()
 
@@ -67,10 +68,11 @@ class AssistedInjectionTest : ComposeTestUtils {
         var fakeInjectedViewModelIdKey by mutableStateOf(111)
         var fakeInjectedViewModel: FakeInjectedViewModel? = null
         composeTestRule.activity.setContent {
-            fakeInjectedViewModel = hiltViewModelScoped(key = fakeInjectedViewModelIdKey) { factory: FakeInjectedViewModel.FakeInjectedViewModelFactory ->
+            val vm = hiltViewModelScoped(key = fakeInjectedViewModelIdKey) { factory: FakeInjectedViewModel.FakeInjectedViewModelFactory ->
                 factory.create(viewModelId = fakeInjectedViewModelIdKey)
             }
-            DemoComposable(inputObject = fakeInjectedViewModel!!, objectType = "FakeInjectedViewModel", scoped = true)
+            fakeInjectedViewModel = vm
+            DemoComposable(inputObject = vm, objectType = "FakeInjectedViewModel", scoped = true)
         }
         printComposeUiTreeToLog()
 

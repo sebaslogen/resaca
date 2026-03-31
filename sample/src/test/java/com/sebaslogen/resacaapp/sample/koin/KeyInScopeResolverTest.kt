@@ -62,6 +62,7 @@ class KeyInScopeResolverTest : ComposeTestUtils {
         val listItems = (1..1000).toList().map { NumberContainer(it) }
         var height by mutableStateOf(1000.dp)
         composeTestRule.activity.setContent {
+            @Suppress("DEPRECATION")
             KoinContext {
                 Box(modifier = Modifier.size(width = 200.dp, height = height)) {
                     val keys = rememberKeysInScope(inputListOfKeys = listItems)
@@ -106,6 +107,7 @@ class KeyInScopeResolverTest : ComposeTestUtils {
         // Given the starting screen with long lazy list of scoped objects remembering their keys
         val items: SnapshotStateList<NumberContainer> = (1..1000).toList().map { NumberContainer(it) }.toMutableStateList()
         composeTestRule.activity.setContent {
+            @Suppress("DEPRECATION")
             KoinContext {
                 Box(modifier = Modifier.size(width = 200.dp, height = 1000.dp)) {
                     val listItems: SnapshotStateList<NumberContainer> = remember { items }
@@ -154,6 +156,7 @@ class KeyInScopeResolverTest : ComposeTestUtils {
         var shown by mutableStateOf(true)
         val textTitle = "Test text"
         composeTestRule.activity.setContent {
+            @Suppress("DEPRECATION")
             KoinContext {
                 Column {
                     Text(textTitle)

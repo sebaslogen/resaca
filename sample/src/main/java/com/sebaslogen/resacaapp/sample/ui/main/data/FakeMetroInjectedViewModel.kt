@@ -14,7 +14,8 @@ import java.util.concurrent.atomic.AtomicInteger
  * @param viewModelsClearedCounter Is a counter to inform the providers of this parameter that this ViewModel has been correctly cleared
  * @param viewModelId Is a dependency that will be provided by assisted injection.
  */
-class FakeMetroInjectedViewModel @AssistedInject constructor(
+@AssistedInject
+class FakeMetroInjectedViewModel(
     private val repository: FakeInjectedRepo,
     private val viewModelsClearedCounter: AtomicInteger,
     @Assisted val viewModelId: Int
