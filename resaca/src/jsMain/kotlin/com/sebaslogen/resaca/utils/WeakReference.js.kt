@@ -6,11 +6,11 @@ import kotlin.experimental.ExperimentalNativeApi
 internal actual class WeakReference<T : Any> actual constructor(referred: T) {
     private var reference: WeakRef<T>? = WeakRef(referred)
 
-    actual fun get(): T? {
+    public actual fun get(): T? {
         return reference?.deref()
     }
 
-    actual fun clear() {
+    public actual fun clear() {
         reference = null
     }
 }

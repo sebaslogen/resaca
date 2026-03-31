@@ -1,6 +1,9 @@
+@file:OptIn(ExperimentalWasmJsInterop::class)
+
 package com.sebaslogen.resaca.utils
 
 import kotlin.experimental.ExperimentalNativeApi
+import kotlin.js.ExperimentalWasmJsInterop
 
 import kotlin.js.JsAny
 import kotlin.js.JsReference
@@ -10,13 +13,13 @@ import kotlin.js.toJsReference
 internal actual class WeakReference<T : Any> actual constructor(referred: T) {
     private var reference: WeakRef? = WeakRef(referred.toJsReference())
 
-    actual fun get(): T? {
+    public actual fun get(): T? {
         return reference?.deref()
             ?.unsafeCast<JsReference<T>>()
             ?.get()
     }
 
-    actual fun clear() {
+    public actual fun clear() {
         reference = null
     }
 }
