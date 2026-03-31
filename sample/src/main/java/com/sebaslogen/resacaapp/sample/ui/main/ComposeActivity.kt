@@ -28,9 +28,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.sebaslogen.resacaapp.sample.ui.main.compose.screens.ComposeScreenWithHiltViewModelScoped
 import com.sebaslogen.resacaapp.sample.ui.main.compose.screens.ComposeScreenWithKoinViewModelScoped
+import com.sebaslogen.resacaapp.sample.ui.main.compose.screens.ComposeScreenWithMetroViewModelScoped
 import com.sebaslogen.resacaapp.sample.ui.main.compose.screens.ComposeScreenWithRememberScoped
 import com.sebaslogen.resacaapp.sample.ui.main.compose.screens.ComposeScreenWithSingleHiltViewModelScoped
 import com.sebaslogen.resacaapp.sample.ui.main.compose.screens.ComposeScreenWithSingleKoinViewModelScoped
+import com.sebaslogen.resacaapp.sample.ui.main.compose.screens.ComposeScreenWithSingleMetroViewModelScoped
 import com.sebaslogen.resacaapp.sample.ui.main.compose.screens.ComposeScreenWithSingleViewModelScoped
 import com.sebaslogen.resacaapp.sample.ui.main.compose.screens.ComposeScreenWithSingleViewModelScopedWithKeys
 import com.sebaslogen.resacaapp.sample.ui.main.ui.theme.ResacaAppTheme
@@ -45,6 +47,8 @@ const val hiltViewModelScopedDestination = "hiltViewModelScopedDestination"
 const val hiltSingleViewModelScopedDestination = "hiltSingleViewModelScopedDestination"
 const val koinViewModelScopedDestination = "koinViewModelScopedDestination"
 const val koinSingleViewModelScopedDestination = "koinSingleViewModelScopedDestination"
+const val metroViewModelScopedDestination = "metroViewModelScopedDestination"
+const val metroSingleViewModelScopedDestination = "metroSingleViewModelScopedDestination"
 
 /**
  * This global boolean is only used in automated tests to fake
@@ -123,6 +127,12 @@ fun ScreensWithNavigation(navController: NavHostController = rememberNavControll
                 ComposeScreenWithSingleKoinViewModelScoped(navController)
             }
         }
+        composable(metroViewModelScopedDestination) {
+            ComposeScreenWithMetroViewModelScoped(navController)
+        }
+        composable(metroSingleViewModelScopedDestination) { // This destination is only used in automated tests
+            ComposeScreenWithSingleMetroViewModelScoped(navController)
+        }
     }
 }
 
@@ -159,6 +169,11 @@ fun NavigationButtons(navController: NavHostController) {
         modifier = Modifier.padding(vertical = 2.dp),
         onClick = { navController.navigate(koinViewModelScopedDestination) }) {
         Text(text = "Push Koin ViewModelScoped destination")
+    }
+    Button(
+        modifier = Modifier.padding(vertical = 2.dp),
+        onClick = { navController.navigate(metroViewModelScopedDestination) }) {
+        Text(text = "Push Metro ViewModelScoped destination")
     }
     val activity = LocalActivity.current
     Button(
