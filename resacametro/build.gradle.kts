@@ -1,4 +1,3 @@
-
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
@@ -9,6 +8,7 @@ plugins {
     alias(libs.plugins.kover)
     alias(libs.plugins.dokka)
     alias(libs.plugins.maven)
+    alias(libs.plugins.metro)
 }
 
 kotlin {
@@ -42,6 +42,7 @@ kotlin {
         commonMain.dependencies {
             api(project(":resaca"))
             // Metro runtime is auto-included by the Metro Gradle plugin
+            implementation(libs.metro.compose)
         }
     }
 }

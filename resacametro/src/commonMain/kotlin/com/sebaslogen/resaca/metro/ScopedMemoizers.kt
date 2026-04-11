@@ -21,6 +21,7 @@ import com.sebaslogen.resaca.addViewModelKey
 import com.sebaslogen.resaca.generateKeysAndObserveLifecycle
 import com.sebaslogen.resaca.utils.ResacaPackagePrivate
 import com.sebaslogen.resaca.utils.getCanonicalNameKey
+import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
 import kotlin.time.Duration
 
 /**
@@ -43,13 +44,14 @@ import kotlin.time.Duration
  * @param keyInScopeResolver A function that uses [key] to determine if the ViewModel should be kept in memory even after it's no longer part of the composition.
  * @param clearDelay The delay after which the [ViewModel] will be cleared from memory.
  * @param factory Metro [ViewModelProvider.Factory] to create the [ViewModel] (e.g. obtained from your Metro @DependencyGraph).
+ *              Defaults to [LocalMetroViewModelFactory], in this case the factory should be provided with a CompositionLocalProvider, see https://zacsweers.github.io/metro/latest/metrox-viewmodel-compose/#2-provide-localmetroviewmodelfactory
  */
 @Composable
 public inline fun <reified T : ViewModel, K : Any> metroViewModelScoped(
     key: K,
     noinline keyInScopeResolver: KeyInScopeResolver<K>,
     clearDelay: Duration? = null,
-    factory: ViewModelProvider.Factory,
+    factory: ViewModelProvider.Factory = LocalMetroViewModelFactory.current,
 ): T {
     val scopeKeyWithResolver: ScopeKeyWithResolver<K> = remember(key, keyInScopeResolver) { ScopeKeyWithResolver(key, keyInScopeResolver) }
     return metroViewModelScoped(
@@ -77,12 +79,13 @@ public inline fun <reified T : ViewModel, K : Any> metroViewModelScoped(
  * @param key Key to track the version of the [ViewModel]. Changing [key] between compositions will produce and store a new [ViewModel].
  * @param clearDelay The delay after which the [ViewModel] will be cleared from memory.
  * @param factory Metro [ViewModelProvider.Factory] to create the [ViewModel] (e.g. obtained from your Metro @DependencyGraph).
+ *              Defaults to [LocalMetroViewModelFactory], in this case the factory should be provided with a CompositionLocalProvider, see https://zacsweers.github.io/metro/latest/metrox-viewmodel-compose/#2-provide-localmetroviewmodelfactory
  */
 @Composable
 public inline fun <reified T : ViewModel> metroViewModelScoped(
     key: Any? = null,
     clearDelay: Duration? = null,
-    factory: ViewModelProvider.Factory,
+    factory: ViewModelProvider.Factory = LocalMetroViewModelFactory.current,
 ): T {
 
     val (scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: InternalKey, externalKey: ExternalKey) =
@@ -120,6 +123,7 @@ public inline fun <reified T : ViewModel> metroViewModelScoped(
  * @param keyInScopeResolver A function that uses [key] to determine if the ViewModel should be kept in memory even after it's no longer part of the composition.
  * @param clearDelay The delay after which the [ViewModel] will be cleared from memory.
  * @param factory Metro [ViewModelProvider.Factory] to create the [ViewModel] (e.g. obtained from your Metro @DependencyGraph).
+ *              Defaults to [LocalMetroViewModelFactory], in this case the factory should be provided with a CompositionLocalProvider, see https://zacsweers.github.io/metro/latest/metrox-viewmodel-compose/#2-provide-localmetroviewmodelfactory
  * @param creationExtras Custom [CreationExtras] to pass additional data to the factory for assisted injection.
  */
 @Composable
@@ -127,7 +131,7 @@ public inline fun <reified T : ViewModel, K : Any> metroViewModelScoped(
     key: K,
     noinline keyInScopeResolver: KeyInScopeResolver<K>,
     clearDelay: Duration? = null,
-    factory: ViewModelProvider.Factory,
+    factory: ViewModelProvider.Factory = LocalMetroViewModelFactory.current,
     creationExtras: CreationExtras,
 ): T {
     val scopeKeyWithResolver: ScopeKeyWithResolver<K> = remember(key, keyInScopeResolver) { ScopeKeyWithResolver(key, keyInScopeResolver) }
@@ -166,13 +170,14 @@ public inline fun <reified T : ViewModel, K : Any> metroViewModelScoped(
  * @param key Key to track the version of the [ViewModel]. Changing [key] between compositions will produce and store a new [ViewModel].
  * @param clearDelay The delay after which the [ViewModel] will be cleared from memory.
  * @param factory Metro [ViewModelProvider.Factory] to create the [ViewModel] (e.g. obtained from your Metro @DependencyGraph).
+ *              Defaults to [LocalMetroViewModelFactory], in this case the factory should be provided with a CompositionLocalProvider, see https://zacsweers.github.io/metro/latest/metrox-viewmodel-compose/#2-provide-localmetroviewmodelfactory
  * @param creationExtras Custom [CreationExtras] to pass additional data to the factory for assisted injection.
  */
 @Composable
 public inline fun <reified T : ViewModel> metroViewModelScoped(
     key: Any? = null,
     clearDelay: Duration? = null,
-    factory: ViewModelProvider.Factory,
+    factory: ViewModelProvider.Factory = LocalMetroViewModelFactory.current,
     creationExtras: CreationExtras,
 ): T {
     val (scopedViewModelContainer: ScopedViewModelContainer, positionalMemoizationKey: InternalKey, externalKey: ExternalKey) =
