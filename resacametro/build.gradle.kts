@@ -8,7 +8,6 @@ plugins {
     alias(libs.plugins.kover)
     alias(libs.plugins.dokka)
     alias(libs.plugins.maven)
-    alias(libs.plugins.metro)
 }
 
 kotlin {
