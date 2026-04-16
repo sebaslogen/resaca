@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.dagger.hilt.android)
     alias(libs.plugins.kover)
+    alias(libs.plugins.kovergate)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.jetbrains.compose)
     alias(libs.plugins.metro)
@@ -194,4 +195,15 @@ kover {
             }
         }
     }
+}
+
+koverGate {
+    minLineCoverage.set(90)
+    minBranchCoverage.set(60)
+    minInstructionCoverage.set(80)
+    minMethodCoverage.set(80)
+    minClassCoverage.set(70)
+    prettyPrintJson.set(true)
+    // Kover XML report task to wire to. Required for Android projects. Defaults to auto-detecting koverXmlReportJvm or koverXmlReport.
+//    xmlReportTask.set("koverXmlReportDebug")
 }
