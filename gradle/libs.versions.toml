@@ -38,6 +38,7 @@ metro = '0.13.2'
 # Test
 junit-version = '4.13.2'
 kover = '0.9.8'
+kovergate = '0.1.2'
 robolectric-version = '4.16.1'
 espresso = '3.7.0'
 testRunner = '1.7.0'
@@ -123,6 +124,7 @@ ksp = { id = 'com.google.devtools.ksp', version.ref = 'ksp' }
 dagger-hilt-android = { id = 'com.google.dagger.hilt.android', version.ref = 'hilt' }
 binary-compatibility-validator = { id = 'org.jetbrains.kotlinx.binary-compatibility-validator', version.ref = 'binary-compatibility-validator' }
 kover = { id = 'org.jetbrains.kotlinx.kover', version.ref = 'kover' }
+kovergate = { id = 'com.commonsware.kovergate', version.ref = 'kovergate' }
 dokka = { id = 'org.jetbrains.dokka', version.ref = 'dokka' }
 maven = { id = 'com.vanniktech.maven.publish', version.ref = 'maven' }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
