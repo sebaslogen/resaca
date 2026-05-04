@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.sebaslogen.resaca.ScopedViewModelContainer.ExternalKey
 import com.sebaslogen.resaca.ScopedViewModelContainer.InternalKey
+import com.sebaslogen.resaca.ScopedViewModelContainer.SavedStateHandleContainer
 import com.sebaslogen.resaca.utils.ResacaPackagePrivate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -18,6 +19,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -218,6 +220,207 @@ internal class ScopedViewModelUtilsTest {
 
         val expected = internalKey.hashCode().toString() + externalKey.hashCode().toString()
         assertEquals(expected, result)
+    }
+
+    // endregion
+
+    // region getOrBuildObject
+
+    private fun emptyObjectMaps(): Quad {
+        return Quad(
+            container = mutableMapOf(),
+            savedStateHandlers = mutableMapOf(),
+            clearDelays = mutableMapOf(),
+            keys = mutableMapOf()
+        )
+    }
+
+    private data class Quad(
+        val container: MutableMap<InternalKey, Any>,
+        val savedStateHandlers: MutableMap<InternalKey, SavedStateHandleContainer>,
+        val clearDelays: MutableMap<InternalKey, Duration>,
+        val keys: MutableMap<InternalKey, ExternalKey>
+    )
+
+    @Test
+    internal fun `getOrBuildObject builds and stores new object when container is empty`() {
+        val maps = emptyObjectMaps()
+        val key = InternalKey("k1")
+        val externalKey = ExternalKey("e1")
+        val expected = "hello"
+
+        val result = ScopedViewModelUtils.getOrBuildObject(
+            positionalMemoizationKey = key,
+            externalKey = externalKey,
+            scopedObjectsContainer = maps.container,
+            scopedObjectsSavedStateHandlers = maps.savedStateHandlers,
+            scopedObjectsClearDelays = maps.clearDelays,
+            scopedObjectKeys = maps.keys,
+            cancelDisposal = {},
+            clearLastDisposedObject = { _, _ -> },
+            builder = { expected }
+        )
+
+        assertEquals(expected, result)
+        assertEquals(expected, maps.container[key])
+        assertEquals(externalKey, maps.keys[key])
+    }
+
+    @Test
+    internal fun `getOrBuildObject returns cached instance when keys and type match`() {
+        val maps = emptyObjectMaps()
+        val key = InternalKey("k1")
+        val externalKey = ExternalKey("e1")
+        val cached = FakeCloseable()
+        maps.container[key] = cached
+        maps.keys[key] = externalKey
+
+        var builderCalls = 0
+        val result = ScopedViewModelUtils.getOrBuildObject(
+            positionalMemoizationKey = key,
+            externalKey = externalKey,
+            scopedObjectsContainer = maps.container,
+            scopedObjectsSavedStateHandlers = maps.savedStateHandlers,
+            scopedObjectsClearDelays = maps.clearDelays,
+            scopedObjectKeys = maps.keys,
+            cancelDisposal = {},
+            clearLastDisposedObject = { _, _ -> },
+            builder = { builderCalls++; FakeCloseable() }
+        )
+
+        assertSame(cached, result)
+        assertEquals(0, builderCalls)
+        assertFalse(cached.closed)
+    }
+
+    @Test
+    internal fun `getOrBuildObject builds new instance and clears old one when external key changes`() {
+        val maps = emptyObjectMaps()
+        val key = InternalKey("k1")
+        val oldExternalKey = ExternalKey("v1")
+        val newExternalKey = ExternalKey("v2")
+        val oldObject = FakeCloseable()
+        maps.container[key] = oldObject
+        maps.keys[key] = oldExternalKey
+
+        var clearedObject: Any? = null
+        val newObject = FakeCloseable()
+
+        val result = ScopedViewModelUtils.getOrBuildObject(
+            positionalMemoizationKey = key,
+            externalKey = newExternalKey,
+            scopedObjectsContainer = maps.container,
+            scopedObjectsSavedStateHandlers = maps.savedStateHandlers,
+            scopedObjectsClearDelays = maps.clearDelays,
+            scopedObjectKeys = maps.keys,
+            cancelDisposal = {},
+            clearLastDisposedObject = { obj, _ -> clearedObject = obj },
+            builder = { newObject }
+        )
+
+        assertSame(newObject, result)
+        assertSame(oldObject, clearedObject)
+        assertEquals(newObject, maps.container[key])
+        assertEquals(newExternalKey, maps.keys[key])
+    }
+
+    @Test
+    internal fun `getOrBuildObject calls cancelDisposal with the positional key`() {
+        val maps = emptyObjectMaps()
+        val key = InternalKey("k1")
+        val externalKey = ExternalKey("e1")
+        var cancelDisposalCalledWith: InternalKey? = null
+
+        ScopedViewModelUtils.getOrBuildObject(
+            positionalMemoizationKey = key,
+            externalKey = externalKey,
+            scopedObjectsContainer = maps.container,
+            scopedObjectsSavedStateHandlers = maps.savedStateHandlers,
+            scopedObjectsClearDelays = maps.clearDelays,
+            scopedObjectKeys = maps.keys,
+            cancelDisposal = { cancelDisposalCalledWith = it },
+            clearLastDisposedObject = { _, _ -> },
+            builder = { "value" }
+        )
+
+        assertEquals(key, cancelDisposalCalledWith)
+    }
+
+    @Test
+    internal fun `getOrBuildObject stores clearDelay when provided`() {
+        val maps = emptyObjectMaps()
+        val key = InternalKey("k1")
+        val externalKey = ExternalKey("e1")
+        val delay = 7.seconds
+
+        ScopedViewModelUtils.getOrBuildObject(
+            positionalMemoizationKey = key,
+            externalKey = externalKey,
+            clearDelay = delay,
+            scopedObjectsContainer = maps.container,
+            scopedObjectsSavedStateHandlers = maps.savedStateHandlers,
+            scopedObjectsClearDelays = maps.clearDelays,
+            scopedObjectKeys = maps.keys,
+            cancelDisposal = {},
+            clearLastDisposedObject = { _, _ -> },
+            builder = { "value" }
+        )
+
+        assertEquals(delay, maps.clearDelays[key])
+    }
+
+    @Test
+    internal fun `getOrBuildObject does not store clearDelay when null`() {
+        val maps = emptyObjectMaps()
+        val key = InternalKey("k1")
+        val externalKey = ExternalKey("e1")
+
+        ScopedViewModelUtils.getOrBuildObject(
+            positionalMemoizationKey = key,
+            externalKey = externalKey,
+            clearDelay = null,
+            scopedObjectsContainer = maps.container,
+            scopedObjectsSavedStateHandlers = maps.savedStateHandlers,
+            scopedObjectsClearDelays = maps.clearDelays,
+            scopedObjectKeys = maps.keys,
+            cancelDisposal = {},
+            clearLastDisposedObject = { _, _ -> },
+            builder = { "value" }
+        )
+
+        assertFalse(maps.clearDelays.containsKey(key))
+    }
+
+    @Test
+    internal fun `getOrBuildObject passes a snapshot list that does not contain the disposed object`() {
+        val maps = emptyObjectMaps()
+        val key = InternalKey("k1")
+        val oldExternalKey = ExternalKey("v1")
+        val newExternalKey = ExternalKey("v2")
+        val oldObject = FakeCloseable()
+        val survivingObject = FakeCloseable()
+        maps.container[key] = oldObject
+        maps.container[InternalKey("other")] = survivingObject
+        maps.keys[key] = oldExternalKey
+
+        var snapshot: List<Any>? = null
+
+        ScopedViewModelUtils.getOrBuildObject(
+            positionalMemoizationKey = key,
+            externalKey = newExternalKey,
+            scopedObjectsContainer = maps.container,
+            scopedObjectsSavedStateHandlers = maps.savedStateHandlers,
+            scopedObjectsClearDelays = maps.clearDelays,
+            scopedObjectKeys = maps.keys,
+            cancelDisposal = {},
+            clearLastDisposedObject = { _, list -> snapshot = list },
+            builder = { FakeCloseable() }
+        )
+
+        val capturedSnapshot = snapshot
+        assertNotNull(capturedSnapshot)
+        assertFalse(capturedSnapshot.contains(oldObject))
+        assertTrue(capturedSnapshot.contains(survivingObject))
     }
 
     // endregion

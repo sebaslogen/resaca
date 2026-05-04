@@ -29,6 +29,53 @@ import kotlin.time.Duration
 internal object ScopedViewModelUtils {
 
     /**
+     * Returns an existing object of type [T] or creates a new one with [builder] if none was present in the [scopedObjectsContainer].
+     *
+     * This function will also compare [positionalMemoizationKey] and [externalKey] to determine
+     * whether a new instance of [T] needs to be created or an existing one can be returned.
+     *
+     * If the cached instance is found under [positionalMemoizationKey] and the [externalKey] matches but the cached
+     * instance is not assignable to [T] (e.g. a different type was previously stored under the same key), the old
+     * instance is cleared via [clearLastDisposedObject] before the new one is built and stored.
+     */
+    @Suppress("UNCHECKED_CAST")
+    public inline fun <T : Any> getOrBuildObject(
+        positionalMemoizationKey: InternalKey,
+        externalKey: ExternalKey,
+        clearDelay: Duration? = null,
+        scopedObjectsContainer: MutableMap<InternalKey, Any>,
+        scopedObjectsSavedStateHandlers: MutableMap<InternalKey, SavedStateHandleContainer>,
+        scopedObjectsClearDelays: MutableMap<InternalKey, Duration>,
+        scopedObjectKeys: MutableMap<InternalKey, ExternalKey>,
+        cancelDisposal: (InternalKey) -> Unit,
+        clearLastDisposedObject: (Any, List<Any>) -> Unit,
+        builder: () -> T
+    ): T {
+        cancelDisposal(positionalMemoizationKey)
+
+        val originalObject: Any? = scopedObjectsContainer[positionalMemoizationKey]
+        val keysMatch = scopedObjectKeys.containsKey(positionalMemoizationKey)
+                && scopedObjectKeys[positionalMemoizationKey] == externalKey
+        val restored: T? = if (keysMatch) originalObject as? T else null
+        if (restored != null) return restored
+
+        // Either keys don't match OR keys match but the cached instance is not a [T] (different type stored under same key).
+        // In both cases the old object is no longer usable and must be cleared before being replaced.
+        scopedObjectsContainer.remove(positionalMemoizationKey)
+            ?.also { clearLastDisposedObject(it, scopedObjectsContainer.values.toList()) }
+        scopedObjectsSavedStateHandlers.remove(positionalMemoizationKey)?.also { savedStateHandleContainer ->
+            savedStateHandleContainer.savedStateHandle.let {
+                it.keys().forEach { key ->
+                    if (key !in savedStateHandleContainer.defaultKeys) it.remove<Any>(key)
+                }
+            }
+        }
+        scopedObjectKeys[positionalMemoizationKey] = externalKey
+        clearDelay?.let { scopedObjectsClearDelays[positionalMemoizationKey] = it }
+        return builder.invoke().also { scopedObjectsContainer[positionalMemoizationKey] = it }
+    }
+
+    /**
      * Returns an existing [ViewModel] of type [T] or creates a new one if none was present in the [scopedObjectsContainer].
      *
      * This function will also compare [positionalMemoizationKey] and [externalKey] to determine

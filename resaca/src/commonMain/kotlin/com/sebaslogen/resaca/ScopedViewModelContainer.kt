@@ -162,33 +162,24 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
     /**
      * Restore or build an object of type [T] using the provided [builder] as the factory
      */
-    @Suppress("UNCHECKED_CAST")
     @Composable
     internal fun <T : Any> getOrBuildObject(
         positionalMemoizationKey: InternalKey,
         externalKey: ExternalKey,
         clearDelay: Duration? = null,
         builder: @DisallowComposableCalls () -> T
-    ): T {
-        @Composable
-        fun buildAndStoreObject() = builder.invoke().apply { scopedObjectsContainer[positionalMemoizationKey] = this }
-        cancelDisposal(positionalMemoizationKey)
-
-        val originalObject: Any? = scopedObjectsContainer[positionalMemoizationKey]
-        return if (scopedObjectKeys.containsKey(positionalMemoizationKey) && (scopedObjectKeys[positionalMemoizationKey] == externalKey)) {
-            // When the object is already present and the external key matches, then try to restore it
-            originalObject as? T ?: buildAndStoreObject()
-        } else { // First time object creation or externalKey changed
-            scopedObjectKeys[positionalMemoizationKey] = externalKey // Set the external key used to track and store the new object version
-            clearDelay?.let { scopedObjectsClearDelays[positionalMemoizationKey] = it }
-            scopedObjectsContainer.remove(positionalMemoizationKey) // Remove in case key changed
-                ?.also { clearLastDisposedObject(it) } // Old object may need to be cleared before it's forgotten
-            scopedObjectsSavedStateHandlers.remove(positionalMemoizationKey)?.also { savedStateHandleContainer ->
-                clearSavedStateHandle(savedStateHandleContainer)
-            }
-            buildAndStoreObject()
-        }
-    }
+    ): T = ScopedViewModelUtils.getOrBuildObject(
+        positionalMemoizationKey = positionalMemoizationKey,
+        externalKey = externalKey,
+        clearDelay = clearDelay,
+        scopedObjectsContainer = scopedObjectsContainer,
+        scopedObjectsSavedStateHandlers = scopedObjectsSavedStateHandlers,
+        scopedObjectsClearDelays = scopedObjectsClearDelays,
+        scopedObjectKeys = scopedObjectKeys,
+        cancelDisposal = ::cancelDisposal,
+        clearLastDisposedObject = ::clearLastDisposedObject,
+        builder = builder
+    )
 
     /**
      * Restore or build a [ViewModel] using the default factory for ViewModels without constructor parameters
