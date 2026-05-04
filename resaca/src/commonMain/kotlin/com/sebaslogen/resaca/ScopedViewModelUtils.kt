@@ -17,6 +17,7 @@ import com.sebaslogen.resaca.ScopedViewModelContainer.InternalKey
 import com.sebaslogen.resaca.ScopedViewModelContainer.SavedStateHandleContainer
 import com.sebaslogen.resaca.utils.ResacaPackagePrivate
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
@@ -27,6 +28,38 @@ import kotlin.time.Duration
  * Set of functions to help create, store, retrieve and clear a [ViewModel].
  */
 internal object ScopedViewModelUtils {
+
+    /**
+     * Cancel any pending disposal job for [key] and un-mark it from [markedForDisposal].
+     *
+     * Used when a scoped object is requested again from composition: a previously scheduled disposal must be aborted
+     * so the same instance can be returned, and the key must be removed from [markedForDisposal] so a later resume
+     * does not re-schedule disposal for an object that is back in scope.
+     *
+     * The caller is responsible for invoking this on the main thread (the maps are not thread-safe).
+     */
+    internal fun cancelDisposal(
+        key: InternalKey,
+        disposingJobs: MutableMap<InternalKey, Job>,
+        markedForDisposal: MutableSet<InternalKey>
+    ) {
+        disposingJobs.remove(key)?.cancel()
+        markedForDisposal.remove(key)
+    }
+
+    /**
+     * Remove from [savedStateHandleContainer]'s [SavedStateHandle] any keys that were not present at creation time.
+     *
+     * The [SavedStateHandleContainer.defaultKeys] list captures the keys present when the [SavedStateHandle] was
+     * first created; any key the user added afterwards must be cleared so the next instance starts clean instead of
+     * inheriting stale state.
+     */
+    internal fun clearSavedStateHandle(savedStateHandleContainer: SavedStateHandleContainer) {
+        val savedStateHandle = savedStateHandleContainer.savedStateHandle
+        savedStateHandle.keys().forEach { key ->
+            if (key !in savedStateHandleContainer.defaultKeys) savedStateHandle.remove<Any>(key)
+        }
+    }
 
     /**
      * Returns an existing object of type [T] or creates a new one with [builder] if none was present in the [scopedObjectsContainer].
@@ -63,16 +96,57 @@ internal object ScopedViewModelUtils {
         // In both cases the old object is no longer usable and must be cleared before being replaced.
         scopedObjectsContainer.remove(positionalMemoizationKey)
             ?.also { clearLastDisposedObject(it, scopedObjectsContainer.values.toList()) }
-        scopedObjectsSavedStateHandlers.remove(positionalMemoizationKey)?.also { savedStateHandleContainer ->
-            savedStateHandleContainer.savedStateHandle.let {
-                it.keys().forEach { key ->
-                    if (key !in savedStateHandleContainer.defaultKeys) it.remove<Any>(key)
-                }
-            }
-        }
+        scopedObjectsSavedStateHandlers.remove(positionalMemoizationKey)?.also(::clearSavedStateHandle)
         scopedObjectKeys[positionalMemoizationKey] = externalKey
         clearDelay?.let { scopedObjectsClearDelays[positionalMemoizationKey] = it }
         return builder.invoke().also { scopedObjectsContainer[positionalMemoizationKey] = it }
+    }
+
+    /**
+     * Resolve the [ScopedViewModelOwner] of type [T] to use for [positionalMemoizationKey], either by restoring the
+     * existing one (when both keys match) or by creating a fresh one and clearing the previously stored entry.
+     *
+     * Pure storage/decision logic: no Compose, no main-thread coupling, all dependencies passed as parameters.
+     *
+     * @return the [ScopedViewModelOwner] to use, paired with `true` when it was just created and `false` when a
+     * previously-stored owner was reused. Callers that want to register a [SavedStateHandle] cleanup hook should do
+     * so only when the owner is freshly created.
+     */
+    internal fun <T : ViewModel> getOrBuildScopedViewModelOwner(
+        modelClass: KClass<T>,
+        positionalMemoizationKey: InternalKey,
+        externalKey: ExternalKey,
+        clearDelay: Duration?,
+        scopedObjectsContainer: MutableMap<InternalKey, Any>,
+        scopedObjectsSavedStateHandlers: MutableMap<InternalKey, SavedStateHandleContainer>,
+        scopedObjectsClearDelays: MutableMap<InternalKey, Duration>,
+        scopedObjectKeys: MutableMap<InternalKey, ExternalKey>,
+        cancelDisposal: (InternalKey) -> Unit,
+        clearLastDisposedViewModel: (Any, List<Any>) -> Unit
+    ): Pair<ScopedViewModelOwner<T>, Boolean> {
+        cancelDisposal(positionalMemoizationKey)
+
+        val originalScopedViewModelOwner: ScopedViewModelOwner<T>? =
+            restoreAndUpdateScopedViewModelOwner(positionalMemoizationKey, scopedObjectsContainer)
+        val keysMatch = scopedObjectKeys.containsKey(positionalMemoizationKey)
+                && scopedObjectKeys[positionalMemoizationKey] == externalKey
+        if (originalScopedViewModelOwner != null && keysMatch) {
+            return originalScopedViewModelOwner to false
+        }
+
+        // First time ViewModel's object creation or externalKey changed: clear any previously-stored entry under this key
+        scopedObjectsContainer.remove(positionalMemoizationKey)
+            ?.also { clearLastDisposedViewModel(it, scopedObjectsContainer.values.toList()) }
+        scopedObjectsSavedStateHandlers.remove(positionalMemoizationKey)?.also(::clearSavedStateHandle)
+        scopedObjectKeys[positionalMemoizationKey] = externalKey
+        clearDelay?.let { scopedObjectsClearDelays[positionalMemoizationKey] = it }
+
+        val newScopedViewModelOwner = ScopedViewModelOwner(
+            key = positionalMemoizationKey + externalKey, // Both keys needed to handle recreation by ViewModelProvider when any of these keys changes
+            modelClass = modelClass
+        )
+        scopedObjectsContainer[positionalMemoizationKey] = newScopedViewModelOwner
+        return newScopedViewModelOwner to true
     }
 
     /**
@@ -97,45 +171,25 @@ internal object ScopedViewModelUtils {
         scopedObjectsSavedStateHandlers: MutableMap<InternalKey, SavedStateHandleContainer>,
         scopedObjectsClearDelays: MutableMap<InternalKey, Duration>,
         scopedObjectKeys: MutableMap<InternalKey, ExternalKey>,
-        cancelDisposal: (InternalKey) -> Unit,
-        clearLastDisposedViewModel: (Any, List<Any>) -> Unit
+        noinline cancelDisposal: (InternalKey) -> Unit,
+        noinline clearLastDisposedViewModel: (Any, List<Any>) -> Unit
     ): T {
-        cancelDisposal(positionalMemoizationKey)
-
-        val originalScopedViewModelOwner: ScopedViewModelOwner<T>? = restoreAndUpdateScopedViewModelOwner(positionalMemoizationKey, scopedObjectsContainer)
-
-        val viewModel: T =
-            if (originalScopedViewModelOwner != null
-                && scopedObjectKeys.containsKey(positionalMemoizationKey)
-                && (scopedObjectKeys[positionalMemoizationKey] == externalKey)
-            ) {
-                // When the object is already present and the external key matches, then return the existing one in the ScopedViewModelOwner
-                originalScopedViewModelOwner.getViewModel(factory, viewModelStoreOwner, creationExtras)
-            } else { // First time ViewModel's object creation or externalKey changed
-                scopedObjectsContainer.remove(positionalMemoizationKey) // Remove in case key changed
-                    ?.also { // Old object may need to be cleared before it's forgotten
-                        clearLastDisposedViewModel(it, scopedObjectsContainer.values.toList())
-                    }
-                // Remove in case key changed
-                scopedObjectsSavedStateHandlers.remove(positionalMemoizationKey)?.also { savedStateHandleContainer ->
-                    savedStateHandleContainer.savedStateHandle.let {
-                        it.keys().forEach { key ->
-                            if (key !in savedStateHandleContainer.defaultKeys) it.remove<Any>(key)
-                        }
-                    }
-                }
-                scopedObjectKeys[positionalMemoizationKey] = externalKey // Set the new external key used to track and store the new object version
-                clearDelay?.let { scopedObjectsClearDelays[positionalMemoizationKey] = it }
-                val newScopedViewModelOwner = ScopedViewModelOwner(
-                    key = positionalMemoizationKey + externalKey, // Both keys needed to handle recreation by ViewModelProvider when any of these keys changes
-                    modelClass = modelClass
-                )
-                scopedObjectsContainer[positionalMemoizationKey] = newScopedViewModelOwner
-                scopedSavedStateHandleForCleanup(creationExtras, positionalMemoizationKey, scopedObjectsSavedStateHandlers)
-                newScopedViewModelOwner.getViewModel(factory, viewModelStoreOwner, creationExtras)
-            }
-
-        return viewModel
+        val (scopedViewModelOwner, isNewlyCreated) = getOrBuildScopedViewModelOwner<T>(
+            modelClass = modelClass,
+            positionalMemoizationKey = positionalMemoizationKey,
+            externalKey = externalKey,
+            clearDelay = clearDelay,
+            scopedObjectsContainer = scopedObjectsContainer,
+            scopedObjectsSavedStateHandlers = scopedObjectsSavedStateHandlers,
+            scopedObjectsClearDelays = scopedObjectsClearDelays,
+            scopedObjectKeys = scopedObjectKeys,
+            cancelDisposal = cancelDisposal,
+            clearLastDisposedViewModel = clearLastDisposedViewModel
+        )
+        if (isNewlyCreated) {
+            scopedSavedStateHandleForCleanup(creationExtras, positionalMemoizationKey, scopedObjectsSavedStateHandlers)
+        }
+        return scopedViewModelOwner.getViewModel(factory, viewModelStoreOwner, creationExtras)
     }
 
     /**
