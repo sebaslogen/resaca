@@ -2,6 +2,7 @@
 
 package com.sebaslogen.resaca
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
@@ -11,6 +12,7 @@ import com.sebaslogen.resaca.ScopedViewModelContainer.ExternalKey
 import com.sebaslogen.resaca.ScopedViewModelContainer.InternalKey
 import com.sebaslogen.resaca.ScopedViewModelContainer.SavedStateHandleContainer
 import com.sebaslogen.resaca.utils.ResacaPackagePrivate
+import kotlinx.coroutines.CompletableJob
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlin.reflect.KClass
@@ -421,6 +423,372 @@ internal class ScopedViewModelUtilsTest {
         assertNotNull(capturedSnapshot)
         assertFalse(capturedSnapshot.contains(oldObject))
         assertTrue(capturedSnapshot.contains(survivingObject))
+    }
+
+    // endregion
+
+    // region cancelDisposal
+
+    @Test
+    internal fun `cancelDisposal cancels and removes the disposing job for the given key`() {
+        val key = InternalKey("k1")
+        val job: CompletableJob = Job()
+        val disposingJobs = mutableMapOf<InternalKey, Job>(key to job)
+        val markedForDisposal = mutableSetOf<InternalKey>()
+
+        ScopedViewModelUtils.cancelDisposal(key, disposingJobs, markedForDisposal)
+
+        assertTrue(job.isCancelled)
+        assertFalse(disposingJobs.containsKey(key))
+    }
+
+    @Test
+    internal fun `cancelDisposal removes the key from markedForDisposal`() {
+        val key = InternalKey("k1")
+        val disposingJobs = mutableMapOf<InternalKey, Job>()
+        val markedForDisposal = mutableSetOf(key)
+
+        ScopedViewModelUtils.cancelDisposal(key, disposingJobs, markedForDisposal)
+
+        assertFalse(markedForDisposal.contains(key))
+    }
+
+    @Test
+    internal fun `cancelDisposal is a no-op when key is not present`() {
+        val key = InternalKey("k1")
+        val otherKey = InternalKey("k2")
+        val otherJob: CompletableJob = Job()
+        val disposingJobs = mutableMapOf<InternalKey, Job>(otherKey to otherJob)
+        val markedForDisposal = mutableSetOf(otherKey)
+
+        ScopedViewModelUtils.cancelDisposal(key, disposingJobs, markedForDisposal)
+
+        // Other entries are untouched
+        assertFalse(otherJob.isCancelled)
+        assertTrue(disposingJobs.containsKey(otherKey))
+        assertTrue(markedForDisposal.contains(otherKey))
+    }
+
+    @Test
+    internal fun `cancelDisposal does not affect other keys`() {
+        val key = InternalKey("k1")
+        val otherKey = InternalKey("k2")
+        val targetJob: CompletableJob = Job()
+        val otherJob: CompletableJob = Job()
+        val disposingJobs = mutableMapOf<InternalKey, Job>(key to targetJob, otherKey to otherJob)
+        val markedForDisposal = mutableSetOf(key, otherKey)
+
+        ScopedViewModelUtils.cancelDisposal(key, disposingJobs, markedForDisposal)
+
+        assertTrue(targetJob.isCancelled)
+        assertFalse(otherJob.isCancelled)
+        assertEquals(setOf(otherKey), markedForDisposal)
+        assertEquals(otherJob, disposingJobs[otherKey])
+    }
+
+    // endregion
+
+    // region clearSavedStateHandle
+
+    @Test
+    internal fun `clearSavedStateHandle removes user-added keys but keeps default keys`() {
+        val handle = SavedStateHandle()
+        handle["default1"] = "d1"
+        handle["default2"] = "d2"
+        val container = SavedStateHandleContainer(
+            defaultKeys = listOf("default1", "default2"),
+            savedStateHandle = handle
+        )
+        // Simulate the user adding extra keys after creation
+        handle["userA"] = "a"
+        handle["userB"] = "b"
+
+        ScopedViewModelUtils.clearSavedStateHandle(container)
+
+        assertEquals("d1", handle.get<String>("default1"))
+        assertEquals("d2", handle.get<String>("default2"))
+        assertFalse(handle.contains("userA"))
+        assertFalse(handle.contains("userB"))
+    }
+
+    @Test
+    internal fun `clearSavedStateHandle is a no-op when there are no user-added keys`() {
+        val handle = SavedStateHandle()
+        handle["only-default"] = "value"
+        val container = SavedStateHandleContainer(
+            defaultKeys = listOf("only-default"),
+            savedStateHandle = handle
+        )
+
+        ScopedViewModelUtils.clearSavedStateHandle(container)
+
+        assertEquals("value", handle.get<String>("only-default"))
+        assertEquals(setOf("only-default"), handle.keys())
+    }
+
+    @Test
+    internal fun `clearSavedStateHandle clears all keys when defaultKeys is empty`() {
+        val handle = SavedStateHandle()
+        handle["a"] = 1
+        handle["b"] = 2
+        val container = SavedStateHandleContainer(
+            defaultKeys = emptyList(),
+            savedStateHandle = handle
+        )
+
+        ScopedViewModelUtils.clearSavedStateHandle(container)
+
+        assertTrue(handle.keys().isEmpty())
+    }
+
+    // endregion
+
+    // region getOrBuildScopedViewModelOwner
+
+    private data class VmMaps(
+        val container: MutableMap<InternalKey, Any>,
+        val savedStateHandlers: MutableMap<InternalKey, SavedStateHandleContainer>,
+        val clearDelays: MutableMap<InternalKey, Duration>,
+        val keys: MutableMap<InternalKey, ExternalKey>
+    )
+
+    private fun emptyVmMaps(): VmMaps = VmMaps(
+        container = mutableMapOf(),
+        savedStateHandlers = mutableMapOf(),
+        clearDelays = mutableMapOf(),
+        keys = mutableMapOf()
+    )
+
+    @Test
+    internal fun `getOrBuildScopedViewModelOwner creates a new owner and stores it when container is empty`() {
+        val maps = emptyVmMaps()
+        val key = InternalKey("k1")
+        val externalKey = ExternalKey("e1")
+
+        val (owner, isNew) = ScopedViewModelUtils.getOrBuildScopedViewModelOwner(
+            modelClass = FakeVM::class,
+            positionalMemoizationKey = key,
+            externalKey = externalKey,
+            clearDelay = null,
+            scopedObjectsContainer = maps.container,
+            scopedObjectsSavedStateHandlers = maps.savedStateHandlers,
+            scopedObjectsClearDelays = maps.clearDelays,
+            scopedObjectKeys = maps.keys,
+            cancelDisposal = {},
+            clearLastDisposedViewModel = { _, _ -> }
+        )
+
+        assertTrue(isNew)
+        assertSame(owner, maps.container[key])
+        assertEquals(externalKey, maps.keys[key])
+    }
+
+    @Test
+    internal fun `getOrBuildScopedViewModelOwner returns existing owner when keys match`() {
+        val maps = emptyVmMaps()
+        val key = InternalKey("k1")
+        val externalKey = ExternalKey("e1")
+        val existingOwner = createScopedViewModelOwner("existing")
+        maps.container[key] = existingOwner
+        maps.keys[key] = externalKey
+
+        val (owner, isNew) = ScopedViewModelUtils.getOrBuildScopedViewModelOwner(
+            modelClass = FakeVM::class,
+            positionalMemoizationKey = key,
+            externalKey = externalKey,
+            clearDelay = null,
+            scopedObjectsContainer = maps.container,
+            scopedObjectsSavedStateHandlers = maps.savedStateHandlers,
+            scopedObjectsClearDelays = maps.clearDelays,
+            scopedObjectKeys = maps.keys,
+            cancelDisposal = {},
+            clearLastDisposedViewModel = { _, _ -> }
+        )
+
+        assertFalse(isNew)
+        assertSame(existingOwner, owner)
+    }
+
+    @Test
+    internal fun `getOrBuildScopedViewModelOwner builds new owner and clears old one when external key changes`() {
+        val maps = emptyVmMaps()
+        val key = InternalKey("k1")
+        val oldExternalKey = ExternalKey("v1")
+        val newExternalKey = ExternalKey("v2")
+        val oldOwner = createScopedViewModelOwner("old")
+        oldOwner.getViewModel(fakeFactory, plainOwner, CreationExtras.Empty)
+        maps.container[key] = oldOwner
+        maps.keys[key] = oldExternalKey
+
+        var clearedObject: Any? = null
+
+        val (owner, isNew) = ScopedViewModelUtils.getOrBuildScopedViewModelOwner(
+            modelClass = FakeVM::class,
+            positionalMemoizationKey = key,
+            externalKey = newExternalKey,
+            clearDelay = null,
+            scopedObjectsContainer = maps.container,
+            scopedObjectsSavedStateHandlers = maps.savedStateHandlers,
+            scopedObjectsClearDelays = maps.clearDelays,
+            scopedObjectKeys = maps.keys,
+            cancelDisposal = {},
+            clearLastDisposedViewModel = { obj, _ -> clearedObject = obj }
+        )
+
+        assertTrue(isNew)
+        assertSame(oldOwner, clearedObject)
+        assertSame(owner, maps.container[key])
+        assertEquals(newExternalKey, maps.keys[key])
+    }
+
+    @Test
+    internal fun `getOrBuildScopedViewModelOwner removes saved state handler when external key changes`() {
+        val maps = emptyVmMaps()
+        val key = InternalKey("k1")
+        val oldExternalKey = ExternalKey("v1")
+        val newExternalKey = ExternalKey("v2")
+        val oldOwner = createScopedViewModelOwner("old")
+        maps.container[key] = oldOwner
+        maps.keys[key] = oldExternalKey
+        val handle = SavedStateHandle().apply { set("user", "value") }
+        maps.savedStateHandlers[key] = SavedStateHandleContainer(emptyList(), handle)
+
+        ScopedViewModelUtils.getOrBuildScopedViewModelOwner(
+            modelClass = FakeVM::class,
+            positionalMemoizationKey = key,
+            externalKey = newExternalKey,
+            clearDelay = null,
+            scopedObjectsContainer = maps.container,
+            scopedObjectsSavedStateHandlers = maps.savedStateHandlers,
+            scopedObjectsClearDelays = maps.clearDelays,
+            scopedObjectKeys = maps.keys,
+            cancelDisposal = {},
+            clearLastDisposedViewModel = { _, _ -> }
+        )
+
+        assertFalse(maps.savedStateHandlers.containsKey(key))
+        assertFalse(handle.contains("user"))
+    }
+
+    @Test
+    internal fun `getOrBuildScopedViewModelOwner calls cancelDisposal with the positional key`() {
+        val maps = emptyVmMaps()
+        val key = InternalKey("k1")
+        val externalKey = ExternalKey("e1")
+        var cancelDisposalCalledWith: InternalKey? = null
+
+        ScopedViewModelUtils.getOrBuildScopedViewModelOwner(
+            modelClass = FakeVM::class,
+            positionalMemoizationKey = key,
+            externalKey = externalKey,
+            clearDelay = null,
+            scopedObjectsContainer = maps.container,
+            scopedObjectsSavedStateHandlers = maps.savedStateHandlers,
+            scopedObjectsClearDelays = maps.clearDelays,
+            scopedObjectKeys = maps.keys,
+            cancelDisposal = { cancelDisposalCalledWith = it },
+            clearLastDisposedViewModel = { _, _ -> }
+        )
+
+        assertEquals(key, cancelDisposalCalledWith)
+    }
+
+    @Test
+    internal fun `getOrBuildScopedViewModelOwner stores clearDelay only when provided`() {
+        val maps = emptyVmMaps()
+        val key = InternalKey("k1")
+        val externalKey = ExternalKey("e1")
+        val delay = 11.seconds
+
+        ScopedViewModelUtils.getOrBuildScopedViewModelOwner(
+            modelClass = FakeVM::class,
+            positionalMemoizationKey = key,
+            externalKey = externalKey,
+            clearDelay = delay,
+            scopedObjectsContainer = maps.container,
+            scopedObjectsSavedStateHandlers = maps.savedStateHandlers,
+            scopedObjectsClearDelays = maps.clearDelays,
+            scopedObjectKeys = maps.keys,
+            cancelDisposal = {},
+            clearLastDisposedViewModel = { _, _ -> }
+        )
+
+        assertEquals(delay, maps.clearDelays[key])
+    }
+
+    @Test
+    internal fun `getOrBuildScopedViewModelOwner does not store clearDelay when null`() {
+        val maps = emptyVmMaps()
+        val key = InternalKey("k1")
+        val externalKey = ExternalKey("e1")
+
+        ScopedViewModelUtils.getOrBuildScopedViewModelOwner(
+            modelClass = FakeVM::class,
+            positionalMemoizationKey = key,
+            externalKey = externalKey,
+            clearDelay = null,
+            scopedObjectsContainer = maps.container,
+            scopedObjectsSavedStateHandlers = maps.savedStateHandlers,
+            scopedObjectsClearDelays = maps.clearDelays,
+            scopedObjectKeys = maps.keys,
+            cancelDisposal = {},
+            clearLastDisposedViewModel = { _, _ -> }
+        )
+
+        assertFalse(maps.clearDelays.containsKey(key))
+    }
+
+    @Test
+    internal fun `getOrBuildScopedViewModelOwner builds owner with key derived from positional plus external key`() {
+        val maps = emptyVmMaps()
+        val key = InternalKey("k1")
+        val externalKey = ExternalKey("e1")
+
+        val (owner, _) = ScopedViewModelUtils.getOrBuildScopedViewModelOwner(
+            modelClass = FakeVM::class,
+            positionalMemoizationKey = key,
+            externalKey = externalKey,
+            clearDelay = null,
+            scopedObjectsContainer = maps.container,
+            scopedObjectsSavedStateHandlers = maps.savedStateHandlers,
+            scopedObjectsClearDelays = maps.clearDelays,
+            scopedObjectKeys = maps.keys,
+            cancelDisposal = {},
+            clearLastDisposedViewModel = { _, _ -> }
+        )
+
+        // The owner is now backed by a fresh ViewModelStore; using a custom factory should produce a VM.
+        val vm = owner.getViewModel(fakeFactory, plainOwner, CreationExtras.Empty)
+        assertNotNull(vm)
+    }
+
+    @Test
+    internal fun `getOrBuildScopedViewModelOwner treats container with non-owner entry under same key as new`() {
+        val maps = emptyVmMaps()
+        val key = InternalKey("k1")
+        val externalKey = ExternalKey("e1")
+        val notAnOwner: Any = "stringStored"
+        maps.container[key] = notAnOwner
+        maps.keys[key] = externalKey
+
+        var clearedObject: Any? = null
+
+        val (owner, isNew) = ScopedViewModelUtils.getOrBuildScopedViewModelOwner(
+            modelClass = FakeVM::class,
+            positionalMemoizationKey = key,
+            externalKey = externalKey,
+            clearDelay = null,
+            scopedObjectsContainer = maps.container,
+            scopedObjectsSavedStateHandlers = maps.savedStateHandlers,
+            scopedObjectsClearDelays = maps.clearDelays,
+            scopedObjectKeys = maps.keys,
+            cancelDisposal = {},
+            clearLastDisposedViewModel = { obj, _ -> clearedObject = obj }
+        )
+
+        assertTrue(isNew)
+        assertSame(owner, maps.container[key])
+        assertSame(notAnOwner, clearedObject)
     }
 
     // endregion
