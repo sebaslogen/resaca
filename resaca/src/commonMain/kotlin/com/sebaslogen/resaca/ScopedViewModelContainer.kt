@@ -366,9 +366,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
                             scopedObjectKeys.remove(key)
                             scopedObjectsClearDelays.remove(key)
                             scopedObjectsContainer.remove(key)?.also { clearLastDisposedObject(it) }
-                            scopedObjectsSavedStateHandlers.remove(key)?.also { savedStateHandleContainer ->
-                                clearSavedStateHandle(savedStateHandleContainer)
-                            }
+                            scopedObjectsSavedStateHandlers.remove(key)?.also(ScopedViewModelUtils::clearSavedStateHandle)
                         }
                     }
                     disposingJobs.remove(key)
@@ -376,17 +374,6 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
             }
         }
         disposingJobs[key] = newDisposingJob
-    }
-
-    /**
-     * Clear only the keys that were added after creation of the [SavedStateHandle], i.e. by the user.
-     */
-    private fun clearSavedStateHandle(savedStateHandleContainer: SavedStateHandleContainer) {
-        val savedStateHandle = savedStateHandleContainer.savedStateHandle
-        savedStateHandle
-            .keys().forEach { key ->
-                if (key !in savedStateHandleContainer.defaultKeys) savedStateHandle.remove<Any>(key) // Clear only user-added keys
-            }
     }
 
     /**
@@ -400,8 +387,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
 
     private fun cancelDisposal(key: InternalKey) {
         threadSafeRunnerOnMain {
-            disposingJobs.remove(key)?.cancel() // Cancel scheduled disposal
-            markedForDisposal.remove(key) // Un-mark for disposal in case it's not yet scheduled for disposal
+            ScopedViewModelUtils.cancelDisposal(key, disposingJobs, markedForDisposal)
         }
     }
 
@@ -420,9 +406,7 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         scopedObjectKeys.clear() // Clear all keys
         scopedObjectsClearDelays.clear() // Clear all delays
         scopedObjectsContainer.clear() // Clear just in case this VM is leaked
-        scopedObjectsSavedStateHandlers.forEach { (_, savedStateHandleContainer) ->
-            clearSavedStateHandle(savedStateHandleContainer)
-        }
+        scopedObjectsSavedStateHandlers.values.forEach(ScopedViewModelUtils::clearSavedStateHandle)
         scopedObjectsSavedStateHandlers.clear() // Clear all keys
         super.onCleared()
     }
