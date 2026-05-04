@@ -452,6 +452,31 @@ public class ScopedViewModelContainer : ViewModel(), LifecycleEventObserver {
         isReturningToForeground = query
     }
 
+    // region Test-only accessors
+    // These exist solely so the lifecycle/disposal state machine can be exercised from desktopTest without driving
+    // a full Compose runtime. They are `internal` (module-private) and must not be referenced from production code.
+
+    internal val isInForegroundForTest: Boolean
+        get() = isInForeground
+
+    internal val storedObjectKeysForTest: Set<InternalKey>
+        get() = scopedObjectsContainer.keys.toSet()
+
+    internal val markedForDisposalForTest: Set<InternalKey>
+        get() = markedForDisposal.toSet()
+
+    internal val disposingJobsForTest: Map<InternalKey, Job>
+        get() = disposingJobs.toMap()
+
+    /** Insert an object directly into the container under [key] for test setup. */
+    internal fun storeForTest(key: InternalKey, externalKey: ExternalKey, value: Any, clearDelay: Duration? = null) {
+        scopedObjectKeys[key] = externalKey
+        scopedObjectsContainer[key] = value
+        clearDelay?.let { scopedObjectsClearDelays[key] = it }
+    }
+
+    // endregion
+
     /**
      * Unique Key to identify versions objects stored in the [ScopedViewModelContainer]
      * When this external key does not match the one stored for an object's main key in [scopedObjectKeys],
