@@ -55,6 +55,14 @@ kotlin {
         desktopMain.dependencies {
             implementation(libs.jetbrains.compose.desktop.common)
             implementation(libs.coroutines.swing)
+            // Skiko native libs are required by runComposeUiTest on desktop. Adding here (rather than desktopTest)
+            // because the native artifact must be on the runtime classpath that the test inherits.
+            implementation(compose.desktop.currentOs)
+        }
+
+        val desktopTest by getting
+        desktopTest.dependencies {
+            implementation(libs.jetbrains.compose.ui.test)
         }
 
         jsMain.dependencies {
