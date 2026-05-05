@@ -43,6 +43,23 @@ kotlin {
             // Metro runtime is auto-included by the Metro Gradle plugin
             implementation(libs.metro.compose)
         }
+
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+        }
+
+        val desktopMain by getting
+        desktopMain.dependencies {
+            // Skiko native libs are required by runComposeUiTest on desktop. Adding here (rather than desktopTest)
+            // because the native artifact must be on the runtime classpath that the test inherits.
+            implementation(compose.desktop.currentOs)
+        }
+
+        val desktopTest by getting
+        desktopTest.dependencies {
+            implementation(libs.jetbrains.compose.ui.test)
+            implementation(libs.androidx.lifecycle.runtime.compose) // for LocalLifecycleOwner
+        }
     }
 }
 
