@@ -21,8 +21,12 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import dev.zacsweers.metro.Provider
+import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
+import dev.zacsweers.metrox.viewmodel.MetroViewModelFactory
 import kotlin.reflect.KClass
 import kotlin.test.Test
+import kotlin.test.assertNotNull
 import kotlin.test.assertNotSame
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
@@ -45,6 +49,13 @@ internal class MetroViewModelScopedSmokeTest {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: KClass<T>, extras: CreationExtras): T =
             TrackingViewModel() as T
+    }
+
+    /** Concrete [MetroViewModelFactory] for the LocalMetroViewModelFactory default-resolution test. */
+    private val metroFactory = object : MetroViewModelFactory() {
+        override val viewModelProviders: Map<KClass<out ViewModel>, Provider<ViewModel>> = mapOf(
+            TrackingViewModel::class to Provider { TrackingViewModel() }
+        )
     }
 
     @Test
@@ -76,6 +87,33 @@ internal class MetroViewModelScopedSmokeTest {
         assertTrue(captures.size >= 3, "Expected at least 3 compositions, got ${captures.size}")
         val first = captures.first()
         captures.forEach { assertSame(first, it, "Same VM should be reused across recomposition") }
+    }
+
+    @Test
+    fun `metroViewModelScoped resolves the default factory from LocalMetroViewModelFactory`() = runComposeUiTest {
+        // Regression guard for the default `factory = LocalMetroViewModelFactory.current` parameter added in commit
+        // b7d89b7. When the caller omits `factory`, the wrapper must read it from the CompositionLocal — a
+        // regression in that branch (e.g. wrong CompositionLocal, or the Metro library changing the binding) would
+        // otherwise slip through CI silently because every other call site passes a factory explicitly.
+        val owner = FakeOwner()
+        var observedVm: TrackingViewModel? = null
+
+        setContent {
+            CompositionLocalProvider(
+                LocalViewModelStoreOwner provides owner,
+                LocalLifecycleOwner provides owner,
+                LocalMetroViewModelFactory provides metroFactory
+            ) {
+                Column {
+                    val vm = metroViewModelScoped<TrackingViewModel>() // factory parameter omitted → uses CompositionLocal
+                    SideEffect { observedVm = vm }
+                    Text("rendered")
+                }
+            }
+        }
+
+        waitForIdle()
+        assertNotNull(observedVm, "VM should have been resolved via LocalMetroViewModelFactory")
     }
 
     @Test
