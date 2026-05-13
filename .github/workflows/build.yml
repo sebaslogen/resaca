@@ -10,7 +10,7 @@ permissions:
 jobs:
   test:
     name: Run Unit Tests
-    runs-on: macos-14
+    runs-on: macos-latest
 
     steps:
       - name: Checkout
