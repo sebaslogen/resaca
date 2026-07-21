@@ -37,7 +37,7 @@ koin = '4.2.2'
 metro = '1.3.2'
 # Test
 junit-version = '4.13.2'
-kover = '0.9.8'
+kover = '0.9.9'
 kovergate = '0.6.0'
 robolectric-version = '4.16.1'
 espresso = '3.7.0'
