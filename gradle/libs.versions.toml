@@ -27,7 +27,7 @@ compose-ui-toolingPreview = '1.11.4'
 # Compose integration with Activities
 androidx-activity = '1.13.0'
 # Compose integration with ViewModels
-jetbrains-lifecycle = '2.10.0'
+jetbrains-lifecycle = '2.11.0'
 # Hilt
 hilt = '2.60.1'
 hilt-navigation-compose = '1.4.0'
