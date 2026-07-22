@@ -296,6 +296,38 @@ val viewModel: MyViewModel = metroViewModelScoped(
 [Documentation and installation instructions are available here](https://github.com/sebaslogen/resaca/tree/main/resacametro/README.md).
 </details>
 
+# Navigation 3 support
+
+`rememberScoped` and `viewModelScoped` work with [Navigation 3](https://developer.android.com/guide/navigation/navigation-3), but **`NavDisplay`'s
+`entryDecorators` must include `rememberViewModelStoreNavEntryDecorator()`**:
+<details>
+  <summary>Navigation 3 details</summary>
+
+```kotlin
+NavDisplay(
+    backStack = backStack,
+    entryDecorators = listOf(
+        rememberSaveableStateHolderNavEntryDecorator(),
+        rememberViewModelStoreNavEntryDecorator() // Required for rememberScoped/viewModelScoped to work correctly with Nav3
+    ),
+    entryProvider = entryProvider {
+        entry<Home> {
+            val vm = viewModelScoped { HomeViewModel() }
+            /* ... */
+        }
+    }
+)
+```
+
+`NavDisplay`'s default `entryDecorators` do **not** include `rememberViewModelStoreNavEntryDecorator()`, so without adding it explicitly every destination
+ends up sharing a single Activity-wide `ScopedViewModelContainer`. In Nav3, objects and ViewModels scoped with `rememberScoped`/`viewModelScoped` can be 
+cleared as soon as their Composable leaves composition, even while their destination is still on the back stack, 
+instead of being retained like they would with Fragments or Navigation 2.
+
+Adding `rememberViewModelStoreNavEntryDecorator()` scopes a separate `ScopedViewModelContainer` to each `NavEntry`, which resolves this: see
+[`Nav3ViewModelsActivity`](sample/src/main/java/com/sebaslogen/resacaapp/sample/ui/main/ComposeActivityNav3.kt) in the sample app for a working example.
+</details>
+
 # Scoping in a LazyColumn, LazyRow, etc
 This is handy for the typical case where you have a lazy list of items and you want to have a separate ViewModel for each item in the list, using the `viewModelScoped` function.
 <details>

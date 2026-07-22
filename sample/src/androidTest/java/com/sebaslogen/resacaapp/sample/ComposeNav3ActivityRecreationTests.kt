@@ -33,7 +33,7 @@ class ComposeNav3ActivityRecreationTests : ComposeTestUtils {
 
             // When I navigate to RouteB and verify it's displayed
             composeTestRule.waitForIdle()
-            val routeText = "Route id: 123 "
+            val routeText = "Route B id: 123 "
             assert(retrieveTextFromNodeWithTestTag("Nav3 Text") == routeText)
 
             // And I recreate the Activity
