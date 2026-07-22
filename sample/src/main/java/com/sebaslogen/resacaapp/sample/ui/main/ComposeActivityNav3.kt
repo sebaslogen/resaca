@@ -11,6 +11,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
@@ -66,9 +67,12 @@ class InjectedViewModelsActivity : ComponentActivity() {
                         ),
                         entryProvider = entryProvider {
                             entry<Screen.RouteA> {
-                                Button(onClick = {
-                                    backStack.add(Screen.RouteB("123"))
-                                }) {
+                                Button(
+                                    modifier = Modifier.testTag("Nav3 Button"),
+                                    onClick = {
+                                        backStack.add(Screen.RouteB("123"))
+                                    }
+                                ) {
                                     Text("Click to navigate")
                                 }
                             }
@@ -88,7 +92,10 @@ class InjectedViewModelsActivity : ComponentActivity() {
 
 @Composable
 fun ScreenB(viewModel: RouteBViewModel) {
-    Text("Route id: ${viewModel.navKey.id} ")
+    Text(
+        modifier = Modifier.testTag("Nav3 Text"),
+        text = "Route id: ${viewModel.navKey.id} "
+    )
 }
 
 @HiltViewModel(assistedFactory = RouteBViewModel.Factory::class)
