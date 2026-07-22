@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.multiplatform) apply false
     alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.kotlinx.serialization) apply false
     alias(libs.plugins.dagger.hilt.android) apply false
     alias(libs.plugins.binary.compatibility.validator)
     alias(libs.plugins.kover) apply false

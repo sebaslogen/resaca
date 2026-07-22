@@ -10,12 +10,12 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.sebaslogen.resaca.hilt.hiltViewModelScoped
@@ -25,6 +25,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.serialization.Serializable
 
 /**
  * Passing navigation arguments to a Hilt injected ViewModel
@@ -33,8 +34,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
  * - Assisted injection is used to construct ViewModels with the navigation key
  */
 
-data object RouteA
-data class RouteB(val id: String)
+@Serializable
+sealed class Screen : NavKey {
+    @Serializable
+    data object RouteA : Screen()
+    @Serializable
+    data class RouteB(val id: String) : Screen()
+}
 
 @AndroidEntryPoint
 class InjectedViewModelsActivity : ComponentActivity() {
@@ -49,7 +55,7 @@ class InjectedViewModelsActivity : ComponentActivity() {
                         .safeDrawingPadding(),
                     color = MaterialTheme.colors.background
                 ) {
-                    val backStack = remember { mutableStateListOf<Any>(RouteA) }
+                    val backStack = rememberNavBackStack(Screen.RouteA)
 
                     NavDisplay(
                         backStack = backStack,
@@ -59,14 +65,14 @@ class InjectedViewModelsActivity : ComponentActivity() {
                             rememberViewModelStoreNavEntryDecorator()
                         ),
                         entryProvider = entryProvider {
-                            entry<RouteA> {
+                            entry<Screen.RouteA> {
                                 Button(onClick = {
-                                    backStack.add(RouteB("123"))
+                                    backStack.add(Screen.RouteB("123"))
                                 }) {
                                     Text("Click to navigate")
                                 }
                             }
-                            entry<RouteB> { key ->
+                            entry<Screen.RouteB> { key ->
                                 val viewModel = hiltViewModelScoped { factory: RouteBViewModel.Factory ->
                                     factory.create(key)
                                 }
@@ -87,11 +93,11 @@ fun ScreenB(viewModel: RouteBViewModel) {
 
 @HiltViewModel(assistedFactory = RouteBViewModel.Factory::class)
 class RouteBViewModel @AssistedInject constructor(
-    @Assisted val navKey: RouteB
+    @Assisted val navKey: Screen.RouteB
 ) : ViewModel() {
 
     @AssistedFactory
     interface Factory {
-        fun create(navKey: RouteB): RouteBViewModel
+        fun create(navKey: Screen.RouteB): RouteBViewModel
     }
 }

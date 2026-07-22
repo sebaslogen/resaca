@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kovergate)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.jetbrains.compose)
+    alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.metro)
 }
 
