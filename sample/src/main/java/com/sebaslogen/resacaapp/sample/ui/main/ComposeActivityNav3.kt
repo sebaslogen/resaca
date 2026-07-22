@@ -48,7 +48,7 @@ sealed class Screen : NavKey {
 }
 
 @AndroidEntryPoint
-class InjectedViewModelsActivity : ComponentActivity() {
+class Nav3ViewModelsActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

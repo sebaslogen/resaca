@@ -15,7 +15,7 @@
             android:label="@string/title_activity_compose"
             android:theme="@style/Theme.ResacaApp.NoActionBar" />
         <activity
-            android:name=".ui.main.InjectedViewModelsActivity"
+            android:name=".ui.main.Nav3ViewModelsActivity"
             android:exported="true"
             android:theme="@style/Theme.ResacaApp.NoActionBar"/>
         <activity

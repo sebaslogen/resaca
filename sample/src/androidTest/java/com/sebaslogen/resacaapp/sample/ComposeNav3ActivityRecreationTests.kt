@@ -2,14 +2,13 @@ package com.sebaslogen.resacaapp.sample
 
 import android.content.Intent
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
-import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.sebaslogen.resaca.utils.ResacaPackagePrivate
-import com.sebaslogen.resacaapp.sample.ui.main.InjectedViewModelsActivity
+import com.sebaslogen.resacaapp.sample.ui.main.Nav3ViewModelsActivity
 import com.sebaslogen.resacaapp.sample.utils.ComposeTestUtils
 import org.junit.Rule
 import org.junit.Test
@@ -25,8 +24,8 @@ class ComposeNav3ActivityRecreationTests : ComposeTestUtils {
 
     @Test
     fun whenActivityRecreates_thenTheNavigationRouteIsPersisted() {
-        ActivityScenario.launch<InjectedViewModelsActivity>(
-            Intent(ApplicationProvider.getApplicationContext(), InjectedViewModelsActivity::class.java)
+        ActivityScenario.launch<Nav3ViewModelsActivity>(
+            Intent(ApplicationProvider.getApplicationContext(), Nav3ViewModelsActivity::class.java)
         ).use { scenario ->
             // Given the starting screen
             composeTestRule.waitForIdle()
