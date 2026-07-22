@@ -1,17 +1,17 @@
 package com.sebaslogen.resacaapp.sample.ui.main
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
@@ -39,8 +39,12 @@ import kotlinx.serialization.Serializable
 sealed class Screen : NavKey {
     @Serializable
     data object RouteA : Screen()
+
     @Serializable
     data class RouteB(val id: String) : Screen()
+
+    @Serializable
+    data class RouteC(val id: String) : Screen()
 }
 
 @AndroidEntryPoint
@@ -63,24 +67,36 @@ class InjectedViewModelsActivity : ComponentActivity() {
                         onBack = { backStack.removeLastOrNull() },
                         entryDecorators = listOf(
                             rememberSaveableStateHolderNavEntryDecorator(),
-                            rememberViewModelStoreNavEntryDecorator()
+                            rememberViewModelStoreNavEntryDecorator(),
                         ),
                         entryProvider = entryProvider {
                             entry<Screen.RouteA> {
-                                Button(
-                                    modifier = Modifier.testTag("Nav3 Button"),
-                                    onClick = {
-                                        backStack.add(Screen.RouteB("123"))
-                                    }
-                                ) {
-                                    Text("Click to navigate")
+                                Button(onClick = {
+                                    backStack.add(Screen.RouteB("123"))
+                                }) {
+                                    Text("Click to navigate to route B")
                                 }
                             }
                             entry<Screen.RouteB> { key ->
-                                val viewModel = hiltViewModelScoped { factory: RouteBViewModel.Factory ->
-                                    factory.create(key)
+                                val viewModel = hiltViewModelScoped { factory: Nav3ViewModel.Factory ->
+                                    factory.create(key.id)
                                 }
-                                ScreenB(viewModel = viewModel)
+                                Column {
+                                    Text("Route B id: ${viewModel.navKey} ")
+                                    Button(onClick = {
+                                        backStack.add(Screen.RouteC("456"))
+                                    }) {
+                                        Text("Click to navigate to route C")
+                                    }
+                                }
+                            }
+                            entry<Screen.RouteC> { key ->
+                                val viewModel = hiltViewModelScoped { factory: Nav3ViewModel.Factory ->
+                                    factory.create(key.id)
+                                }
+                                Column {
+                                    Text("Route C id: ${viewModel.navKey} ")
+                                }
                             }
                         }
                     )
@@ -90,21 +106,22 @@ class InjectedViewModelsActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun ScreenB(viewModel: RouteBViewModel) {
-    Text(
-        modifier = Modifier.testTag("Nav3 Text"),
-        text = "Route id: ${viewModel.navKey.id} "
-    )
-}
-
-@HiltViewModel(assistedFactory = RouteBViewModel.Factory::class)
-class RouteBViewModel @AssistedInject constructor(
-    @Assisted val navKey: Screen.RouteB
+@HiltViewModel(assistedFactory = Nav3ViewModel.Factory::class)
+class Nav3ViewModel @AssistedInject constructor(
+    @Assisted val navKey: String
 ) : ViewModel() {
+
+    init {
+        Log.e("TAG", "Init VM $navKey $this")
+    }
+
+    override fun onCleared() {
+        Log.e("TAG", "Cleared VM $navKey $this")
+        super.onCleared()
+    }
 
     @AssistedFactory
     interface Factory {
-        fun create(navKey: Screen.RouteB): RouteBViewModel
+        fun create(navKey: String): Nav3ViewModel
     }
 }
