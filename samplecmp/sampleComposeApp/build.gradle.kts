@@ -40,6 +40,7 @@ kotlin {
             }
         }
         useEsModules()
+        binaries.executable()
     }
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
