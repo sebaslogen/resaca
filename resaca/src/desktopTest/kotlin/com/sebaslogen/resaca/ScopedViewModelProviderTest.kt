@@ -9,7 +9,6 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import kotlin.reflect.KClass
 import kotlin.test.Test
 import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 
 internal class ScopedViewModelProviderTest {
 
@@ -42,13 +41,7 @@ internal class ScopedViewModelProviderTest {
     // endregion
 
     @Test
-    internal fun `getCachedViewModelProvider returns null before any call`() {
-        val provider = ScopedViewModelProvider(ViewModelStore())
-        assertNull(provider.getCachedViewModelProvider())
-    }
-
-    @Test
-    internal fun `getViewModelProvider with custom factory creates provider and caches it`() {
+    internal fun `getViewModelProvider with custom factory creates provider`() {
         val store = ViewModelStore()
         val provider = ScopedViewModelProvider(store)
 
@@ -59,8 +52,6 @@ internal class ScopedViewModelProviderTest {
         )
 
         assertNotNull(vmProvider)
-        // Verify caching
-        assertNotNull(provider.getCachedViewModelProvider())
     }
 
     @Test
@@ -96,20 +87,6 @@ internal class ScopedViewModelProviderTest {
         // It should be able to create ViewModels with no-arg constructors
         val vm = vmProvider.get(TestViewModel::class)
         assertNotNull(vm)
-    }
-
-    @Test
-    internal fun `getCachedViewModelProvider returns non-null after getViewModelProvider call`() {
-        val store = ViewModelStore()
-        val provider = ScopedViewModelProvider(store)
-
-        provider.getViewModelProvider(
-            factory = testFactory,
-            viewModelStoreOwner = plainOwner(store),
-            creationExtras = CreationExtras.Empty
-        )
-
-        assertNotNull(provider.getCachedViewModelProvider())
     }
 
     @Test
