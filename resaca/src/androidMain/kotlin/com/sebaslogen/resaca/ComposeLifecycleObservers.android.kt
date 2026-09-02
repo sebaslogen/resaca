@@ -11,7 +11,12 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavBackStackEntry
 import com.sebaslogen.resaca.utils.ResacaPackagePrivate
-import java.lang.reflect.Field
+
+/**
+ * Amount returned when the number of [ViewModelStore]s held by the NavController could not be read.
+ * It never matches a real amount of stores, so a scoped object is kept instead of disposed when in doubt.
+ */
+private const val UNKNOWN_AMOUNT_OF_VIEW_MODEL_STORES = -1
 
 /**
  * Observe the lifecycle of a Composable container to detect when it is being disposed
@@ -28,18 +33,19 @@ import java.lang.reflect.Field
 @Composable
 @PublishedApi
 internal actual fun ObserveComposableContainerLifecycle(scopedViewModelContainer: ScopedViewModelContainer) {
-    val viewModelStores = getViewModelStores()
-    if (viewModelStores == null) {
+    val navBackStackEntry = LocalLifecycleOwner.current as? NavBackStackEntry
+    val countViewModelStoresInNavHost = remember(navBackStackEntry) { navBackStackEntry?.let(::viewModelStoresCounter) }
+    if (countViewModelStoresInNavHost == null) {
         // Use a different observer when not using Compose Navigation with a NavHost, default to just Activity recreation
         ObserveComposableContainerLifecycleWithoutComposeNavigation(scopedViewModelContainer)
         return
     }
-    val totalViewModelStoresWhenDestinationIsCreatedInNavHost = viewModelStores.size
 
     // Observe state of configuration changes when disposing
     val activity = LocalActivity.current
         ?: throw IllegalStateException("Expected an Activity for detecting configuration changes for a NavBackStackEntry but instead found null")
     remember(activity) {
+        val totalViewModelStoresWhenDestinationIsCreatedInNavHost = countViewModelStoresInNavHost()
         object : RememberObserver {
             /**
              * When the destination is removed from the composition, we can check if the destination is still in the foreground.
@@ -53,7 +59,7 @@ internal actual fun ObserveComposableContainerLifecycle(scopedViewModelContainer
             private fun onRemoved() {
                 if (activity.isChangingConfigurations) {
                     scopedViewModelContainer.setShouldBeReturningToForeground {
-                        totalViewModelStoresWhenDestinationIsCreatedInNavHost == viewModelStores.size
+                        totalViewModelStoresWhenDestinationIsCreatedInNavHost == countViewModelStoresInNavHost()
                     }
                 }
             }
@@ -75,33 +81,54 @@ internal actual fun ObserveComposableContainerLifecycle(scopedViewModelContainer
 
 
 /**
- * Get the NavBackStackEntry from the current LifecycleOwner to access the ViewModelStoreProvider and ViewModelStores
- * to count the number of ViewModelStores when the destination was created in the NavHost.
+ * Build a function that reads how many [ViewModelStore]s the NavController hosting this [navBackEntry] currently holds,
+ * or null when that amount cannot be read, e.g. because the internals of Navigation changed again.
  *
- * In the callback after the Activity is recreated, we can check if the number of ViewModelStores is the same as when the destination was created.
- * When the number matches we are still on top of the back stack and the destination is back in the foreground.
- * When the number differs, it means the destination is not the top of the back stack and we should NOT dispose any scoped objects yet. Only after resuming.
+ * The stores are owned by an object that outlives Activity recreation (a [androidx.lifecycle.ViewModel] scoped to the NavHost),
+ * which is why the returned function keeps reporting the current amount across a configuration change,
+ * unlike the [NavBackStackEntry] that produced it.
+ *
+ * The amount of stores is not part of the public Navigation API, so it is read reflectively and two internal layouts are supported:
+ * - Navigation 2.9.x and older: `NavBackStackEntry.viewModelStoreProvider` is a `NavControllerViewModel` owning a `viewModelStores` map.
+ * - Navigation 2.10.0 and newer: `NavBackStackEntry.viewModelStoreProvider` is a `NavViewModelStoreProviderImpl` that delegates to an
+ *   `androidx.lifecycle.viewmodel.ViewModelStoreProvider`, whose lazily created `StateHolder` owns an `entries` map.
  */
-@Composable
-private fun getViewModelStores(): Map<String, ViewModelStore>? {
-    val current = LocalLifecycleOwner.current
-    val navBackEntry = current as? NavBackStackEntry ?: return null // No-op if not a NavBackStackEntry, aka if not using Compose Navigation with a NavHost
-    return getViewModelStores(navBackEntry)
+@SuppressLint("RestrictedApi")
+private fun viewModelStoresCounter(navBackEntry: NavBackStackEntry): (() -> Int)? {
+    // Access an androidx.navigation.NavViewModelStoreProvider
+    val viewModelStoreProvider: Any = navBackEntry.readDeclaredField("viewModelStoreProvider") ?: return null
+
+    // Navigation 2.9.x and older
+    (viewModelStoreProvider.readDeclaredField("viewModelStores") as? Map<*, *>)?.let { stores -> return { stores.size } }
+
+    // Navigation 2.10.0 and newer
+    val delegatedStoreProvider: Any = viewModelStoreProvider.readDeclaredField("provider") ?: return null
+    val counter = { delegatedStoreProvider.countViewModelStoresInStateHolder() }
+    return counter.takeIf { it() != UNKNOWN_AMOUNT_OF_VIEW_MODEL_STORES }
 }
 
-@SuppressLint("RestrictedApi")
-@Suppress("UNCHECKED_CAST")
-private fun getViewModelStores(navBackEntry: NavBackStackEntry): Map<String, ViewModelStore>? {
-    try {
-        val navViewModelStoreProviderField: Field = navBackEntry.javaClass.getDeclaredField("viewModelStoreProvider")
-        navViewModelStoreProviderField.isAccessible = true // Make the field accessible to read
-        val viewModelStoreProvider: Any = navViewModelStoreProviderField.get(navBackEntry) ?: return null // Access a androidx.navigation.NavControllerViewModel
-        val viewModelStoresField: Field = viewModelStoreProvider.javaClass.getDeclaredField("viewModelStores")
-        viewModelStoresField.isAccessible = true // Make the field accessible to read
-        return viewModelStoresField.get(viewModelStoreProvider) as? Map<String, ViewModelStore>
-    } catch (_: Exception) {
-        return null
-    }
+/**
+ * Count the entries held by the `StateHolder` of an `androidx.lifecycle.viewmodel.ViewModelStoreProvider`.
+ * The amount is never cached because the `StateHolder` keeps track of the stores of all the destinations in the NavHost over time.
+ */
+private fun Any.countViewModelStoresInStateHolder(): Int =
+    invokeNoArgumentsMethod("getStateHolder")
+        ?.invokeNoArgumentsMethod("getEntries")
+        ?.invokeNoArgumentsMethod("getSize") as? Int
+        ?: UNKNOWN_AMOUNT_OF_VIEW_MODEL_STORES
+
+private fun Any.readDeclaredField(name: String): Any? = try {
+    javaClass.getDeclaredField(name).apply { isAccessible = true }.get(this)
+} catch (_: Exception) {
+    null
+}
+
+private fun Any.invokeNoArgumentsMethod(name: String): Any? = try {
+    // The method can be declared by the class itself (and be private) or inherited from a public parent class
+    val method = runCatching { javaClass.getDeclaredMethod(name) }.getOrElse { javaClass.getMethod(name) }
+    method.apply { isAccessible = true }.invoke(this)
+} catch (_: Exception) {
+    null
 }
 
 
