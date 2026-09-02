@@ -46,6 +46,10 @@ testRules = '1.7.0'
 junitKtx = '1.3.0'
 tracing = '2.0.1'
 kotlinxDatetime = "0.8.0"
+# Transitive dependencies of Espresso, pinned so that AGP's consistent resolution
+# between the app and androidTest runtime classpaths does not conflict
+concurrentFutures = '1.2.0'
+errorProneAnnotations = '2.30.0'
 
 
 [libraries]
@@ -114,6 +118,8 @@ espresso = { module = 'androidx.test.espresso:espresso-core', version.ref = 'esp
 test-runner = { module = 'androidx.test:runner', version.ref = 'testRunner' }
 test-rules = { module = 'androidx.test:rules', version.ref = 'testRules' }
 androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
+androidx-concurrent-futures = { module = 'androidx.concurrent:concurrent-futures', version.ref = 'concurrentFutures' }
+errorprone-annotations = { module = 'com.google.errorprone:error_prone_annotations', version.ref = 'errorProneAnnotations' }
 
 
 [plugins]
