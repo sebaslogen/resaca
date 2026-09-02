@@ -33,9 +33,14 @@ kotlin {
     js {
         browser()
         useEsModules()
+        // Required so that webpack bundles the Skiko runtime that Compose UI needs, see https://youtrack.jetbrains.com/issue/CMP-4906
+        binaries.executable()
     }
     @OptIn(ExperimentalWasmDsl::class)
-    wasmJs { browser() }
+    wasmJs {
+        browser()
+        binaries.executable()
+    }
 
     sourceSets {
         commonMain.dependencies {
@@ -44,6 +49,12 @@ kotlin {
             api(libs.koin.core)
             api(libs.koin.core.viewmodel)
             api(libs.koin.compose)
+
+            // Koin brings these Compose libraries in at an older version than the Compose plugin used here.
+            // Declaring them keeps every target on the plugin's version instead of only the JVM ones, where
+            // compose.desktop.currentOs happens to raise them.
+            implementation(libs.jetbrains.compose.foundation)
+            implementation(libs.jetbrains.compose.ui)
         }
 
         commonTest.dependencies {
