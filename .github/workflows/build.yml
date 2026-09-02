@@ -62,6 +62,20 @@ jobs:
         env:
           CI_FLOW: ${{ github.workflow }}
 
+      # Test failures that only happen on CI are hard to diagnose from the console output alone,
+      # because Gradle truncates assertion messages and drops the test's stdout/stderr.
+      # The XML results keep the full message and output of every test.
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            **/build/test-results/**
+            **/build/reports/tests/**
+          if-no-files-found: ignore
+          retention-days: 14
+
 #      DISABLED: Android instrumentation tests don't run yet on M1 see https://github.com/ReactiveCircus/android-emulator-runner/issues/392
 #      - name: Run Android instrumentation tests
 #        uses: reactivecircus/android-emulator-runner@v2

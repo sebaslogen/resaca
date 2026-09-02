@@ -46,8 +46,14 @@ jobs:
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none -metrics-collection
           script: ./gradlew connectedDebugAndroidTest --daemon
           
+      # `always()` is what makes this run after a failing test step, which is when the report is actually needed
       - name: Upload Test Report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-results
-          path: '**/build/test-results/**'
+          path: |
+            **/build/test-results/**
+            **/build/reports/androidTests/**
+          if-no-files-found: ignore
+          retention-days: 14
