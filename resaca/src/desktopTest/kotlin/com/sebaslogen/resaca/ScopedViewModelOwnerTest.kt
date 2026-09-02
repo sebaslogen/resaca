@@ -9,11 +9,13 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.sebaslogen.resaca.utils.ResacaPackagePrivate
+import java.lang.ref.WeakReference
 import kotlin.reflect.KClass
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertSame
 
 internal class ScopedViewModelOwnerTest {
 
@@ -81,6 +83,43 @@ internal class ScopedViewModelOwnerTest {
     }
 
     @Test
+    internal fun `getCachedViewModel keeps returning the ViewModel once the ViewModelProvider is garbage collected`() {
+        val owner = ScopedViewModelOwner(
+            key = "testKey",
+            modelClass = FakeViewModel::class
+        )
+
+        val vm = owner.getViewModel(
+            factory = fakeFactory,
+            viewModelStoreOwner = plainOwner,
+            creationExtras = CreationExtras.Empty
+        )
+        // Nothing outside of this owner references the ViewModelProvider that created the ViewModel anymore
+        forceGarbageCollection()
+
+        // The owner still reports the ViewModel it holds, otherwise a ViewModel shared by two Composables
+        // would be wrongly cleared as soon as one of them is disposed
+        assertSame(vm, owner.getCachedViewModel())
+    }
+
+    @Test
+    internal fun `getCachedViewModel returns null after clear`() {
+        val owner = ScopedViewModelOwner(
+            key = "testKey",
+            modelClass = FakeViewModel::class
+        )
+        owner.getViewModel(
+            factory = fakeFactory,
+            viewModelStoreOwner = plainOwner,
+            creationExtras = CreationExtras.Empty
+        )
+
+        owner.clear()
+
+        assertNull(owner.getCachedViewModel())
+    }
+
+    @Test
     internal fun `clear clears the underlying ViewModelStore`() {
         val owner = ScopedViewModelOwner(
             key = "testKey",
@@ -115,5 +154,19 @@ internal class ScopedViewModelOwnerTest {
         assertNotNull(vm)
         assertEquals(99, vm.id)
         assertEquals(savedStateHandle, capturedHandle)
+    }
+
+    /**
+     * Best effort attempt to make the JVM collect everything that is only weakly reachable.
+     * It stops as soon as a canary reference is collected, or after enough attempts to keep the test bounded.
+     */
+    private fun forceGarbageCollection() {
+        val canary = WeakReference(Any())
+        repeat(20) {
+            if (canary.get() == null) return
+            System.gc()
+            @Suppress("UNUSED_EXPRESSION")
+            ByteArray(1 shl 20) // Allocate garbage to give the collector a reason to run
+        }
     }
 }

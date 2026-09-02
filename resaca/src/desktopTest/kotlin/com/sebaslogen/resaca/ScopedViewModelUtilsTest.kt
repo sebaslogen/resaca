@@ -198,6 +198,32 @@ internal class ScopedViewModelUtilsTest {
         assertNotNull(owner.getCachedViewModel())
     }
 
+    @Test
+    internal fun `clearLastDisposedViewModel does not clear a ViewModel that another owner in the container shares`() {
+        // Two Composables scoping the very same ViewModel instance end up with one owner each
+        val sharedViewModel = FakeVM()
+        val sharedViewModelFactory = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: KClass<T>, extras: CreationExtras): T {
+                @Suppress("UNCHECKED_CAST")
+                return sharedViewModel as T
+            }
+        }
+        val disposedOwner = createScopedViewModelOwner("disposedOwnerKey")
+        val remainingOwner = createScopedViewModelOwner("remainingOwnerKey")
+        disposedOwner.getViewModel(sharedViewModelFactory, plainOwner, CreationExtras.Empty)
+        remainingOwner.getViewModel(sharedViewModelFactory, plainOwner, CreationExtras.Empty)
+
+        // When only one of the two Composables is disposed
+        ScopedViewModelUtils.clearLastDisposedViewModel(
+            scopedViewModelOwner = disposedOwner,
+            objectsContainer = listOf(remainingOwner)
+        )
+
+        // Then the shared ViewModel is still alive for the Composable that is still in composition
+        assertFalse(sharedViewModel.cleared)
+        assertSame(sharedViewModel, remainingOwner.getCachedViewModel())
+    }
+
     // endregion
 
     // region InternalKey.plus(ExternalKey) operator

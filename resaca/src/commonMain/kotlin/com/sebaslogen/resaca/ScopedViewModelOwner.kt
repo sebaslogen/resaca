@@ -34,18 +34,31 @@ public class ScopedViewModelOwner<T : ViewModel>(
     private val viewModelStore = ViewModelStore()
     private val scopedViewModelProvider = ScopedViewModelProvider(viewModelStore)
 
+    /**
+     * The [ViewModel] currently held by [viewModelStore], or null while no [ViewModel] has been requested yet.
+     *
+     * This is a strong reference, but it does not extend the life of the [ViewModel] because [viewModelStore] already
+     * holds it strongly and both are owned by this same object.
+     */
+    private var cachedViewModel: T? = null
+
     internal fun getViewModel(factory: ViewModelProvider.Factory?, viewModelStoreOwner: ViewModelStoreOwner, creationExtras: CreationExtras): T {
         val viewModelProvider = scopedViewModelProvider.getViewModelProvider(factory, viewModelStoreOwner, creationExtras)
         @Suppress("ReplaceGetOrSet")
-        return viewModelProvider.get(modelClass.getCanonicalNameKey(key), modelClass)
+        return viewModelProvider.get(modelClass.getCanonicalNameKey(key), modelClass).also { cachedViewModel = it }
     }
 
-    internal fun getCachedViewModel(): T? {
-        return scopedViewModelProvider.getCachedViewModelProvider()?.get(modelClass.getCanonicalNameKey(key), modelClass)
-    }
+    /**
+     * Returns the [ViewModel] this owner holds, or null when no [ViewModel] was created yet or it was already cleared.
+     *
+     * This is used to find out whether two Composables are sharing the same [ViewModel] instance, so it must never
+     * create a [ViewModel] as a side effect and must never forget one that is still alive.
+     */
+    internal fun getCachedViewModel(): T? = cachedViewModel
 
     internal fun clear() {
         viewModelStore.clear()
+        cachedViewModel = null
     }
 
     internal companion object {
