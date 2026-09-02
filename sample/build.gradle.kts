@@ -124,6 +124,15 @@ dependencies {
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+
+    // AGP resolves the androidTest classpath consistently with the app runtime classpath, turning
+    // every version on the latter into a strict constraint on the former. Espresso needs newer
+    // versions of these two transitive dependencies than the app pulls in (via profileinstaller and
+    // material), which makes that consistent resolution fail. Raise them on the app classpath too.
+    constraints {
+        implementation(libs.androidx.concurrent.futures)
+        implementation(libs.errorprone.annotations)
+    }
 }
 
 tasks.withType<AbstractTestTask> {
