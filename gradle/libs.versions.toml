@@ -49,7 +49,7 @@ kotlinxDatetime = "0.8.0"
 # Transitive dependencies of Espresso, pinned so that AGP's consistent resolution
 # between the app and androidTest runtime classpaths does not conflict
 concurrentFutures = '1.2.0'
-errorProneAnnotations = '2.30.0'
+errorProneAnnotations = '2.50.0'
 
 
 [libraries]
