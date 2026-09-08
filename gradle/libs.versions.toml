@@ -15,7 +15,7 @@ navigation3 = "1.1.4"
 lifecycleViewmodelNav3 = "2.11.0"
 appcompat = '1.8.0'
 constraintlayout = '2.2.2'
-binary-compatibility-validator = '0.18.1'
+binary-compatibility-validator = '0.18.2'
 dokka = '2.2.0'
 maven = '0.37.0'
 # Compose Multiplatform
