@@ -1,6 +1,6 @@
 [versions]
 agp = '9.4.0'
-kotlin = '2.4.10'
+kotlin = '2.4.20'
 ksp = '2.3.12'
 compileSdk = '37'
 targetSdk = '37'
