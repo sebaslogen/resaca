@@ -1,0 +1,70 @@
+name: CodeQL
+
+on:
+  push:
+    branches: [ 'main' ]
+  pull_request:
+    branches: [ 'main' ]
+  schedule:
+    - cron: '27 4 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      packages: read
+      actions: read
+      contents: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: actions
+            build-mode: none
+          # Autobuild can't handle this KMP project (it runs `./gradlew clean` with JDK 17), so build manually
+          - language: java-kotlin
+            build-mode: manual
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        if: matrix.build-mode == 'manual'
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '21'
+
+      - name: Setup Gradle
+        if: matrix.build-mode == 'manual'
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
+
+      # CodeQL only extracts code that is actually compiled while tracing, so skip the build cache and
+      # compile in-process. Only the JVM/Android targets are compiled; iOS/JS/wasm sources aren't analyzable.
+      - name: Build
+        if: matrix.build-mode == 'manual'
+        run: |
+          ./gradlew --no-daemon --no-build-cache --no-configuration-cache \
+            -Pkotlin.compiler.execution.strategy=in-process \
+            :resaca:compileAndroidMain :resaca:compileKotlinDesktop \
+            :resacakoin:compileAndroidMain :resacakoin:compileKotlinDesktop \
+            :resacametro:compileAndroidMain :resacametro:compileKotlinDesktop \
+            :resacahilt:compileReleaseSources
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: "/language:${{ matrix.language }}"
