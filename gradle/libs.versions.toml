@@ -38,7 +38,7 @@ metro = '1.5.1'
 # Test
 junit-version = '4.13.2'
 kover = '0.9.11'
-kovergate = '0.7.0'
+kovergate = '0.8.1'
 robolectric-version = '4.17'
 espresso = '3.7.0'
 testRunner = '1.7.0'
